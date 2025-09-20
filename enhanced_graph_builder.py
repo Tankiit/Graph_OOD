@@ -168,7 +168,6 @@ class EnhancedGraphBuilder:
                 
             except:
                 # Fallback to cosine if Mahalanobis fails
-                print("Mahalanobis computation failed, falling back to cosine")
                 similarity_matrix = cosine_similarity(features)
                 
         else:
@@ -190,9 +189,6 @@ class EnhancedGraphBuilder:
         # Preprocess features
         features_processed = self.preprocess_features(features, fit=fit_preprocessing)
         
-        print(f"Building {self.method} graph for {features_processed.shape[0]} samples "
-              f"with {features_processed.shape[1]} features")
-        
         # Build k-NN graph (simplified for this version)
         adjacency = kneighbors_graph(features_processed, n_neighbors=self.k_neighbors, 
                                    mode='distance', metric='cosine', include_self=False)
@@ -201,8 +197,6 @@ class EnhancedGraphBuilder:
         
         # Symmetrize the graph
         adjacency = 0.5 * (adjacency + adjacency.T)
-        
-        print(f"Graph constructed: {adjacency.nnz} edges, density: {adjacency.nnz / (adjacency.shape[0]**2):.4f}")
         
         return adjacency
     
@@ -299,11 +293,6 @@ class VisionGraphPipeline:
         Returns:
             Dictionary containing all pipeline results
         """
-        print(f"\n{'='*60}")
-        print(f"Processing {dataset_name} ({split}) with {self.architecture}")
-        print(f"Graph method: {self.graph_method}")
-        print(f"{'='*60}")
-        
         # Load dataset
         if dataset_name == 'cifar10':
             dataloader = self.dataset_loader.get_cifar10(train=(split=='train'))
@@ -321,18 +310,14 @@ class VisionGraphPipeline:
             raise ValueError(f"Unknown dataset: {dataset_name}")
         
         # Extract features
-        print("Extracting features...")
         features, labels = self.feature_extractor.extract_features(dataloader, max_samples)
-        print(f"Extracted features shape: {features.shape}")
         
         # Build graph
-        print("Building graph...")
         adjacency = self.graph_builder.build_graph(features, fit_preprocessing=True)
         
         # Extract spectral features if requested
         spectral_features = None
         if extract_spectral:
-            print("Extracting spectral features...")
             spectral_features = self.graph_builder.extract_spectral_features(adjacency)
         
         # Compile results
@@ -351,8 +336,6 @@ class VisionGraphPipeline:
             'spectral_features': spectral_features
         }
         
-        print(f"✅ Processing complete: {len(features)} samples, {adjacency.nnz} edges")
-        
         return results
 
 
@@ -360,11 +343,6 @@ def main():
     """
     Main demonstration of enhanced graph building for computer vision datasets
     """
-    print("="*80)
-    print("ENHANCED GRAPH CONSTRUCTION FOR COMPUTER VISION")
-    print("Optimized for CIFAR-10/100, SVHN, and OOD Detection")
-    print("="*80)
-    
     # Initialize pipeline
     pipeline = VisionGraphPipeline(
         architecture='resnet18',  # Start with lightweight model
@@ -372,29 +350,16 @@ def main():
         data_dir='./data'
     )
     
-    # Quick demo: CIFAR-10
-    print("\n🚀 Running CIFAR-10 graph construction demo...")
-    
     try:
         results = pipeline.process_dataset(
             dataset_name='cifar10',
             max_samples=500  # Small for demo
         )
         
-        print(f"\n✅ Demo Results:")
-        print(f"Dataset: {results['dataset_name']}")
-        print(f"Samples: {results['n_samples']}")
-        print(f"Graph edges: {results['n_edges']}")
-        print(f"Graph density: {results['graph_density']:.6f}")
-        if results['spectral_features']:
-            print(f"Spectral gap: {results['spectral_features']['spectral_gap']:.4f}")
+        return results
         
     except Exception as e:
-        print(f"❌ Demo error: {e}")
-        print("This is likely due to missing datasets. Please ensure CIFAR-10 is available.")
-    
-    print("\n🎯 Enhanced graph construction framework ready!")
-    print("Use VisionGraphPipeline for your computer vision OOD detection tasks.")
+        raise RuntimeError(f"Demo error: {e}. Ensure datasets are available.")
 
 
 if __name__ == "__main__":

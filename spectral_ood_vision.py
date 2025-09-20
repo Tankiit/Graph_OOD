@@ -92,7 +92,7 @@ class VisionDatasetLoader:
                 dataset = torch.utils.data.Subset(dataset, indices)
         except:
             # If ImageNet not available, create dummy dataset
-            print("ImageNet not found, using CIFAR-10 as substitute")
+            pass  # ImageNet not found, using CIFAR-10 as substitute
             return self.get_cifar10(train=(split=='train'))
             
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=(split=='train'), num_workers=4)
@@ -201,8 +201,7 @@ class FeatureExtractor:
                 labels.extend(target.numpy())
                 sample_count += len(data)
                 
-                if batch_idx % 10 == 0:
-                    print(f"Processed {sample_count} samples...")
+                # Progress tracking removed for cleaner output
         
         return np.vstack(features), np.array(labels)
 
@@ -378,7 +377,7 @@ class ImageSpectralOODDetector:
         # Preprocess features
         features_processed = self._preprocess_features(features, fit=True)
         
-        print(f"Processed features shape: {features_processed.shape}")
+        # Features preprocessed for spectral analysis
         
         # Extract spectral features based on method
         if self.method == 'spectral_gap':
@@ -472,10 +471,6 @@ class VisionOODEvaluator:
                              max_samples: int = 2000) -> Dict:
         """Evaluate single configuration"""
         
-        print(f"\n{'='*60}")
-        print(f"Evaluating: {id_dataset} vs {ood_dataset} | {architecture} | {method}")
-        print(f"{'='*60}")
-        
         # Load datasets
         if id_dataset == 'cifar10':
             id_loader = self.loader.get_cifar10(train=False)
@@ -500,14 +495,8 @@ class VisionOODEvaluator:
         # Extract features
         feature_extractor = FeatureExtractor(architecture=architecture)
         
-        print("Extracting ID features...")
         id_features, id_labels = feature_extractor.extract_features(id_loader, max_samples)
-        
-        print("Extracting OOD features...")
         ood_features, ood_labels = feature_extractor.extract_features(ood_loader, max_samples//2)
-        
-        print(f"ID features shape: {id_features.shape}")
-        print(f"OOD features shape: {ood_features.shape}")
         
         # Split ID data for training/testing
         n_train = min(1000, len(id_features) // 2)  # Use subset for training
@@ -522,12 +511,10 @@ class VisionOODEvaluator:
         ])
         
         # Train spectral detector
-        print(f"Training {method} detector...")
         detector = ImageSpectralOODDetector(method=method, pca_dim=min(256, train_features.shape[1]))
         detector.fit(train_features)
         
         # Predict scores
-        print("Computing OOD scores...")
         scores = detector.predict_score(test_features)
         
         # Evaluate
@@ -556,8 +543,6 @@ class VisionOODEvaluator:
             'feature_dim_original': id_features.shape[1],
             'feature_dim_processed': detector.pca_dim
         }
-        
-        print(f"Results: AUC={auc:.4f}, AP={ap:.4f}, FPR95={fpr95:.4f}")
         
         return results
     

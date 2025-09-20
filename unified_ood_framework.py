@@ -75,20 +75,14 @@ class UnifiedSpectralOODDetector:
             dataloader: Training data loader
             max_samples: Maximum samples to use for training
         """
-        print(f"🔧 Fitting unified detector with {self.architecture} + {self.graph_method} + {self.spectral_method}")
-        
         # Extract features
-        print("Extracting features...")
         features, labels = self.feature_extractor.extract_features(dataloader, max_samples)
-        print(f"Extracted {features.shape[0]} samples with {features.shape[1]} features")
         
         # Build graph and extract spectral features
-        print("Building enhanced graph...")
         adjacency = self.graph_builder.build_graph(features, fit_preprocessing=True)
         spectral_features = self.graph_builder.extract_spectral_features(adjacency)
         
         # Fit spectral detector
-        print("Fitting spectral detector...")
         self.spectral_detector.fit(features)
         
         # Store reference data
@@ -96,9 +90,6 @@ class UnifiedSpectralOODDetector:
         self.reference_spectral = spectral_features
         self.reference_graph = adjacency
         self.is_fitted = True
-        
-        print(f"✅ Training completed: {adjacency.nnz} graph edges, "
-              f"spectral gap: {spectral_features['spectral_gap']:.4f}")
         
         return self
     
@@ -115,8 +106,6 @@ class UnifiedSpectralOODDetector:
         """
         if not self.is_fitted:
             raise ValueError("Detector must be fitted first")
-        
-        print("🔍 Computing OOD scores...")
         
         # Extract test features
         test_features, test_labels = self.feature_extractor.extract_features(dataloader, max_samples)
@@ -171,8 +160,6 @@ class UnifiedSpectralOODDetector:
         Returns:
             Evaluation results dictionary
         """
-        print(f"\n📊 Evaluating unified detector...")
-        
         # Get predictions for ID data
         id_results = self.predict_score(id_dataloader, max_samples)
         id_labels = np.zeros(len(id_results['combined_scores']))
@@ -221,14 +208,6 @@ def main():
     """
     Main execution for unified OOD detection framework
     """
-    print("="*80)
-    print("UNIFIED SPECTRAL OOD DETECTION FRAMEWORK")
-    print("Enhanced Graph Construction + Spectral Analysis")
-    print("="*80)
-    
-    # Quick demo
-    print("\n🎯 Quick Demo: CIFAR-10 vs Noise with ResNet18")
-    
     try:
         # Initialize detector
         detector = UnifiedSpectralOODDetector(
@@ -249,18 +228,10 @@ def main():
         detector.fit(id_train_loader, max_samples=400)
         results = detector.evaluate(id_test_loader, ood_loader, max_samples=200)
         
-        # Print demo results
-        print(f"\n📊 DEMO RESULTS:")
-        print(f"Spectral AUC:  {results['spectral_scores']['auc']:.4f}")
-        print(f"Graph AUC:     {results['graph_scores']['auc']:.4f}")
-        print(f"Combined AUC:  {results['combined_scores']['auc']:.4f}")
-        print(f"Combined FPR95: {results['combined_scores']['fpr95']:.4f}")
+        return results
         
     except Exception as e:
-        print(f"❌ Demo error: {e}")
-        print("This is likely due to missing datasets or dependencies.")
-    
-    print(f"\n✅ Unified framework demonstration completed!")
+        raise RuntimeError(f"Demo error: {e}. Check datasets and dependencies.")
 
 
 if __name__ == "__main__":
