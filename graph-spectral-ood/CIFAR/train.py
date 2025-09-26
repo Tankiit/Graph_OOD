@@ -315,12 +315,12 @@ def analyze_pi_impact(epoch, net, train_loader_in, train_loader_aux_in,
         # Get features
         with torch.no_grad():
             if hasattr(net, 'forward_backbone'):
-                _, features_in = net.forward_backbone(in_batch[0].cuda(), return_feat=True)
-                _, features_wild = net.forward_backbone(mixed_batch.cuda(), return_feat=True)
+                _, features_in = net.forward_backbone(in_batch[0].to(device), return_feat=True)
+                _, features_wild = net.forward_backbone(mixed_batch.to(device), return_feat=True)
             else:
                 # Fallback to regular forward
-                features_in = net(in_batch[0].cuda())
-                features_wild = net(mixed_batch.cuda())
+                features_in = net(in_batch[0].to(device))
+                features_wild = net(mixed_batch.to(device))
 
         # Compute spectral gap
         from spectral_monitoring import compute_spectral_gap
@@ -358,7 +358,7 @@ torch.manual_seed(args.seed)
 rng = np.random.default_rng(args.seed)
 
 #make the data_loaders
-train_loader_in, train_loader_in_noaug, train_loader_aux_in, train_loader_aux_in_cor, train_loader_aux_out, test_loader_in, test_loader_cor, \
+train_loader_in, train_loader_in_noaug, train_loader_in_aug, train_loader_aux_in, train_loader_aux_in_cor, train_loader_aux_out, test_loader_in, test_loader_cor, \
 test_loader_ood, valid_loader_in, valid_loader_aux, valid_loader_aux_in, valid_loader_aux_cor, valid_loader_aux_out = make_datasets(
     args.dataset, args.aux_out_dataset, args.test_out_dataset, state, args.alpha, args.pi_1, args.pi_2, args.cortype)
 
@@ -410,10 +410,14 @@ net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.drop
 print('Parameters {:.2f}M'.format(sum([x.numel() for x in net.parameters() if x.requires_grad])/1e6))
 
 
+# Set device for CPU/GPU usage
+device = torch.device('cuda' if args.ngpu > 0 and torch.cuda.is_available() else 'cpu')
+print(f"Using device: {device}")
+
 # create logistic regression layer for energy_vos and woods
 if args.score in ['energy_vos', 'woods', 'scone']:
     logistic_regression = nn.Linear(1, 1)
-    logistic_regression.cuda()
+    logistic_regression.to(device)
 
 
 # Restore model
@@ -424,12 +428,13 @@ else:
     print(args.load_pretrained)
     print('Restoring trained model...')
     model_name = args.load_pretrained
-    if os.path.isfile(model_name):
+    if model_name and os.path.isfile(model_name):
         print('found pretrained model: {}'.format(model_name))
         net.load_state_dict(torch.load(model_name))
         model_found = True
     if not model_found:
-        assert False, "could not find model to restore"
+        print('No pretrained model found, starting from scratch...')
+        # Continue without pretrained model
 
 
 # add extra NN for OOD detection (for SSND methods)
@@ -442,13 +447,13 @@ if args.ngpu > 1:
     print('CUDA available:', torch.cuda.is_available())
     print('Running in parallel across', args.ngpu, 'GPUs')
     net = torch.nn.DataParallel(net, device_ids=list(range(args.ngpu)))
-    net.cuda()
+    net.to(device)
     torch.cuda.manual_seed(1)
 elif args.ngpu > 0:
     print('CUDA available:', torch.cuda.is_available())
     print('Available CUDA devices:', torch.cuda.device_count())
     print('Sending model to device', torch.cuda.current_device(), ':', torch.cuda.get_device_name())
-    net.cuda()
+    net.to(device)
     torch.cuda.manual_seed(1)
 
 # cudnn.benchmark = True  # fire on all cylinders
@@ -493,8 +498,8 @@ def pre_train(epoch):
     for in_set, aux_in_set, aux_in_cor_set, aux_out_set in loaders:
         #create the mixed batch
         aux_set, aux_set1 = mix_pretrain_batches(aux_in_set, aux_in_cor_set, aux_out_set)
-        x1 = in_set[0][0].cuda(); x2 = in_set[0][1].cuda(); aux_set = aux_set.cuda(); aux_set1 = aux_set1.cuda()
-        target = in_set[1].cuda()
+        x1 = in_set[0][0].to(device); x2 = in_set[0][1].to(device); aux_set = aux_set.to(device); aux_set1 = aux_set1.to(device)
+        target = in_set[1].to(device)
 
         batch_num += 1
         net.zero_grad()
@@ -525,10 +530,10 @@ ce_constraint_weight = args.ce_constraint_weight
 # create the lagrangian variable for lagrangian methods
 if args.score in ['woods_nn', 'woods', 'scone']:
     lam = torch.tensor(0).float()
-    lam = lam.cuda()
+    lam = lam.to(device)
 
     lam2 = torch.tensor(0).float()
-    lam2 = lam.cuda()
+    lam2 = lam.to(device)
 
 class ArrayDataset(torch.utils.data.dataset.Dataset):
     
@@ -743,7 +748,7 @@ def train(epoch):
         target = in_set[1]
 
         if args.ngpu > 0:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
 
         # print(data.shape)
 
@@ -756,8 +761,8 @@ def train(epoch):
         if args.spectral_reg:
             with torch.no_grad():
                 if hasattr(net, 'forward_backbone'):
-                    _, features_in = net.forward_backbone(in_set[0].cuda(), return_feat=True)
-                    _, features_aux = net.forward_backbone(aux_set.cuda(), return_feat=True)
+                    _, features_in = net.forward_backbone(in_set[0].to(device), return_feat=True)
+                    _, features_aux = net.forward_backbone(aux_set.to(device), return_feat=True)
                 else:
                     # Fallback to basic feature extraction
                     features_in = x[:len(in_set[0])]
@@ -777,7 +782,7 @@ def train(epoch):
         if args.classification:
             loss_ce = F.cross_entropy(x_classification, target)
         else:
-            loss_ce = torch.Tensor([0]).cuda()
+            loss_ce = torch.Tensor([0]).to(device)
 
         losses_ce.append(loss_ce.item())
 
@@ -829,7 +834,7 @@ def train(epoch):
 
             Ec_out = torch.logsumexp(x[len(in_set[0]):], dim=1)
             Ec_in = torch.logsumexp(x[:len(in_set[0])], dim=1)
-            binary_labels = torch.ones(len(x)).cuda()
+            binary_labels = torch.ones(len(x)).to(device)
             binary_labels[len(in_set[0]):] = 0
             loss_energy = F.binary_cross_entropy_with_logits(logistic_regression(
                 torch.cat([Ec_in, Ec_out], -1).unsqueeze(1)).squeeze(),
@@ -888,7 +893,7 @@ def train(epoch):
             if features_in is None:
                 with torch.no_grad():
                     if hasattr(net, 'forward_backbone'):
-                        _, features_in = net.forward_backbone(in_set[0].cuda(), return_feat=True)
+                        _, features_in = net.forward_backbone(in_set[0].to(device), return_feat=True)
                     else:
                         features_in = x[:len(in_set[0])]
 
@@ -1073,7 +1078,7 @@ def compute_constraint_terms():
         target = in_set[1]
 
         if args.ngpu > 0:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
 
         # forward
         net(data)
@@ -1136,7 +1141,7 @@ def test(epoch):
         OOD_scores_P0 = []
         for data, target in test_loader_in:
             if args.ngpu > 0:
-                data, target = data.cuda(), target.cuda()
+                data, target = data.to(device), target.to(device)
             # forward
             output = net(data)
             if args.score in ["woods_nn"]:
@@ -1171,7 +1176,7 @@ def test(epoch):
         #for data, target in in_loader:
         for data, target in test_loader_cor:
             if args.ngpu > 0:
-                data, target = data.cuda(), target.cuda()
+                data, target = data.to(device), target.to(device)
             # forward
             output = net(data)
             if args.score in ["woods_nn"]:
@@ -1205,7 +1210,7 @@ def test(epoch):
         OOD_scores_P_out = []
         for data, target in test_loader_ood:
             if args.ngpu > 0:
-                data, target = data.cuda(), target.cuda()
+                data, target = data.to(device), target.to(device)
             # forward
             output = net(data)
             if args.score in ["woods_nn"]:
@@ -1237,7 +1242,7 @@ def test(epoch):
         OOD_scores_val_P0 = []
         for data, target in valid_loader_in:
             if args.ngpu > 0:
-                data, target = data.cuda(), target.cuda()
+                data, target = data.to(device), target.to(device)
             # forward
             output = net(data)
             if args.score in ["woods_nn"]:
@@ -1270,7 +1275,7 @@ def test(epoch):
         OOD_scores_val_P_wild = []
         for data, target in valid_loader_aux:
             if args.ngpu > 0:
-                data, target = data.cuda(), target.cuda()
+                data, target = data.to(device), target.to(device)
             # forward
             output = net(data)
             if args.score in ["woods_nn"]:
@@ -1355,7 +1360,7 @@ def evaluate_classification_loss_training():
         target = in_set[1]
 
         if args.ngpu > 0:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
         # forward
         x = net(data)
 
@@ -1384,7 +1389,7 @@ def evaluate_energy_logistic_loss():
         target = in_set[1]
 
         if args.ngpu > 0:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
 
         # forward
         x = net(data)
@@ -1393,7 +1398,7 @@ def evaluate_energy_logistic_loss():
         Ec_in = torch.logsumexp(x, dim=1)
 
         # compute labels
-        binary_labels_1 = torch.ones(len(data)).cuda()
+        binary_labels_1 = torch.ones(len(data)).to(device)
 
         # compute in distribution logistic losses
         logistic_loss_energy_in = F.binary_cross_entropy_with_logits(logistic_regression(
@@ -1545,8 +1550,8 @@ def get_thresholds(ID_loader, classifier, temper=1.0):
         end = time.time()
         for idx, (features, labels) in enumerate(ID_loader):
             
-            features = features.float().cuda()
-            labels = labels.long().cuda()            
+            features = features.float().to(device)
+            labels = labels.long().to(device)            
             bsz = labels.shape[0]
 
             output = classifier(features.detach())
@@ -1566,11 +1571,11 @@ def get_thresholds(ID_loader, classifier, temper=1.0):
 def full_finetune():
     ori_checkpoints = copy.deepcopy(net.state_dict())
     net.train()
-    for epoch in range(20):
+    for epoch in range(args.epochs):
         losses = []
         train_accuracies = []    
-        for bid, (data, target) in enumerate(train_loader_in_noaug):
-            data, target = data.cuda(), target.cuda()
+        for bid, (data, target) in enumerate(train_loader_in_aug):
+            data, target = data.to(device), target.to(device)
 
             x_classification = net(data)
             pred = x_classification.data.max(1)[1]
@@ -1591,6 +1596,9 @@ def full_finetune():
 
         if epoch%2==0 and epoch!=0:
             cal_ft_acc(epoch)
+        
+        # Step the learning rate scheduler
+        scheduler.step()
 
     net.load_state_dict(ori_checkpoints)
 
@@ -1602,8 +1610,8 @@ def cal_ft_acc(epoch):
     valin_acc_num = 0
     valin_num = 0
     for idx, in_sets in enumerate(valid_loader_in):
-        x = in_sets[0].cuda()
-        label = in_sets[1].cuda()
+        x = in_sets[0].to(device)
+        label = in_sets[1].to(device)
         output, feat = net.forward_backbone(x, return_feat=True)
         
         prob = F.softmax(output, dim=1)
@@ -1616,8 +1624,8 @@ def cal_ft_acc(epoch):
     testin_num = 0
     f_source_test = []
     for idx, in_sets in enumerate(test_loader_in):
-        x = in_sets[0].cuda()
-        label = in_sets[1].cuda()
+        x = in_sets[0].to(device)
+        label = in_sets[1].to(device)
         output, feat = net.forward_backbone(x, return_feat=True)
         
         prob = F.softmax(output, dim=1)
@@ -1632,8 +1640,8 @@ def cal_ft_acc(epoch):
     testcor_acc_num = 0
     testcor_num = 0
     for idx, cor_sets in enumerate(test_loader_cor):
-        x = cor_sets[0].cuda()
-        label = cor_sets[1].cuda()
+        x = cor_sets[0].to(device)
+        label = cor_sets[1].to(device)
         output, feat = net.forward_backbone(x, return_feat=True)
             
         prob = F.softmax(output, dim=1)
@@ -1645,8 +1653,8 @@ def cal_ft_acc(epoch):
     valcor_acc_num = 0
     valcor_num = 0
     for idx, cor_sets in enumerate(valid_loader_aux_cor):
-        x = cor_sets[0].cuda()
-        label = cor_sets[1].cuda()
+        x = cor_sets[0].to(device)
+        label = cor_sets[1].to(device)
         output, feat = net.forward_backbone(x, return_feat=True)
         
         prob = F.softmax(output, dim=1)
@@ -1657,13 +1665,13 @@ def cal_ft_acc(epoch):
       
     
     for idx, out_sets in enumerate(valid_loader_aux_out):
-        x = out_sets[0].cuda()
+        x = out_sets[0].to(device)
         label = out_sets[1]
         output, feat = net.forward_backbone(x, return_feat=True)
        
     f_out_test = []
     for idx, out_sets in enumerate(test_loader_ood):
-        x = out_sets[0].cuda()
+        x = out_sets[0].to(device)
         label = out_sets[1]
         output, feat = net.forward_backbone(x, return_feat=True)
         f_out_test.append(feat.data.cpu().numpy())
@@ -1673,7 +1681,7 @@ def cal_ft_acc(epoch):
     for idx, out_sets in enumerate(train_loader_in_noaug):
         if idx==100:
             break
-        x = out_sets[0].cuda()
+        x = out_sets[0].to(device)
         label = out_sets[1]
         output, feat = net.forward_backbone(x, return_feat=True)
         f_train_in.append(feat.data.cpu().numpy())
@@ -1726,7 +1734,7 @@ if args.score in [ 'woods_nn', 'woods', 'scone']:
 
 import time
 print(len(train_loader_in), len(train_loader_aux_in), len(train_loader_aux_in_cor), len(train_loader_aux_out))
-net.cuda()
+net.to(device)
 if args.pretrain:
     for epoch in range(0, args.epochs):
         state['epoch'] = epoch

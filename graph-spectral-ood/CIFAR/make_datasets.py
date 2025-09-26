@@ -31,6 +31,22 @@ from random import sample
 import random
 import copy
 
+def safe_collate_fn(batch):
+    """Custom collate function that handles PIL Images and other data types safely"""
+    # Convert any PIL Images to tensors before collating
+    processed_batch = []
+    for item in batch:
+        if isinstance(item, tuple) and len(item) == 2:
+            x, y = item
+            if hasattr(x, 'mode') and not torch.is_tensor(x):  # PIL Image
+                x = trn.ToTensor()(x)
+            processed_batch.append((x, y))
+        else:
+            processed_batch.append(item)
+    
+    # Use default collate function
+    return torch.utils.data.dataloader.default_collate(processed_batch)
+
 imagenet_mean_std = [[0.485, 0.456, 0.406],[0.229, 0.224, 0.225]]
 
 '''
@@ -42,7 +58,7 @@ This script makes the datasets used in training. The main function is make_datas
 cifar10_path = '../data/'
 cifar100_path = '../data/'
 svhn_path = '../data/'
-lsun_c_path = '../data/'
+lsun_c_path = '../data/LSUN_C/'
 lsun_r_path = '../data/'
 isun_path = '../data/'
 dtd_path = '../data/'
@@ -76,6 +92,11 @@ class CustomSubset(torch.utils.data.Subset):
         
         if self.subset_transform is not None:
             x = self.subset_transform(x)
+        
+        # Final safety check - ensure we never return PIL Images
+        if hasattr(x, 'mode') and not torch.is_tensor(x):  # PIL Image and not already a tensor
+            print(f"Warning: PIL Image detected in CustomSubset at idx {idx}, converting to tensor")
+            x = trn.ToTensor()(x)
       
         return x, y   
     
@@ -281,25 +302,25 @@ def load_dataset(dataset):
     t = trn.Compose([trn.ToTensor(), trn.Normalize(mean, std), trn.RandomCrop(32, padding=4)])
     if dataset == 'lsun_c':
         print('loading LSUN_C')
-        out_data = dset.ImageFolder(root=lsun_c_path, transform=None)
+        out_data = dset.ImageFolder(root=lsun_c_path, transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
 
     if dataset == 'lsun_r':
         print('loading LSUN_R')
-        out_data = dset.ImageFolder(root=lsun_r_path, transform=None)
+        out_data = dset.ImageFolder(root=lsun_r_path, transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
 
     if dataset == 'isun':
         print('loading iSUN')
-        out_data = dset.ImageFolder(root=isun_path, transform=None)
+        out_data = dset.ImageFolder(root=isun_path, transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
     if dataset == 'dtd':
         print('loading DTD')
-        out_data = dset.ImageFolder(root=dtd_path, transform=None)
+        out_data = dset.ImageFolder(root=dtd_path, transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
     if dataset == 'places':
         print('loading Places365')
-        out_data = dset.ImageFolder(root=places_path, transform=None)
+        out_data = dset.ImageFolder(root=places_path, transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
 
     if dataset == 'iNaturalist':
         print('loading iNaturalist')
-        out_data = dset.ImageFolder(root=iNaturalist_path, transform=None)
+        out_data = dset.ImageFolder(root=iNaturalist_path, transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
 
     return out_data
 
@@ -621,8 +642,43 @@ def make_datasets(in_dset, aux_out_dset, test_out_dset, state, alpha, pi_1, pi_2
     train_aux_out_data_final.subset_transform = SimSiamTransform(image_size=32)
     train_in_data.subset_transform = SimSiamTransform(image_size=32)  
 
-    train_in_data_noaug = copy.deepcopy(train_in_data)
-    train_in_data_noaug.subset_transform = transform 
+    # Create a proper no-augmentation dataset that returns single tensors
+    # Use a simple transform without resize for CIFAR-10
+    simple_transform = trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)])
+    train_in_data_noaug = CustomSubset(train_in_data.dataset, train_in_data.indices)
+    train_in_data_noaug.subset_transform = simple_transform
+    
+    # Create an augmented version for better generalization
+    augmented_transform = trn.Compose([
+        trn.RandomHorizontalFlip(p=0.5),
+        trn.RandomCrop(32, padding=4),
+        trn.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+        trn.ToTensor(),
+        trn.Normalize(mean, std)
+    ])
+    train_in_data_aug = CustomSubset(train_in_data.dataset, train_in_data.indices)
+    train_in_data_aug.subset_transform = augmented_transform
+    
+    # Debug: Test multiple samples from the dataset
+    print("Debug: Testing multiple samples from train_in_data_noaug:")
+    for i in range(min(5, len(train_in_data_noaug))):
+        sample_x, sample_y = train_in_data_noaug[i]
+        print(f"Sample {i}: type={type(sample_x)}, has_mode={hasattr(sample_x, 'mode')}, is_tensor={torch.is_tensor(sample_x)}")
+        if hasattr(sample_x, 'mode') and not torch.is_tensor(sample_x):
+            print(f"ERROR: PIL Image detected in sample {i}!")
+        else:
+            print(f"OK: Sample {i} is a tensor with shape {sample_x.shape}")
+    
+    # Debug: Test random samples from the dataset
+    print("Debug: Testing random samples from train_in_data_noaug:")
+    import random
+    random_indices = random.sample(range(len(train_in_data_noaug)), min(10, len(train_in_data_noaug)))
+    for i in random_indices:
+        sample_x, sample_y = train_in_data_noaug[i]
+        if hasattr(sample_x, 'mode') and not torch.is_tensor(sample_x):
+            print(f"ERROR: PIL Image detected in random sample {i}!")
+        else:
+            print(f"OK: Random sample {i} is a tensor with shape {sample_x.shape}") 
 
 
     # state['prefetch'] = 4
@@ -632,16 +688,24 @@ def make_datasets(in_dset, aux_out_dset, test_out_dset, state, alpha, pi_1, pi_2
         batch_size=state['batch_size'], shuffle=True,
         num_workers=state['prefetch'], pin_memory=True)
     
+    train_loader_in_aug = torch.utils.data.DataLoader(
+        train_in_data_aug,
+        batch_size=state['batch_size'], shuffle=True,
+        num_workers=state['prefetch'], pin_memory=True,
+        collate_fn=safe_collate_fn)
+    
     train_loader_in_noaug = torch.utils.data.DataLoader(
         train_in_data_noaug,
         batch_size=state['batch_size'], shuffle=True,
-        num_workers=state['prefetch'], pin_memory=True)
+        num_workers=state['prefetch'], pin_memory=True,
+        collate_fn=safe_collate_fn)
 
     # validation for P_0
     valid_loader_in = torch.utils.data.DataLoader(
         valid_in_data_final,
         batch_size=state['batch_size'], shuffle=False,
-        num_workers=state['prefetch'], pin_memory=True)
+        num_workers=state['prefetch'], pin_memory=True,
+        collate_fn=safe_collate_fn)
 
     # auxiliary dataset
     # for in-distribution component of mixture
@@ -650,59 +714,82 @@ def make_datasets(in_dset, aux_out_dset, test_out_dset, state, alpha, pi_1, pi_2
         #train_aux_in_data_mix_final,
         train_aux_in_data_final,
         batch_size=state['batch_size'], shuffle=True,
-        num_workers=state['prefetch'], pin_memory=True, drop_last=True)
+        num_workers=state['prefetch'], pin_memory=True, drop_last=True,
+        collate_fn=safe_collate_fn)
 
     #for in-distribution cor component of mixture
     #drop last batch to eliminate unequal batch size issues
     train_loader_aux_in_cor = torch.utils.data.DataLoader(
         train_aux_in_data_cor_final,
         batch_size=state['batch_size'], shuffle=True,
-        num_workers=state['prefetch'], pin_memory=True, drop_last=True)
+        num_workers=state['prefetch'], pin_memory=True, drop_last=True,
+        collate_fn=safe_collate_fn)
 
 
     #for out-distribution component of mixture
+    # Debug: Test SVHN dataset for PIL Images
+    print("Debug: Testing SVHN dataset (train_aux_out_data_final):")
+    for i in range(min(3, len(train_aux_out_data_final))):
+        sample = train_aux_out_data_final[i]
+        print(f"SVHN Sample {i}: type={type(sample)}")
+        if isinstance(sample, tuple) and len(sample) == 2:
+            sample_x, sample_y = sample
+            print(f"  x type={type(sample_x)}, has_mode={hasattr(sample_x, 'mode')}, is_tensor={torch.is_tensor(sample_x)}")
+            if hasattr(sample_x, 'mode') and not torch.is_tensor(sample_x):
+                print(f"ERROR: PIL Image detected in SVHN sample {i}!")
+        else:
+            print(f"ERROR: SVHN sample {i} is not a tuple!")
+
     train_loader_aux_out = torch.utils.data.DataLoader(
         train_aux_out_data_final,
         batch_size=state['batch_size'], shuffle=True,
-        num_workers=state['prefetch'], pin_memory=True, drop_last=True)
+        num_workers=state['prefetch'], pin_memory=True, drop_last=True,
+        collate_fn=safe_collate_fn)
 
     valid_loader_aux = torch.utils.data.DataLoader(
          valid_aux_data_final,
          batch_size=state['batch_size'], shuffle=False,
-         num_workers=state['prefetch'], pin_memory=True, drop_last=False)
+         num_workers=state['prefetch'], pin_memory=True, drop_last=False,
+         collate_fn=safe_collate_fn)
 
     valid_loader_aux_in = torch.utils.data.DataLoader(
          valid_aux_in_data_final,
          batch_size=state['batch_size'], shuffle=False,
-         num_workers=state['prefetch'], pin_memory=True, drop_last=False)
+         num_workers=state['prefetch'], pin_memory=True, drop_last=False,
+         collate_fn=safe_collate_fn)
     
     valid_loader_aux_cor = torch.utils.data.DataLoader(
          valid_aux_in_data_cor_final,
          batch_size=state['batch_size'], shuffle=False,
-         num_workers=state['prefetch'], pin_memory=True, drop_last=False)
+         num_workers=state['prefetch'], pin_memory=True, drop_last=False,
+         collate_fn=safe_collate_fn)
 
     valid_loader_aux_out = torch.utils.data.DataLoader(
          valid_aux_out_data_final,
          batch_size=state['batch_size'], shuffle=False,
-         num_workers=state['prefetch'], pin_memory=True, drop_last=False)
+         num_workers=state['prefetch'], pin_memory=True, drop_last=False,
+         collate_fn=safe_collate_fn)
 
     test_loader_in = torch.utils.data.DataLoader(
         test_in_data,
         batch_size=state['batch_size'], shuffle=False,
-        num_workers=state['prefetch'], pin_memory=True)
+        num_workers=state['prefetch'], pin_memory=True,
+        collate_fn=safe_collate_fn)
 
     test_loader_cor = torch.utils.data.DataLoader(
         test_in_data_cor,
         batch_size=state['batch_size'], shuffle=False,
-        num_workers=state['prefetch'], pin_memory=True)
+        num_workers=state['prefetch'], pin_memory=True,
+        collate_fn=safe_collate_fn)
 
     # test loader for ood
     test_loader_out = torch.utils.data.DataLoader(
         test_out_data,
         batch_size=state['batch_size'], shuffle=False,
-        num_workers=state['prefetch'], pin_memory=True)
+        num_workers=state['prefetch'], pin_memory=True,
+        collate_fn=safe_collate_fn)
 
-    return train_loader_in, train_loader_in_noaug, train_loader_aux_in, train_loader_aux_in_cor, train_loader_aux_out, test_loader_in, test_loader_cor, test_loader_out, valid_loader_in, valid_loader_aux, \
+    return train_loader_in, train_loader_in_noaug, train_loader_in_aug, train_loader_aux_in, train_loader_aux_in_cor, train_loader_aux_out, test_loader_in, test_loader_cor, test_loader_out, valid_loader_in, valid_loader_aux, \
            valid_loader_aux_in, valid_loader_aux_cor, valid_loader_aux_out
 
 
