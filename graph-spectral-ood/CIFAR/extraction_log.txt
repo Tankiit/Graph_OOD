@@ -1,0 +1,31 @@
+
+Loading model from: ./snapshots/pretrained/cifar10_wrn_pretrained_epoch_99.pt
+Model loaded successfully!
+============================================================
+EXTRACTING FEATURES FROM ALL DATASETS
+============================================================
+
+Loading datasets...
+building datasets...
+loading CIFAR-10
+loading CorCIFAR-10
+Traceback (most recent call last):
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/extract_features_spectral.py", line 598, in <module>
+    main()
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/extract_features_spectral.py", line 558, in main
+    all_features, detector = extract_all_features(args, net, cache_dir=args.cache_dir)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/extract_features_spectral.py", line 379, in extract_all_features
+    valid_loader_aux_out = make_datasets(
+                           ^^^^^^^^^^^^^^
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/make_datasets.py", line 584, in make_datasets
+    train_in_data, aux_in_data, aux_in_data_cor, test_in_data, test_in_data_cor = load_in_mixCifar_data(in_dset, rng, alpha, cortype)
+                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/make_datasets.py", line 364, in load_in_mixCifar_data
+    aux_data_cor_orig, test_data_cor = load_CorCifar(in_dset, cortype)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/make_datasets.py", line 233, in load_CorCifar
+    from dataloader.corcifar10Loader import CorCIFARDataset as Dataset
+  File "/home/tanmoy/research/Graph_OOD/graph-spectral-ood/CIFAR/dataloader/corcifar10Loader.py", line 15, in <module>
+    from tqdm import tqdm
+ModuleNotFoundError: No module named 'tqdm'
