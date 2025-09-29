@@ -693,11 +693,6 @@ class VisionOODEvaluator:
 
 # Main execution and demonstration
 def main():
-    """Main execution function"""
-    print("="*80)
-    print("SPECTRAL OOD DETECTION FOR COMPUTER VISION")
-    print("Implementation across Multiple Datasets and Architectures")
-    print("="*80)
     
     # Initialize evaluator
     evaluator = VisionOODEvaluator(data_dir='./data')
