@@ -18,6 +18,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
+from datasets import load_dataset
 from typing import Dict, List, Tuple, Optional, Union
 import os
 import argparse
@@ -57,8 +58,28 @@ class VisionDatasetLoader:
                 transforms.CenterCrop(224),
                 transforms.ToTensor(),
                 transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            ]),
+            'tinyimagenet': transforms.Compose([
+                transforms.Resize(64),
+                transforms.ToTensor(),
+                transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
         }
+    
+    def get_tiny_imagenet(self, train: bool = True) -> DataLoader:
+        """Load Tiny ImageNet dataset"""
+        dataset = load_dataset('Maysee/tiny-imagenet', cache_dir=self.data_dir, split="train" if train else "valid")
+        
+        _transform = self.transforms['tinyimagenet']
+
+        def transforms(example):
+            return {"image":[_transform(x.convert("RGB")) for x in example["image"]],"label":example["label"]}
+
+        def collate(args):
+            return (torch.stack([x["image"] for x in args]),torch.tensor([x["label"] for x in args]))
+
+        dataset.set_transform(transforms)
+        return DataLoader(dataset, batch_size=self.batch_size, shuffle=train, collate_fn=collate, num_workers=4)
     
     def get_cifar10(self, train: bool = True) -> DataLoader:
         """Load CIFAR-10 dataset"""

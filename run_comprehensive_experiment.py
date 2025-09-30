@@ -57,12 +57,19 @@ class ExperimentOrchestrator:
         """Define all experimental configurations"""
         
         # Dataset configurations
+        id_datasets = ['cifar10', 'tiny_imagenet']
+        ood_datasets = {
+            'cifar10': ['tiny_imagenet'],
+            'tiny_imagenet': ['cifar10'], 
+        }
+        """
         id_datasets = ['cifar10', 'cifar100', 'svhn']
         ood_datasets = {
             'cifar10': ['cifar100', 'svhn', 'noise', 'texture'],
             'cifar100': ['cifar10', 'svhn', 'noise', 'texture'], 
             'svhn': ['cifar10', 'cifar100', 'noise', 'texture']
         }
+        """
         
         # Architecture configurations
         architectures = {
@@ -177,6 +184,8 @@ class ExperimentOrchestrator:
                 id_loader = loader.get_cifar100(train=False) 
             elif config['id_dataset'] == 'svhn':
                 id_loader = loader.get_svhn(split='test')
+            elif config['id_dataset'] == 'tiny_imagenet':
+                id_loader = loader.get_tiny_imagenet(train=False)
             else:
                 raise ValueError(f"Unknown ID dataset: {config['id_dataset']}")
             
@@ -187,6 +196,8 @@ class ExperimentOrchestrator:
                 ood_loader = loader.get_cifar100(train=False)
             elif config['ood_dataset'] == 'svhn':
                 ood_loader = loader.get_svhn(split='test')
+            elif config['ood_dataset'] == 'tiny_imagenet':
+                ood_loader = loader.get_tiny_imagenet(train=False)
             elif config['ood_dataset'] == 'noise':
                 ood_loader = loader.get_noise_ood(size=self.max_samples//2)
             elif config['ood_dataset'] == 'texture':
