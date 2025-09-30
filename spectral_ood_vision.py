@@ -124,14 +124,10 @@ class VisionDatasetLoader:
     
     def get_texture_ood(self) -> DataLoader:
         """Load texture dataset as OOD (DTD - Describable Textures Dataset)"""
-        try:
-            dataset = torchvision.datasets.DTD(
-                root=self.data_dir, split='test', download=True,
-                transform=self.transforms['cifar']
-            )
-        except:
-            # Fallback to noise if DTD not available
-            dataset = NoiseDataset(size=1000, transform=self.transforms['cifar'])
+        dataset = torchvision.datasets.DTD(
+            root=self.data_dir, split='test', download=True,
+            transform=self.transforms['cifar']
+        )
             
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
     
