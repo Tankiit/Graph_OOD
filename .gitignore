@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -163,9 +162,3 @@ Thumbs.db
 *.temp
 temp/
 tmp/
-=======
-venv
-results
-__pycache__
-data
->>>>>>> eeb7907 (add tiny imagenet)
