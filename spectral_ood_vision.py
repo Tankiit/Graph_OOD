@@ -63,7 +63,7 @@ class VisionDatasetLoader:
                 transforms.Resize(64),
                 transforms.ToTensor(),
                 transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-            ])
+            ]),
         }
     
     def get_tiny_imagenet(self, train: bool = True) -> DataLoader:
@@ -137,7 +137,7 @@ class VisionDatasetLoader:
     
     def get_noise_ood(self, size: int = 1000) -> DataLoader:
         """Generate Gaussian noise as OOD"""
-        dataset = NoiseDataset(size=size, transform=self.transforms['cifar'])
+        dataset = NoiseDataset(size=size)
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
 
 
