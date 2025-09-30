@@ -64,6 +64,11 @@ class VisionDatasetLoader:
                 transforms.ToTensor(),
                 transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ]),
+            'texture': transforms.Compose([
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            ]),
         }
     
     def get_tiny_imagenet(self, train: bool = True) -> DataLoader:
@@ -126,7 +131,7 @@ class VisionDatasetLoader:
         """Load texture dataset as OOD (DTD - Describable Textures Dataset)"""
         dataset = torchvision.datasets.DTD(
             root=self.data_dir, split='test', download=True,
-            transform=self.transforms['cifar']
+            transform=self.transforms['texture']
         )
             
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
