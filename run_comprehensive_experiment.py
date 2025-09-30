@@ -29,9 +29,11 @@ class ExperimentOrchestrator:
     def __init__(self, 
                  data_dir: str = './data',
                  results_dir: str = './results',
+                 cache_dir: str = './cache',
                  max_samples_per_dataset: int = 2000):
         self.data_dir = data_dir
         self.results_dir = results_dir
+        self.cache_dir = cache_dir
         self.max_samples = max_samples_per_dataset
         
         # Create results directory
@@ -192,11 +194,18 @@ class ExperimentOrchestrator:
             else:
                 raise ValueError(f"Unknown OOD dataset: {config['ood_dataset']}")
             
-            # Extract features
+                # Extract features with caching
             feature_extractor = AdvancedFeatureExtractor(architecture=config['architecture'])
             
-            id_features, id_labels = feature_extractor.extract_features(id_loader, max_samples=self.max_samples)
-            ood_features, ood_labels = feature_extractor.extract_features(ood_loader, max_samples=self.max_samples//2)
+            # Use cached features if available
+            id_features, id_labels = feature_extractor.extract_features_with_cache(
+                id_loader, config['id_dataset'], max_samples=self.max_samples,
+                cache_dir=self.cache_dir
+            )
+            ood_features, ood_labels = feature_extractor.extract_features_with_cache(
+                ood_loader, config['ood_dataset'], max_samples=self.max_samples//2,
+                cache_dir=self.cache_dir
+            )
             
             # Prepare train/test splits
             n_train = min(1000, len(id_features) // 2)
@@ -234,7 +243,8 @@ class ExperimentOrchestrator:
             fpr, tpr, _ = roc_curve(test_labels, scores)
             precision, recall, _ = precision_recall_curve(test_labels, scores)
             
-            # FPR at TPR=95%\n            tpr95_idx = np.where(tpr >= 0.95)[0]
+            # FPR at TPR=95%
+            tpr95_idx = np.where(tpr >= 0.95)[0]
             fpr95 = fpr[tpr95_idx[0]] if len(tpr95_idx) > 0 else 1.0
             
             # AUROC at different FPR levels
@@ -559,6 +569,7 @@ def main():
     
     parser = argparse.ArgumentParser(description='Run comprehensive spectral OOD detection experiments')
     parser.add_argument('--data_dir', default='./data', help='Data directory')
+    parser.add_argument('--cache_dir', default='./cache', help='Cache directory for features')
     parser.add_argument('--results_dir', default='./results', help='Results directory')
     parser.add_argument('--max_experiments', type=int, help='Maximum number of experiments to run')
     parser.add_argument('--architectures', nargs='+', help='Filter by architectures')
@@ -566,12 +577,32 @@ def main():
     parser.add_argument('--max_samples', type=int, default=2000, help='Maximum samples per dataset')
     parser.add_argument('--quick_demo', action='store_true', help='Run quick demo with limited configurations')
     parser.add_argument('--analysis_only', help='Analyze existing results file')
+    parser.add_argument('--force_recompute', action='store_true', help='Force recomputation of cached features')
+    parser.add_argument('--clear_cache', action='store_true', help='Clear all cached features before running')
+    parser.add_argument('--cache_info', action='store_true', help='Show cache information and exit')
     
     args = parser.parse_args()
+    
+    # Import caching system
+    from feature_cache import CachedFeatureExtractor
+    
+    # Initialize cache system
+    cache_system = CachedFeatureExtractor(cache_dir=args.cache_dir)
+    
+    # Handle cache operations
+    if args.cache_info:
+        cache_system.print_cache_info()
+        return
+        
+    if args.clear_cache:
+        print("\n🧹 Clearing cache...")
+        cache_system.clear_cache()
+        print("Cache cleared successfully!")
     
     # Initialize orchestrator
     orchestrator = ExperimentOrchestrator(
         data_dir=args.data_dir,
+        cache_dir=args.cache_dir,
         results_dir=args.results_dir,
         max_samples_per_dataset=args.max_samples
     )
@@ -583,7 +614,14 @@ def main():
     
     print("🚀 COMPREHENSIVE SPECTRAL OOD DETECTION EXPERIMENTS")
     print("="*80)
+    print(f"Data Directory: {args.data_dir}")
+    print(f"Cache Directory: {args.cache_dir}")
+    print(f"Results Directory: {args.results_dir}")
     print(f"Total configurations available: {len(orchestrator.configurations)}")
+    
+    # Show cache info
+    print("\n📊 Cache Information:")
+    cache_system.print_cache_info()
     
     if args.quick_demo:
         print("🔬 Running quick demo with limited configurations...")

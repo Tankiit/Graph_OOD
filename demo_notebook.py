@@ -8,12 +8,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.datasets import make_classification, make_blobs
 from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve
+import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
 # Import our spectral methods
 from spectral_ood_vision import ImageSpectralOODDetector
 from advanced_spectral_vision import HybridSpectralOODDetector
+from feature_cache import CachedFeatureExtractor
 
 def generate_demo_data():
     """Generate synthetic data to demonstrate spectral OOD detection concepts"""
@@ -340,13 +342,34 @@ def demo_real_vision_example():
         print("Skipping real vision demonstration...")
 
 def main_demo():
-    """Run the complete interactive demo"""
+    """Run the complete interactive demo with argparse support"""
+    parser = argparse.ArgumentParser(description='Interactive Spectral OOD Detection Demo')
+    parser.add_argument('--data_dir', type=str, default='./data',
+                       help='Directory containing datasets (default: ./data)')
+    parser.add_argument('--cache_dir', type=str, default='./cache',
+                       help='Directory for caching features (default: ./cache)')
+    parser.add_argument('--skip_real_data', action='store_true',
+                       help='Skip real vision data demo')
+    parser.add_argument('--cache_info', action='store_true',
+                       help='Show cache information and exit')
+    
+    args = parser.parse_args()
     
     print("🚀 SPECTRAL OOD DETECTION - INTERACTIVE DEMO")
     print("="*80)
     print("This demo showcases spectral graph theory for OOD detection")
     print("across synthetic and real computer vision data.")
+    print(f"Data Directory: {args.data_dir}")
+    print(f"Cache Directory: {args.cache_dir}")
     print("\n")
+    
+    # Initialize cache system
+    cache_system = CachedFeatureExtractor(cache_dir=args.cache_dir)
+    
+    # Handle cache info
+    if args.cache_info:
+        cache_system.print_cache_info()
+        return
     
     # Demo 1: Basic concepts
     id_data, ood_data = demo_basic_spectral_concepts()
@@ -354,8 +377,11 @@ def main_demo():
     # Demo 2: OOD detection methods
     results = demo_spectral_ood_detection()
     
-    # Demo 3: Real vision data
-    demo_real_vision_example()
+    # Demo 3: Real vision data (optional)
+    if not args.skip_real_data:
+        demo_real_vision_example()
+    else:
+        print("\n🖼️  Real vision demo skipped (use --skip_real_data to enable)")
     
     # Summary
     print("\n🎉 DEMO SUMMARY")

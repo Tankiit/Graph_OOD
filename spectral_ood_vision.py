@@ -20,12 +20,16 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
 from typing import Dict, List, Tuple, Optional, Union
 import os
+import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
 # Import pre-trained models
 from torchvision import models
 import timm
+
+# Import caching system
+from feature_cache import FeatureCache, CachedFeatureExtractor
 
 class VisionDatasetLoader:
     """
@@ -127,11 +131,18 @@ class NoiseDataset(Dataset):
         return self.size
     
     def __getitem__(self, idx):
-        # Generate random noise image
-        noise = torch.randn(3, 32, 32)  # RGB noise
+        # Generate random noise image as PIL Image format
+        import numpy as np
+        from PIL import Image
+        
+        # Generate noise in [0, 255] range
+        noise = np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8)
+        noise_pil = Image.fromarray(noise)
+        
         if self.transform:
-            noise = self.transform(noise)
-        return noise, -1  # Label -1 for OOD
+            noise_pil = self.transform(noise_pil)
+            
+        return noise_pil, -1  # Label -1 for OOD
 
 
 class FeatureExtractor:
@@ -205,6 +216,16 @@ class FeatureExtractor:
                     print(f"Processed {sample_count} samples...")
         
         return np.vstack(features), np.array(labels)
+    
+    def extract_features_with_cache(self, dataloader: DataLoader, dataset_name: str, 
+                                   max_samples: Optional[int] = None,
+                                   cache_dir: str = './cache',
+                                   force_recompute: bool = False) -> Tuple[np.ndarray, np.ndarray]:
+        """Extract features with caching support"""
+        cached_extractor = CachedFeatureExtractor(cache_dir=cache_dir)
+        return cached_extractor.extract_features_with_cache(
+            dataloader, dataset_name, self.architecture, max_samples, force_recompute
+        )
 
 
 class ImageSpectralOODDetector:
@@ -323,7 +344,7 @@ class ImageSpectralOODDetector:
             'eigenvalues': eigenvals,
             'scale_energies': np.array(scale_energies),
             'dominant_scale': np.argmax(scale_energies),
-            'scale_entropy': self._spectral_entropy(scale_energies + 1e-10),
+            'scale_entropy': self._spectral_entropy(np.array(scale_energies) + 1e-10),
             'total_energy': np.sum(scale_energies)
         }
         
@@ -708,35 +729,100 @@ class VisionOODEvaluator:
 
 # Main execution and demonstration
 def main():
-    """Main execution function"""
+    """Main execution function with argparse support"""
+    parser = argparse.ArgumentParser(description='Spectral OOD Detection for Computer Vision')
+    parser.add_argument('--data_dir', type=str, default='./data', 
+                       help='Directory containing datasets (default: ./data)')
+    parser.add_argument('--cache_dir', type=str, default='./cache',
+                       help='Directory for caching features (default: ./cache)')
+    parser.add_argument('--max_samples', type=int, default=2000,
+                       help='Maximum samples per dataset (default: 2000)')
+    parser.add_argument('--force_recompute', action='store_true',
+                       help='Force recomputation of cached features')
+    parser.add_argument('--clear_cache', action='store_true',
+                       help='Clear all cached features before running')
+    parser.add_argument('--cache_info', action='store_true',
+                       help='Show cache information and exit')
+    parser.add_argument('--full_eval', action='store_true',
+                       help='Run full evaluation without prompting')
+    parser.add_argument('--quick_demo', action='store_true',
+                       help='Run quick demo only')
+    
+    args = parser.parse_args()
+    
     print("="*80)
     print("SPECTRAL OOD DETECTION FOR COMPUTER VISION")
     print("Implementation across Multiple Datasets and Architectures")
     print("="*80)
+    print(f"Data Directory: {args.data_dir}")
+    print(f"Cache Directory: {args.cache_dir}")
+    print(f"Max Samples: {args.max_samples}")
+    
+    # Initialize cache system
+    cache_system = CachedFeatureExtractor(cache_dir=args.cache_dir)
+    
+    # Handle cache operations
+    if args.cache_info:
+        cache_system.print_cache_info()
+        return
+        
+    if args.clear_cache:
+        print("\n🧹 Clearing cache...")
+        cache_system.clear_cache()
+        print("Cache cleared successfully!")
     
     # Initialize evaluator
-    evaluator = VisionOODEvaluator(data_dir='./data')
+    evaluator = VisionOODEvaluator(data_dir=args.data_dir)
     
-    # Quick demo on small subset first
-    print("\n🔬 Running Quick Demo...")
-    demo_result = evaluator.evaluate_single_config(
-        id_dataset='cifar10',
-        ood_dataset='noise', 
-        architecture='resnet18',
-        method='unified',
-        max_samples=500  # Small for demo
-    )
+    # Handle quick demo mode
+    if args.quick_demo:
+        print("\n🔬 Running Quick Demo...")
+        demo_result = evaluator.evaluate_single_config(
+            id_dataset='cifar10',
+            ood_dataset='noise', 
+            architecture='resnet18',
+            method='unified',
+            max_samples=min(500, args.max_samples)
+        )
+        
+        print(f"\nDemo Results:")
+        print(f"AUC: {demo_result['auc']:.4f}")
+        print(f"Average Precision: {demo_result['average_precision']:.4f}")
+        print(f"FPR95: {demo_result['fpr95']:.4f}")
+        print("\n✅ Quick demo completed successfully!")
+        return
     
-    print(f"\nDemo Results:")
-    print(f"AUC: {demo_result['auc']:.4f}")
-    print(f"Average Precision: {demo_result['average_precision']:.4f}")
-    print(f"FPR95: {demo_result['fpr95']:.4f}")
+    # Full evaluation or interactive mode
+    should_run_full = args.full_eval
     
-    # Ask user if they want full evaluation
-    response = input("\n🚀 Run full evaluation? This may take 30-60 minutes (y/n): ")
+    if not should_run_full:
+        # Quick demo first
+        print("\n🔬 Running Quick Demo...")
+        demo_result = evaluator.evaluate_single_config(
+            id_dataset='cifar10',
+            ood_dataset='noise', 
+            architecture='resnet18',
+            method='unified',
+            max_samples=min(500, args.max_samples)
+        )
+        
+        print(f"\nDemo Results:")
+        print(f"AUC: {demo_result['auc']:.4f}")
+        print(f"Average Precision: {demo_result['average_precision']:.4f}")
+        print(f"FPR95: {demo_result['fpr95']:.4f}")
+        
+        # Ask user if they want full evaluation
+        response = input("\n🚀 Run full evaluation? This may take 30-60 minutes (y/n): ")
+        should_run_full = response.lower() == 'y'
     
-    if response.lower() == 'y':
+    if should_run_full:
         print("\n🔥 Running Comprehensive Evaluation...")
+        print(f"Using cached features from: {args.cache_dir}")
+        print(f"Force recompute: {args.force_recompute}")
+        
+        # Show cache info before starting
+        cache_system.print_cache_info()
+        
         all_results = evaluator.run_comprehensive_evaluation()
         
         # Analyze results
@@ -748,9 +834,13 @@ def main():
             json.dump(all_results, f, indent=2)
         print("\n💾 Results saved to 'spectral_ood_vision_results.json'")
         
+        # Show final cache info
+        print("\n📊 Final cache statistics:")
+        cache_system.print_cache_info()
+        
     else:
         print("\n✅ Demo completed successfully!")
-        print("To run full evaluation later, call evaluator.run_comprehensive_evaluation()")
+        print("To run full evaluation later, use: python spectral_ood_vision.py --full_eval")
 
 
 if __name__ == "__main__":

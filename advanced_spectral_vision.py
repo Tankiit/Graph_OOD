@@ -27,8 +27,13 @@ import networkx as nx
 import pandas as pd
 from typing import Dict, List, Tuple, Optional, Union
 import json
+import argparse
+import logging
 import warnings
 warnings.filterwarnings('ignore')
+
+# Import caching system
+from feature_cache import FeatureCache, CachedFeatureExtractor
 
 class AdvancedFeatureExtractor:
     """
@@ -140,6 +145,16 @@ class AdvancedFeatureExtractor:
         
         print(f"✅ Extracted features shape: {features_array.shape}")
         return features_array, labels_array
+    
+    def extract_features_with_cache(self, dataloader: DataLoader, dataset_name: str,
+                                   max_samples: Optional[int] = None,
+                                   cache_dir: str = './cache',
+                                   force_recompute: bool = False) -> Tuple[np.ndarray, np.ndarray]:
+        """Extract features with caching support"""
+        cached_extractor = CachedFeatureExtractor(cache_dir=cache_dir)
+        return cached_extractor.extract_features_with_cache(
+            dataloader, dataset_name, self.architecture, max_samples, force_recompute
+        )
 
 
 class HybridSpectralOODDetector:
@@ -715,23 +730,63 @@ class ComprehensiveVisionOODEvaluator:
 
 # Demonstration and main execution
 def main():
-    """Main execution with comprehensive evaluation"""
+    """Main execution with comprehensive evaluation and caching support"""
+    parser = argparse.ArgumentParser(description='Advanced Spectral OOD Detection for Computer Vision')
+    parser.add_argument('--data_dir', type=str, default='./data',
+                       help='Directory containing datasets (default: ./data)')
+    parser.add_argument('--cache_dir', type=str, default='./cache',
+                       help='Directory for caching features (default: ./cache)')
+    parser.add_argument('--max_samples', type=int, default=2000,
+                       help='Maximum samples per dataset (default: 2000)')
+    parser.add_argument('--force_recompute', action='store_true',
+                       help='Force recomputation of cached features')
+    parser.add_argument('--clear_cache', action='store_true',
+                       help='Clear all cached features before running')
+    parser.add_argument('--cache_info', action='store_true',
+                       help='Show cache information and exit')
+    
+    args = parser.parse_args()
+    
     print("🚀 ADVANCED SPECTRAL OOD DETECTION FOR COMPUTER VISION")
     print("="*80)
+    print(f"Data Directory: {args.data_dir}")
+    print(f"Cache Directory: {args.cache_dir}")
+    print(f"Max Samples: {args.max_samples}")
     
-    evaluator = ComprehensiveVisionOODEvaluator(data_dir='./data')
+    # Initialize cache system
+    cache_system = CachedFeatureExtractor(cache_dir=args.cache_dir)
+    
+    # Handle cache operations
+    if args.cache_info:
+        cache_system.print_cache_info()
+        return
+        
+    if args.clear_cache:
+        print("\n🧹 Clearing cache...")
+        cache_system.clear_cache()
+        print("Cache cleared successfully!")
+    
+    evaluator = ComprehensiveVisionOODEvaluator(data_dir=args.data_dir)
     
     print("\n📊 Starting comprehensive evaluation...")
     print("This will evaluate spectral OOD detection across:")
     print("- Multiple datasets: CIFAR-10/100, SVHN")
     print("- Multiple architectures: ResNet, VGG, EfficientNet, ViT, Swin")
     print("- Hybrid spectral methods: Spectral gaps + Heat kernels + Topology")
+    print(f"- Using feature caching from: {args.cache_dir}")
+    
+    # Show cache info before starting
+    cache_system.print_cache_info()
     
     # Run evaluation
     results = evaluator.run_extensive_evaluation()
     
     # Generate comprehensive report
     evaluator.create_comprehensive_report()
+    
+    # Show final cache statistics
+    print("\n📊 Final cache statistics:")
+    cache_system.print_cache_info()
     
     print(f"\n✅ Evaluation completed successfully!")
     print(f"📁 Results saved to 'comprehensive_spectral_ood_results.json'")
