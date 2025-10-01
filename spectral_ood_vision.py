@@ -138,7 +138,7 @@ class VisionDatasetLoader:
     
     def get_noise_ood(self, size: int = 1000) -> DataLoader:
         """Generate Gaussian noise as OOD"""
-        dataset = NoiseDataset(size=size)
+        dataset = NoiseDataset(size=size,transform=self.transforms['cifar'])
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
 
 
