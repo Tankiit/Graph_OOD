@@ -69,7 +69,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 3. Install dependencies:
 ```bash
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-pip install timm transformers scikit-learn scipy matplotlib seaborn pandas
+pip install timm transformers scikit-learn scipy matplotlib seaborn pandas datasets
 pip install networkx umap-learn
 ```
 
