@@ -57,20 +57,13 @@ class ExperimentOrchestrator:
         """Define all experimental configurations"""
         
         # Dataset configurations
-        id_datasets = ['cifar10', 'tiny_imagenet']
-        ood_datasets = {
-            'cifar10': ['tiny_imagenet'],
-            'tiny_imagenet': ['cifar10'], 
-        }
-        """
-        id_datasets = ['cifar10', 'cifar100', 'svhn']
+        id_datasets = ['cifar10', 'cifar100', 'svhn', 'tiny_imagenet']
         ood_datasets = {
             'cifar10': ['cifar100', 'tiny_imagenet', 'svhn', 'noise', 'texture'],
             'cifar100': ['cifar10', 'tiny_imagenet', 'svhn', 'noise', 'texture'], 
             'tiny_imagenet': ['cifar10', 'cifar100', 'svhn', 'noise', 'texture'], 
             'svhn': ['cifar10', 'cifar100', 'tiny_imagenet', 'noise', 'texture']
         }
-        """
         
         # Architecture configurations
         architectures = {
