@@ -18,6 +18,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
+from datasets import load_dataset
 from typing import Dict, List, Tuple, Optional, Union
 import os
 import argparse
@@ -57,8 +58,33 @@ class VisionDatasetLoader:
                 transforms.CenterCrop(224),
                 transforms.ToTensor(),
                 transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-            ])
+            ]),
+            'tinyimagenet': transforms.Compose([
+                transforms.Resize(64),
+                transforms.ToTensor(),
+                transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            ]),
+            'texture': transforms.Compose([
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            ]),
         }
+    
+    def get_tiny_imagenet(self, train: bool = True) -> DataLoader:
+        """Load Tiny ImageNet dataset"""
+        dataset = load_dataset('Maysee/tiny-imagenet', cache_dir=self.data_dir, split="train" if train else "valid")
+        
+        _transform = self.transforms['tinyimagenet']
+
+        def transforms(example):
+            return {"image":[_transform(x.convert("RGB")) for x in example["image"]],"label":example["label"]}
+
+        def collate(args):
+            return (torch.stack([x["image"] for x in args]),torch.tensor([x["label"] for x in args]))
+
+        dataset.set_transform(transforms)
+        return DataLoader(dataset, batch_size=self.batch_size, shuffle=train, collate_fn=collate, num_workers=4)
     
     def get_cifar10(self, train: bool = True) -> DataLoader:
         """Load CIFAR-10 dataset"""
@@ -103,20 +129,16 @@ class VisionDatasetLoader:
     
     def get_texture_ood(self) -> DataLoader:
         """Load texture dataset as OOD (DTD - Describable Textures Dataset)"""
-        try:
-            dataset = torchvision.datasets.DTD(
-                root=self.data_dir, split='test', download=True,
-                transform=self.transforms['cifar']
-            )
-        except:
-            # Fallback to noise if DTD not available
-            dataset = NoiseDataset(size=1000, transform=self.transforms['cifar'])
+        dataset = torchvision.datasets.DTD(
+            root=self.data_dir, split='test', download=True,
+            transform=self.transforms['texture']
+        )
             
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
     
     def get_noise_ood(self, size: int = 1000) -> DataLoader:
         """Generate Gaussian noise as OOD"""
-        dataset = NoiseDataset(size=size, transform=self.transforms['cifar'])
+        dataset = NoiseDataset(size=size,transform=self.transforms['cifar'])
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
 
 
