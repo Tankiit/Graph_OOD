@@ -162,3 +162,18 @@ Thumbs.db
 *.temp
 temp/
 tmp/
+
+# Old/archived files
+old/
+
+# UAI experiment generated files
+uai_expt/checkpoints/
+uai_expt/plots/
+uai_expt/*.log
+uai_expt/.claude/
+
+# Documentation - do not upload
+*.md
+
+# Large model files
+models/*.pt
