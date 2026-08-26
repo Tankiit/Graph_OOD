@@ -1,0 +1,55 @@
+{
+  "tag": "halueval",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "dataset": "halueval_qa",
+  "n_questions": 6554,
+  "metrics": {
+    "gap": {
+      "aurc": 0.4842,
+      "auroc": 0.5,
+      "prr": 1.0327
+    },
+    "probe_alone": {
+      "aurc": 0.2663,
+      "auroc": 0.8398,
+      "prr": 1.8775
+    },
+    "logprob_alone": {
+      "aurc": 0.3039,
+      "auroc": 0.6763,
+      "prr": 1.6453
+    },
+    "scod": {
+      "aurc": 0.2663,
+      "auroc": 0.8398,
+      "prr": 1.8775
+    }
+  },
+  "conformal": {
+    "alpha": 0.1,
+    "theta": 0.0,
+    "beta": 0.0778,
+    "deferral_rate": 0.0,
+    "non_def_acc": 0.5
+  },
+  "claims": {
+    "claim1_gap_lt_probe": false,
+    "claim2_gap_lt_logprob": false,
+    "claim3_scod_lt_gap": true,
+    "key_claim_holds": false
+  },
+  "gap_stats": {
+    "mean_correct": 0.0,
+    "mean_wrong": 0.0,
+    "separation": 0.0
+  },
+  "category_stats": [
+    {
+      "category": "HaluEval-QA",
+      "n": 6554,
+      "mean_gap_correct": 0.0,
+      "mean_gap_wrong": 0.0,
+      "separation": 0.0
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+models:
+  - {hf_id: Qwen/Qwen3.5-4B, tinker_id: Qwen/Qwen3.5-4B, axis: scale-small, base_model: false}
+  - {hf_id: Qwen/Qwen3.5-9B, tinker_id: Qwen/Qwen3.5-9B, axis: main-instruct, base_model: false}
+  - {hf_id: Qwen/Qwen3.5-9B-Base, tinker_id: Qwen/Qwen3.5-9B-Base, axis: base-control, base_model: true}
+  - {hf_id: Qwen/Qwen3-8B, tinker_id: Qwen/Qwen3-8B, axis: cross-generation, base_model: false}
+ranks: [8, 16, 32]
+adapter_roles: [true, hal]
+
