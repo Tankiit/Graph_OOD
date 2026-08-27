@@ -49,6 +49,8 @@ class RepresentationBank:
                 self.root.create_dataset(name, shape=shape, chunks=chunks, dtype=dtype, fill_value=fill)
         self.meta_path = Path(path) / "rows.jsonl"
         self.meta_path.parent.mkdir(parents=True, exist_ok=True)
+        if overwrite and self.meta_path.exists():
+            self.meta_path.unlink()
 
     def append(self, row: CacheRow) -> int:
         index = self.root["h_last"].shape[0]
@@ -61,4 +63,3 @@ class RepresentationBank:
         with self.meta_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(meta, ensure_ascii=False) + "\n")
         return index
-
