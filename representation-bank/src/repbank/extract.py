@@ -42,13 +42,21 @@ def extract(config_path: str, manifest_path: str) -> None:
     device = model.get_input_embeddings().weight.device
     for record in rows:
         prompt = record["prompt"]
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
-        generation_kwargs = {"max_new_tokens": cfg.generation.max_new_tokens,
-                             "do_sample": cfg.generation.do_sample}
-        if cfg.generation.do_sample:
-            generation_kwargs["temperature"] = cfg.generation.temperature
-        generated = model.generate(**inputs, **generation_kwargs)
-        prompt_len = inputs.input_ids.shape[1]
+        prompt_inputs = tokenizer(prompt, return_tensors="pt").to(device)
+        prompt_len = prompt_inputs.input_ids.shape[1]
+        if "generation_tokens" in record:
+            completion = torch.tensor([record["generation_tokens"]], device=device)
+            generated = torch.cat([prompt_inputs.input_ids, completion], dim=1)
+        elif "generation" in record:
+            # Teacher-force the exact externally generated completion. Tokenize
+            # jointly so boundary-sensitive tokenizers see the original text.
+            generated = tokenizer(prompt + record["generation"], return_tensors="pt").input_ids.to(device)
+        else:
+            generation_kwargs = {"max_new_tokens": cfg.generation.max_new_tokens,
+                                 "do_sample": cfg.generation.do_sample}
+            if cfg.generation.do_sample:
+                generation_kwargs["temperature"] = cfg.generation.temperature
+            generated = model.generate(**prompt_inputs, **generation_kwargs)
         full = model(generated, output_hidden_states=True, use_cache=False)
         states = full.hidden_states  # embedding output plus every block output
         h_last = torch.stack([h[0, -1] for h in states]).cpu().to(torch.float16).numpy()
@@ -63,7 +71,9 @@ def extract(config_path: str, manifest_path: str) -> None:
         padded_probs[:completion_len] = probs
         mask = np.zeros(cfg.capture.span_cap, dtype=bool)
         mask[:completion_len] = True
-        text = tokenizer.decode(generated[0, prompt_len:], skip_special_tokens=True)
+        text = record.get("generation") or tokenizer.decode(
+            generated[0, prompt_len:], skip_special_tokens=True
+        )
         bank.append(CacheRow(h_last, span, mask, padded_probs, str(record["pair_id"]),
                              record["role"], float(record.get("label", np.nan)),
                              record.get("label_protocol", "BLEURT-0.5"), prompt, text))

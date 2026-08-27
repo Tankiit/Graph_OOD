@@ -1,0 +1,17 @@
+model:
+  hf_id: Qwen/Qwen3.5-9B-Base
+  tinker_id: Qwen/Qwen3.5-9B-Base
+  base_model: true
+  trust_remote_code: true
+  dtype: bfloat16
+  device_map: auto
+
+capture:
+  depth_fractions: [0.2, 0.5, 0.8]
+  span_cap: 32
+  last_token_all_layers: true
+  chunk_rows: 1
+
+cache:
+  path: artifacts/qwen35-9b-base_truthfulqa_smoke.zarr
+  overwrite: true
