@@ -20,6 +20,7 @@ dependencies = [
 [project.optional-dependencies]
 tinker = ["tinker>=0.7", "tinker-cookbook"]
 hf = ["datasets>=3.0"]
+extract = ["accelerate>=1.0", "peft>=0.17"]
 test = ["pytest>=8", "ruff>=0.6"]
 
 [project.scripts]

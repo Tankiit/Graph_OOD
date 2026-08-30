@@ -1,0 +1,18 @@
+generation_set: artifacts/frozen/truthfulqa_qwen35_family.json
+training_data: artifacts/frozen/truthfulqa_adapter_data.jsonl
+defaults:
+  epochs: 1
+  batch_size: 32
+  lr: 0.0001
+  ttl_seconds: 1209600
+  seed: 0
+adapters:
+  - {id: ladder-1, base: Qwen/Qwen3.5-9B, rank: 1, role: "true", purpose: dimensionality-direction}
+  - {id: ladder-8, base: Qwen/Qwen3.5-9B, rank: 8, role: "true", purpose: dimensionality-curve}
+  - {id: ladder-16, base: Qwen/Qwen3.5-9B, rank: 16, role: "true", purpose: dimensionality-curve}
+  - {id: ladder-32, base: Qwen/Qwen3.5-9B, rank: 32, role: "true", purpose: dimensionality-curve}
+  - {id: M_true, base: Qwen/Qwen3.5-9B-Base, rank: 8, role: "true", purpose: likelihood-ratio}
+  - {id: M_hal, base: Qwen/Qwen3.5-9B-Base, rank: 8, role: "hal", purpose: likelihood-ratio}
+  # Mode adapters become runnable after mode-specific frozen sets exist.
+  - {id: mode-A, base: Qwen/Qwen3.5-9B, rank: 8, role: "hal", purpose: dial-E, enabled: false}
+  - {id: mode-B, base: Qwen/Qwen3.5-9B, rank: 8, role: "hal", purpose: dial-E, enabled: false}

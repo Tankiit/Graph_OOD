@@ -128,11 +128,13 @@ async def train_adapter(model_id: str, rank: int, role: str, data_path: str,
                         batch_size: int = 32, renderer_name: str | None = None,
                         split: str = "train", dataset_config: str | None = None,
                         revision: str | None = None, messages_column: str = "messages",
-                        role_column: str = "role", max_samples: int | None = None) -> str:
+                        role_column: str = "role", max_samples: int | None = None,
+                        save_name: str | None = None) -> str:
     """Train M_true or M_hal from local chat data or a Hugging Face dataset."""
     _require_key()
     import tinker
     from tinker_cookbook import renderers
+    from tinker_cookbook.renderers import TrainOnWhat
     from tinker_cookbook.supervised.data import conversation_to_datum
     from tinker_cookbook.tokenizer_utils import get_tokenizer
 
@@ -146,7 +148,9 @@ async def train_adapter(model_id: str, rank: int, role: str, data_path: str,
     if not records:
         raise ValueError(f"no role={role!r} rows in {data_path}")
     service = tinker.ServiceClient()
-    client = await service.create_lora_training_client_async(base_model=model_id, rank=rank)
+    client = await service.create_lora_training_client_async(
+        base_model=model_id, rank=rank, seed=seed
+    )
     tokenizer = get_tokenizer(model_id)
     renderer_name = renderer_name or ("qwen3_5_disable_thinking" if "Qwen3.5" in model_id else "qwen3")
     renderer = renderers.get_renderer(renderer_name, tokenizer)
@@ -154,30 +158,68 @@ async def train_adapter(model_id: str, rank: int, role: str, data_path: str,
     for _epoch in range(epochs):
         rng.shuffle(records)
         for start in range(0, len(records), batch_size):
-            batch = [conversation_to_datum(record["messages"], renderer, max_length=max_length)
+            batch = [conversation_to_datum(
+                record["messages"], renderer, max_length=max_length,
+                train_on_what=TrainOnWhat.LAST_ASSISTANT_MESSAGE,
+            )
                      for record in records[start:start + batch_size]]
             fwd = await client.forward_backward_async(batch, loss_fn="cross_entropy")
             opt = await client.optim_step_async(tinker.AdamParams(learning_rate=lr))
             await fwd.result_async()
             await opt.result_async()
-    saved = await client.save_weights_for_sampler_async(
-        name=f"{role}-r{rank}", ttl_seconds=ttl_seconds)
+    save_future = await client.save_weights_for_sampler_async(
+        name=save_name or f"{role}-r{rank}", ttl_seconds=ttl_seconds)
+    saved = await save_future.result_async()
     return saved.path
 
 
 def export_adapter(tinker_path: str, base_model: str, output_root: str, merge: bool = False) -> Path:
     """Kill switch 4: download, convert/merge, and leave a loadable HF directory."""
+    _load_local_env()
     from tinker_cookbook import weights
 
     root = Path(output_root)
     raw = root / "tinker_adapter"
     output = root / ("merged_model" if merge else "peft_adapter")
     adapter_dir = weights.download(tinker_path=tinker_path, output_dir=str(raw))
+    normalize_tinker_adapter_config(Path(adapter_dir))
     if merge:
         weights.build_hf_model(base_model=base_model, adapter_path=adapter_dir, output_path=str(output))
     else:
         weights.build_lora_adapter(base_model=base_model, adapter_path=adapter_dir, output_path=str(output))
     return output
+
+
+def download_raw_adapter(tinker_path: str, output_root: str) -> Path:
+    """Download and normalize a Tinker checkpoint without converting its keys."""
+    _load_local_env()
+    from tinker_cookbook import weights
+
+    result = Path(weights.download(tinker_path=tinker_path, output_dir=output_root))
+    normalize_tinker_adapter_config(result)
+    return result
+
+
+def normalize_tinker_adapter_config(adapter_dir: Path) -> list[str]:
+    """Replace ``all-linear`` with the exact modules present in a Tinker checkpoint.
+
+    Qwen3.5 contains fused linear-attention projections that PEFT discovers under
+    ``all-linear`` but Tinker's exported checkpoint does not train. Declaring the
+    observed leaf modules prevents PEFT from silently initializing absent LoRA
+    matrices at inference time.
+    """
+    from safetensors import safe_open
+
+    weights_path = adapter_dir / "adapter_model.safetensors"
+    config_path = adapter_dir / "adapter_config.json"
+    with safe_open(weights_path, framework="pt") as checkpoint:
+        targets = sorted({key.split(".lora_")[0].rsplit(".", 1)[-1] for key in checkpoint})
+    config = json.loads(config_path.read_text())
+    config["target_modules"] = targets
+    temporary = config_path.with_suffix(".json.partial")
+    temporary.write_text(json.dumps(config, indent=2, sort_keys=True) + "\n")
+    temporary.replace(config_path)
+    return targets
 
 
 def run(coro):

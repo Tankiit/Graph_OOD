@@ -36,6 +36,7 @@ def main() -> None:
     train.add_argument("--max-samples", type=int, default=None)
     train.add_argument("--validate-only", action="store_true",
                        help="validate/load data without creating a Tinker training job")
+    train.add_argument("--name", default=None, help="saved Tinker checkpoint name")
     export = sub.add_parser("export-adapter")
     export.add_argument("--tinker-path", required=True); export.add_argument("--base-model", required=True)
     export.add_argument("--output", required=True); export.add_argument("--merge", action="store_true")
@@ -65,7 +66,7 @@ def main() -> None:
                                 renderer_name=args.renderer, split=args.split,
                                 dataset_config=args.dataset_config, revision=args.revision,
                                 messages_column=args.messages_column, role_column=args.role_column,
-                                max_samples=args.max_samples)))
+                                max_samples=args.max_samples, save_name=args.name)))
     elif args.command == "export-adapter":
         print(export_adapter(args.tinker_path, args.base_model, args.output, args.merge))
     elif args.command == "extract":
