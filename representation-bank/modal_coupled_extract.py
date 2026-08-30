@@ -23,6 +23,10 @@ image = (
         "artifacts/frozen/truthfulqa_qwen35_family.json",
         remote_path="/root/generation_set.json",
     )
+    .add_local_file(
+        "artifacts/frozen/truthfulqa_qwen35_family_v2.json",
+        remote_path="/root/generation_set_v2.json",
+    )
     .add_local_dir(
         "artifacts/adapters/ladder-1/tinker_adapter",
         remote_path="/root/adapters/ladder-1",
@@ -32,6 +36,7 @@ image = (
 )
 hf_cache = modal.Volume.from_name("repbank-hf-cache", create_if_missing=True)
 outputs = modal.Volume.from_name("repbank-results", create_if_missing=True)
+adapter_volume = modal.Volume.from_name("repbank-adapters", create_if_missing=True)
 
 
 @app.function(
@@ -40,7 +45,7 @@ outputs = modal.Volume.from_name("repbank-results", create_if_missing=True)
     cpu=4,
     memory=32768,
     timeout=60 * 60,
-    volumes={"/cache": hf_cache, "/outputs": outputs},
+    volumes={"/cache": hf_cache, "/outputs": outputs, "/adapter-volume": adapter_volume},
     env={"HF_HOME": "/cache", "TOKENIZERS_PARALLELISM": "false"},
 )
 def extract_target(target: str) -> dict:
@@ -55,6 +60,22 @@ def extract_target(target: str) -> dict:
             "adapter_id": "primary",
             "rank": 0,
             "include_span": True,
+            "generation_set_path": "/root/generation_set.json",
+        },
+        "primary-v2": {
+            "model_path": "Qwen/Qwen3.5-9B", "adapter_path": None,
+            "adapter_id": "primary-v2", "rank": 0, "include_span": True,
+            "generation_set_path": "/root/generation_set_v2.json",
+        },
+        **{
+            f"v2-ladder-{rank}": {
+                "model_path": "Qwen/Qwen3.5-9B",
+                "adapter_path": f"/adapter-volume/v2/v2-ladder-{rank}/tinker_adapter",
+                "adapter_id": f"v2-ladder-{rank}", "rank": rank,
+                "include_span": False,
+                "generation_set_path": "/root/generation_set_v2.json",
+            }
+            for rank in (1, 8, 16, 32)
         },
         "ladder-1": {
             "model_path": "Qwen/Qwen3.5-9B",
@@ -62,27 +83,32 @@ def extract_target(target: str) -> dict:
             "adapter_id": "ladder-1",
             "rank": 1,
             "include_span": False,
+            "generation_set_path": "/root/generation_set.json",
         },
         "base-primary": {
             "model_path": "Qwen/Qwen3.5-9B-Base", "adapter_path": None,
             "adapter_id": "base-primary", "rank": 0, "include_span": True,
+            "generation_set_path": "/root/generation_set.json",
         },
         "M_true": {
             "model_path": "Qwen/Qwen3.5-9B-Base", "adapter_path": "/root/adapters/M_true",
             "adapter_id": "M_true", "rank": 8, "include_span": False,
+            "generation_set_path": "/root/generation_set.json",
         },
         "M_hal": {
             "model_path": "Qwen/Qwen3.5-9B-Base", "adapter_path": "/root/adapters/M_hal",
             "adapter_id": "M_hal", "rank": 8, "include_span": False,
+            "generation_set_path": "/root/generation_set.json",
         },
     }
     if target not in configurations:
         raise ValueError(f"unknown target {target!r}; choose {sorted(configurations)}")
     config = configurations[target]
+    generation_set_path = config.pop("generation_set_path")
     started = time.time()
     result = extract_frozen(
         **config,
-        generation_set_path="/root/generation_set.json",
+        generation_set_path=generation_set_path,
         output_path=f"/outputs/coupled/{target}.npz",
         batch_size=1,
         span_cap=32,

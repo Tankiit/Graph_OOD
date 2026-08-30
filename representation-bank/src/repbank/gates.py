@@ -8,6 +8,7 @@ import numpy as np
 from .coupled_extract import verify_checksum
 from .geometry import (
     cosine,
+    covariance,
     covariance_mismatch,
     reduced_basis,
     solve_direction,
@@ -147,4 +148,62 @@ def compare_model_axis(base_path: str | Path, adapter_path: str | Path,
         "cosine_adapter_vs_eu": cosine(displacement, eu),
         "cosine_adapter_vs_raw_delta": cosine(displacement, raw),
         "generation_set_checksum": base_meta["generation_set_checksum"],
+    }
+
+
+def rank_geometry_curve(base_path: str | Path, adapter_paths: list[str | Path],
+                        depth_fraction: float = 0.8) -> dict:
+    """Measure controlled geometry changes in one primary-model coordinate system."""
+    base, base_meta = load_bank(base_path)
+    block = min(base_meta["n_layers"] - 1,
+                max(0, round(depth_fraction * (base_meta["n_layers"] - 1))))
+    base_states = base["h_last"][:, block + 1].astype(np.float32)
+    labels = base["label"].astype(np.int8)
+    center, basis = reduced_basis(base_states, max_dim=64)
+    base_reduced = (base_states - center) @ basis
+    base_correct = base_reduced[labels == 1]
+    base_wrong = base_reduced[labels == 0]
+    base_eu, base_delta_unit = solve_direction(base_correct, base_wrong)
+    base_delta = base_correct.mean(0) - base_wrong.mean(0)
+    base_covariances = (covariance(base_correct), covariance(base_wrong))
+    rows = []
+    for path in adapter_paths:
+        bank, metadata = load_bank(path)
+        for field in ("generation_set_checksum", "tokenizer_sha256", "n_layers", "d_model"):
+            if metadata[field] != base_meta[field]:
+                raise ValueError(f"rank bank {path} differs from primary on {field}")
+        if not np.array_equal(base["pair_id"], bank["pair_id"]):
+            raise ValueError(f"rank bank {path} has different row order")
+        states = bank["h_last"][:, block + 1].astype(np.float32)
+        reduced = (states - center) @ basis
+        correct, wrong = reduced[labels == 1], reduced[labels == 0]
+        eu, delta_unit = solve_direction(correct, wrong)
+        delta = correct.mean(0) - wrong.mean(0)
+        class_covariances = (covariance(correct), covariance(wrong))
+        displacement = (states - base_states).mean(0) @ basis
+        eu_raw = cosine(eu, delta_unit)
+        rows.append({
+            "adapter_id": metadata["adapter_id"], "rank": metadata["rank"],
+            "delta_norm_ratio_to_primary": float(np.linalg.norm(delta) / np.linalg.norm(base_delta)),
+            "delta_cosine_to_primary": cosine(delta, base_delta),
+            "eu_cosine_to_primary": cosine(eu, base_eu),
+            "eu_raw_cosine": eu_raw,
+            "eu_orthogonal_fraction": float(np.sqrt(max(0.0, 1 - eu_raw ** 2))),
+            "covariance_mismatch_relative_fro": covariance_mismatch(correct, wrong),
+            "correct_covariance_change_from_primary": float(
+                np.linalg.norm(class_covariances[0] - base_covariances[0], ord="fro")
+                / np.linalg.norm(base_covariances[0], ord="fro")
+            ),
+            "wrong_covariance_change_from_primary": float(
+                np.linalg.norm(class_covariances[1] - base_covariances[1], ord="fro")
+                / np.linalg.norm(base_covariances[1], ord="fro")
+            ),
+            "mean_displacement_norm": float(np.linalg.norm(displacement)),
+            "displacement_cosine_to_primary_delta": cosine(displacement, base_delta_unit),
+            "displacement_cosine_to_primary_eu": cosine(displacement, base_eu),
+        })
+    return {
+        "base": str(base_path), "depth_fraction": depth_fraction, "block_index": block,
+        "generation_set_checksum": base_meta["generation_set_checksum"],
+        "rows": sorted(rows, key=lambda item: item["rank"]),
     }

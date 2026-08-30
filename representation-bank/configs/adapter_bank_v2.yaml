@@ -1,0 +1,13 @@
+generation_set: artifacts/frozen/truthfulqa_qwen35_family_v2.json
+training_data: artifacts/frozen/truthfulqa_adapter_data_v2.jsonl
+defaults:
+  epochs: 1
+  batch_size: 32
+  lr: 0.0001
+  ttl_seconds: 1209600
+  seed: 501693
+adapters:
+  - {id: v2-ladder-1, base: Qwen/Qwen3.5-9B, rank: 1, role: "true", purpose: dimensionality-direction}
+  - {id: v2-ladder-8, base: Qwen/Qwen3.5-9B, rank: 8, role: "true", purpose: dimensionality-curve}
+  - {id: v2-ladder-16, base: Qwen/Qwen3.5-9B, rank: 16, role: "true", purpose: dimensionality-curve}
+  - {id: v2-ladder-32, base: Qwen/Qwen3.5-9B, rank: 32, role: "true", purpose: dimensionality-curve}

@@ -213,7 +213,11 @@ def normalize_tinker_adapter_config(adapter_dir: Path) -> list[str]:
     weights_path = adapter_dir / "adapter_model.safetensors"
     config_path = adapter_dir / "adapter_config.json"
     with safe_open(weights_path, framework="pt") as checkpoint:
-        targets = sorted({key.split(".lora_")[0].rsplit(".", 1)[-1] for key in checkpoint})
+        # Some safetensors releases expose keys but do not make safe_open iterable.
+        targets = sorted({
+            key.split(".lora_")[0].rsplit(".", 1)[-1]
+            for key in checkpoint.keys()  # noqa: SIM118 - safe_open is not iterable
+        })
     config = json.loads(config_path.read_text())
     config["target_modules"] = targets
     temporary = config_path.with_suffix(".json.partial")

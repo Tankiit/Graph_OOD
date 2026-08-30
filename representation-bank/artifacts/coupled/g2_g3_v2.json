@@ -1,0 +1,19 @@
+{
+  "bank": "artifacts/coupled/primary-v2.npz",
+  "block_index": 25,
+  "depth_fraction": 0.8,
+  "g2": {
+    "covariance_mismatch_relative_fro": 0.32107165455818176,
+    "eu_auc": 0.7251210653753026,
+    "eu_raw_cosine_reduced": 0.5554237852017271,
+    "raw_auc": 0.6463226392251816,
+    "whitened_eigen_fraction_0.9_1.1": 0.0625
+  },
+  "g3": {
+    "combined_auc": 0.7305311743341404,
+    "confidence_auc": 0.6429403753026635,
+    "eu_coefficient_standardized": 0.6770205506570369,
+    "incremental_auc": 0.08759079903147693
+  },
+  "heldout_rows": 743
+}

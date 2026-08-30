@@ -181,3 +181,22 @@ def write_adapter_view(generation_set: FrozenGenerationSet, path: str | Path) ->
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
     temporary.replace(target)
     return target
+
+
+def merge_frozen_sets(parts: list[FrozenGenerationSet]) -> FrozenGenerationSet:
+    """Create a new sealed version without modifying any constituent set."""
+    if not parts:
+        raise ValueError("at least one frozen generation set is required")
+    family = {(part.tokenizer_id, part.tokenizer_sha256) for part in parts}
+    if len(family) != 1:
+        raise ValueError("cannot merge generation sets from different tokenizer families")
+    records = [record for part in parts for record in part.records]
+    identities = [(record.pair_id, record.seed) for record in records]
+    if len(identities) != len(set(identities)):
+        raise ValueError("merged generation sets contain duplicate pair_id/seed records")
+    first = parts[0]
+    return FrozenGenerationSet(
+        tokenizer_id=first.tokenizer_id,
+        tokenizer_sha256=first.tokenizer_sha256,
+        records=records,
+    ).seal()

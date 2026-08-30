@@ -7,6 +7,7 @@ from repbank.generation_set import (
     find_answer_start,
     freeze_tinker_generations,
     g1_report,
+    merge_frozen_sets,
 )
 
 
@@ -58,3 +59,16 @@ def test_checksum_detects_mutation(tmp_path):
 
 def test_boundary_merge_moves_answer_start_left():
     assert find_answer_start([1, 2, 3], [1, 2, 9, 4]) == 2
+
+
+def test_merge_creates_new_sealed_version():
+    def part(pair_id, seed):
+        return freeze_tinker_generations(
+            [{"pair_id": pair_id, "role": "true", "prompt": "Q", "generation": "A",
+              "label_protocol": "exact"}], TinyTokenizer(), tokenizer_id="tiny",
+            source_model="tiny", decode_config={"samples": 1}, base_seed=seed,
+        )
+
+    merged = merge_frozen_sets([part("q1", 0), part("q2", 1)])
+    merged.verify()
+    assert [record.pair_id for record in merged.records] == ["q1", "q2"]

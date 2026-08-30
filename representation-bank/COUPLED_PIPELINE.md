@@ -52,3 +52,19 @@ generation checksum is
 
 Mode-A/B remain disabled until their mode-specific frozen training sets exist.
 Llama/Mistral caches remain an explicitly uncontrolled, separate arm.
+
+The expanded TruthfulQA v2 set is a new immutable version rather than an
+overwrite of the pilot. Run its ladder with:
+
+```bash
+python scripts/run_adapter_bank.py --config configs/adapter_bank_v2.yaml \
+  --manifest artifacts/adapter_bank_v2.json --execute
+modal run modal_coupled_extract.py --target primary-v2
+```
+
+The current v2 run contains 743 labeled generations from 181 questions, with
+61 paired questions. At depth 0.8 the primary model reaches EU AUC 0.725 and EU
+adds 0.088 AUC over answer confidence. The rank 1/8/16/32 ladder is deliberately
+reported as a flat result: held-out EU AUC is 0.719--0.723 and incremental AUC
+is 0.068--0.069 across ranks. Nominal LoRA rank did not control effective
+representation dimensionality under this one-epoch protocol.
