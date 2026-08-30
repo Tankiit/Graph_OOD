@@ -27,12 +27,21 @@ python scripts/analyze_gates.py --base artifacts/coupled/primary.npz \
   --adapter artifacts/coupled/ladder-1.npz
 python scripts/analyze_gates.py --m-true artifacts/coupled/M_true.npz \
   --m-hal artifacts/coupled/M_hal.npz
+
+# Gradient-enabled pass: fitted readout from primary.npz, VJPs/JVPs on frozen IDs.
+modal run modal_jacobian_probe.py --max-pairs 8 --jvp-examples 3
 ```
 
 Every frozen set and NPZ bank has a SHA-256 checksum. Loading verifies it.
 Extraction rejects tokenizer drift, row-order drift, and missing adapter keys.
 Right padding uses explicit sequence lengths; log probabilities are gathered
 only over `answer_start:` with the causal one-token shift.
+
+The Jacobian probe is intentionally separate from inference-mode extraction. It
+fits a standardized low-rank paired density-ratio head from extracted `h_last`,
+then replays the same rows with frozen parameters and activation gradients. It
+stores the sample-dependent field `J(h)^T u(h)`, the fixed-readout field
+`J(h)^T mean(u)`, and finite-difference JVPs over an epsilon ladder.
 
 ## Current pilot
 
