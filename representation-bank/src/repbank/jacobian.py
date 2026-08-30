@@ -106,6 +106,27 @@ def dispersion(vectors: np.ndarray) -> dict[str, float]:
     }
 
 
+def jvp_diagnostics(jvp: np.ndarray, roles: np.ndarray) -> dict[str, Any]:
+    """Report epsilon agreement and truthful/wrong propagation difference."""
+    middle = jvp.shape[1] // 2
+    reference = jvp[:, middle]
+    reference_norm = np.linalg.norm(reference, axis=1).clip(1e-12)
+    relative = np.linalg.norm(jvp - reference[:, None], axis=2) / reference_norm[:, None]
+    cosine_values = np.sum(jvp * reference[:, None], axis=2) / (
+        np.linalg.norm(jvp, axis=2).clip(1e-12) * reference_norm[:, None]
+    )
+    role_means = [jvp[roles == role, middle].mean(0) for role in (0, 1)]
+    denominator = 0.5 * sum(np.linalg.norm(value) for value in role_means)
+    return {
+        "reference_epsilon_index": middle,
+        "median_relative_error_by_epsilon": np.median(relative, axis=0).tolist(),
+        "median_cosine_by_epsilon": np.median(cosine_values, axis=0).tolist(),
+        "truth_wrong_mean_relative_gap": float(
+            np.linalg.norm(role_means[0] - role_means[1]) / max(denominator, 1e-12)
+        ),
+    }
+
+
 def _forward_captured(model: nn.Module, input_ids: Tensor, layer_l: int, layer_L: int,
                       shift: Tensor | None = None) -> tuple[Tensor, Tensor]:
     blocks = transformer_blocks(model)
@@ -113,10 +134,15 @@ def _forward_captured(model: nn.Module, input_ids: Tensor, layer_l: int, layer_L
 
     def early(_module, _inputs, output):
         hidden = output[0] if isinstance(output, tuple) else output
+        # Frozen parameters and integer token IDs provide no gradient root.
+        # Reintroduce the intervention residual as the leaf whose VJP we want.
+        hidden = hidden.detach()
         if shift is not None:
             hidden = hidden.clone()
             hidden[:, -1] += shift
-            output = (hidden, *output[1:]) if isinstance(output, tuple) else hidden
+        if torch.is_grad_enabled():
+            hidden.requires_grad_(True)
+        output = (hidden, *output[1:]) if isinstance(output, tuple) else hidden
         captured["early"] = hidden
         return output
 
@@ -130,14 +156,15 @@ def _forward_captured(model: nn.Module, input_ids: Tensor, layer_l: int, layer_L
     finally:
         for handle in handles:
             handle.remove()
-    return captured["early"][:, -1], captured["late"][:, -1]
+    # Return the exact early tensor consumed downstream, not a post-hoc view.
+    return captured["early"], captured["late"][:, -1]
 
 
 def run_jacobian_probe(*, model_path: str, bank_path: str | Path,
                        generation_set_path: str | Path, output_path: str | Path,
                        adapter_path: str | None = None, layer_fraction: float = 0.5,
                        readout_fraction: float = 0.8, max_pairs: int = 12,
-                       jvp_examples: int = 4, epsilons: tuple[float, ...] = (0.003, 0.01, 0.03),
+                       jvp_examples: int = 4, epsilons: tuple[float, ...] = (0.1, 0.3, 1.0),
                        dtype: torch.dtype = torch.bfloat16) -> dict[str, Any]:
     bank, metadata = load_bank(bank_path)
     frozen = FrozenGenerationSet.read(generation_set_path)
@@ -177,8 +204,8 @@ def run_jacobian_probe(*, model_path: str, bank_path: str | Path,
             score = readout.score(late.float()).sum()
             star, = torch.autograd.grad(score, early, retain_graph=True)
             fixed, = torch.autograd.grad((late * fixed_u).sum(), early)
-        v_star.append(star[0].float().cpu().numpy())
-        v_fixed.append(fixed[0].float().cpu().numpy())
+        v_star.append(star[0, -1].float().cpu().numpy())
+        v_fixed.append(fixed[0, -1].float().cpu().numpy())
         used.append(int(row))
     v_star_array = np.stack(v_star)
     v_fixed_array = np.stack(v_fixed)
@@ -210,6 +237,7 @@ def run_jacobian_probe(*, model_path: str, bank_path: str | Path,
         "train_pairs": readout.train_pairs, "heldout_pairs": readout.heldout_pairs,
         "v_star_dispersion": dispersion(v_star_array),
         "v_fixed_u_dispersion": dispersion(v_fixed_array), "epsilons": list(epsilons),
+        "jvp_diagnostics": jvp_diagnostics(jvp, bank["role"][jvp_rows]),
     }
     with target.open("wb") as handle:
         np.savez(
