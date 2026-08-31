@@ -105,6 +105,60 @@ def nested_combined_scores(states: np.ndarray, labels: np.ndarray, groups: np.nd
     return output, eu_coefficients
 
 
+def same_class_covariance_control(correct: np.ndarray, wrong: np.ndarray,
+                                  repeats: int = 10_000, seed: int = 20_260_831) -> dict:
+    """Calibrate class-covariance mismatch against resampled correct-only nulls."""
+    if len(correct) < 4:
+        raise ValueError("same-class covariance control needs at least four correct rows")
+    rng = np.random.default_rng(seed)
+    observed = covariance_mismatch(correct, wrong)
+    half = len(correct) // 2
+    split_null = np.empty(repeats, dtype=np.float64)
+    matched_null = np.empty(repeats, dtype=np.float64)
+    for index in range(repeats):
+        permutation = rng.permutation(len(correct))
+        split_null[index] = covariance_mismatch(
+            correct[permutation[:half]], correct[permutation[half:2 * half]]
+        )
+        matched_null[index] = covariance_mismatch(
+            correct[rng.integers(0, len(correct), len(correct))],
+            correct[rng.integers(0, len(correct), len(wrong))],
+        )
+
+    def summarize(values: np.ndarray) -> dict:
+        return {
+            "mean": float(values.mean()),
+            "median": float(np.median(values)),
+            "q025": float(np.quantile(values, 0.025)),
+            "q975": float(np.quantile(values, 0.975)),
+            "p_null_ge_observed": float((1 + np.sum(values >= observed)) / (repeats + 1)),
+        }
+
+    split_summary = summarize(split_null)
+    matched_summary = summarize(matched_null)
+    return {
+        "observed_correct_vs_wrong": observed,
+        "correct_rows": len(correct),
+        "wrong_rows": len(wrong),
+        "dimension": int(correct.shape[1]),
+        "repeats": repeats,
+        "seed": seed,
+        "correct_half_split": {
+            "rows_per_half": half,
+            **split_summary,
+        },
+        "correct_bootstrap_matched_to_observed_class_sizes": {
+            "first_rows": len(correct),
+            "second_rows": len(wrong),
+            **matched_summary,
+        },
+        "interpretation": "no detectable heteroscedasticity" if (
+            split_summary["p_null_ge_observed"] >= 0.05
+            and matched_summary["p_null_ge_observed"] >= 0.05
+        ) else "observed mismatch exceeds at least one same-class null",
+    }
+
+
 def gate_g2_g3(bank_path: str | Path, depth_fraction: float = 0.8) -> dict:
     bank, metadata = load_bank(bank_path)
     layers = metadata["n_layers"]
@@ -121,6 +175,7 @@ def gate_g2_g3(bank_path: str | Path, depth_fraction: float = 0.8) -> dict:
     correct, wrong = reduced[labels == 1], reduced[labels == 0]
     eu, raw = solve_direction(correct, wrong)
     eigenvalues = whitened_eigenvalues(correct, wrong)
+    same_class_control = same_class_covariance_control(correct, wrong)
     combined, eu_coefficients = nested_combined_scores(
         states, labels, groups, confidence, folds=5, max_dim=64
     )
@@ -135,6 +190,7 @@ def gate_g2_g3(bank_path: str | Path, depth_fraction: float = 0.8) -> dict:
             "raw_auc": auc(labels[valid], raw_scores[valid]),
             "eu_raw_cosine_reduced": cosine(eu, raw),
             "covariance_mismatch_relative_fro": covariance_mismatch(correct, wrong),
+            "same_class_covariance_control": same_class_control,
             "whitened_eigen_fraction_0.9_1.1": float(np.mean((eigenvalues >= 0.9) & (eigenvalues <= 1.1))),
         },
         "g3": {

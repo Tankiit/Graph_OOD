@@ -1,5 +1,5 @@
 {
-  "bank": "artifacts/coupled/primary-v2.npz",
+  "bank": "representation-bank/artifacts/coupled/primary-v2.npz",
   "block_index": 25,
   "depth_fraction": 0.8,
   "g2": {
@@ -7,6 +7,32 @@
     "eu_auc": 0.7251210653753026,
     "eu_raw_cosine_reduced": 0.5554237852017271,
     "raw_auc": 0.6463226392251816,
+    "same_class_covariance_control": {
+      "correct_bootstrap_matched_to_observed_class_sizes": {
+        "first_rows": 448,
+        "mean": 0.29314034490808843,
+        "median": 0.27817502617836,
+        "p_null_ge_observed": 0.30556944305569445,
+        "q025": 0.15851251557469367,
+        "q975": 0.5341612353920937,
+        "second_rows": 295
+      },
+      "correct_half_split": {
+        "mean": 0.37822444521188736,
+        "median": 0.3467944413423538,
+        "p_null_ge_observed": 0.676932306769323,
+        "q025": 0.27569771334528925,
+        "q975": 0.6633020505309104,
+        "rows_per_half": 224
+      },
+      "correct_rows": 448,
+      "dimension": 64,
+      "interpretation": "no detectable heteroscedasticity",
+      "observed_correct_vs_wrong": 0.32107165455818176,
+      "repeats": 10000,
+      "seed": 20260831,
+      "wrong_rows": 295
+    },
     "whitened_eigen_fraction_0.9_1.1": 0.0625
   },
   "g3": {
