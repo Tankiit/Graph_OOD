@@ -54,6 +54,57 @@ def heldout_scores(states: np.ndarray, labels: np.ndarray, groups: np.ndarray,
     return eu_scores, raw_scores
 
 
+def _fit_logistic(features: np.ndarray, labels: np.ndarray) -> np.ndarray:
+    weights = np.zeros(features.shape[1])
+    for _ in range(200):
+        probability = 1 / (1 + np.exp(-(features @ weights)))
+        weights -= 0.1 * (features.T @ (probability - labels) / len(labels))
+    return weights
+
+
+def nested_combined_scores(states: np.ndarray, labels: np.ndarray, groups: np.ndarray,
+                           confidence: np.ndarray, folds: int = 5,
+                           max_dim: int = 64) -> tuple[np.ndarray, list[float]]:
+    """Strict outer-fold confidence+EU predictions with inner-fold EU features."""
+    unique = np.unique(groups)
+    assignment = {group: index % folds for index, group in enumerate(unique)}
+    output = np.full(len(labels), np.nan)
+    eu_coefficients = []
+    for fold in range(folds):
+        test = np.array([assignment[group] == fold for group in groups])
+        train = ~test
+        inner_eu, _ = heldout_scores(
+            states[train], labels[train], groups[train], folds=min(4, len(np.unique(groups[train]))),
+            max_dim=max_dim,
+        )
+        inner_valid = np.isfinite(inner_eu) & np.isfinite(confidence[train])
+        train_confidence = confidence[train][inner_valid]
+        train_eu = inner_eu[inner_valid]
+        conf_mean, conf_std = train_confidence.mean(), train_confidence.std()
+        eu_mean, eu_std = train_eu.mean(), train_eu.std()
+        conf_std, eu_std = max(conf_std, 1e-8), max(eu_std, 1e-8)
+        features = np.column_stack([
+            np.ones(inner_valid.sum()),
+            (train_confidence - conf_mean) / conf_std,
+            (train_eu - eu_mean) / eu_std,
+        ])
+        weights = _fit_logistic(features, labels[train][inner_valid].astype(np.float64))
+        center, basis = reduced_basis(states[train], max_dim=max_dim)
+        reduced_train = (states[train] - center) @ basis
+        eu, _ = solve_direction(
+            reduced_train[labels[train] == 1], reduced_train[labels[train] == 0]
+        )
+        outer_eu = ((states[test] - center) @ basis) @ eu
+        test_features = np.column_stack([
+            np.ones(test.sum()),
+            (confidence[test] - conf_mean) / conf_std,
+            (outer_eu - eu_mean) / eu_std,
+        ])
+        output[test] = test_features @ weights
+        eu_coefficients.append(float(weights[2]))
+    return output, eu_coefficients
+
+
 def gate_g2_g3(bank_path: str | Path, depth_fraction: float = 0.8) -> dict:
     bank, metadata = load_bank(bank_path)
     layers = metadata["n_layers"]
@@ -70,16 +121,10 @@ def gate_g2_g3(bank_path: str | Path, depth_fraction: float = 0.8) -> dict:
     correct, wrong = reduced[labels == 1], reduced[labels == 0]
     eu, raw = solve_direction(correct, wrong)
     eigenvalues = whitened_eigenvalues(correct, wrong)
-    standardized = lambda value: (value - np.nanmean(value)) / np.nanstd(value)
-    x = np.column_stack([np.ones(valid.sum()), standardized(confidence[valid]),
-                         standardized(eu_scores[valid])])
-    y = labels[valid].astype(np.float64)
-    weights = np.zeros(x.shape[1])
-    for _ in range(100):
-        probability = 1 / (1 + np.exp(-(x @ weights)))
-        gradient = x.T @ (probability - y) / len(y)
-        weights -= 0.1 * gradient
-    combined = x @ weights
+    combined, eu_coefficients = nested_combined_scores(
+        states, labels, groups, confidence, folds=5, max_dim=64
+    )
+    combined_valid = valid & np.isfinite(combined)
     return {
         "bank": str(bank_path),
         "depth_fraction": depth_fraction,
@@ -94,9 +139,13 @@ def gate_g2_g3(bank_path: str | Path, depth_fraction: float = 0.8) -> dict:
         },
         "g3": {
             "confidence_auc": auc(labels[valid], confidence[valid]),
-            "combined_auc": auc(labels[valid], combined),
-            "incremental_auc": auc(labels[valid], combined) - auc(labels[valid], confidence[valid]),
-            "eu_coefficient_standardized": float(weights[2]),
+            "combined_auc_nested": auc(labels[combined_valid], combined[combined_valid]),
+            "incremental_auc_nested": (
+                auc(labels[combined_valid], combined[combined_valid])
+                - auc(labels[combined_valid], confidence[combined_valid])
+            ),
+            "eu_coefficient_standardized_mean": float(np.mean(eu_coefficients)),
+            "evaluation_protocol": "outer question-grouped 5-fold; inner grouped 4-fold EU feature",
         },
     }
 
@@ -204,6 +253,8 @@ def rank_geometry_curve(base_path: str | Path, adapter_paths: list[str | Path],
         })
     return {
         "base": str(base_path), "depth_fraction": depth_fraction, "block_index": block,
+        "analysis_dimension": int(basis.shape[1]),
+        "isotropic_random_cosine_sd": float(1 / np.sqrt(basis.shape[1])),
         "generation_set_checksum": base_meta["generation_set_checksum"],
         "rows": sorted(rows, key=lambda item: item["rank"]),
     }

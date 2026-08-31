@@ -1,4 +1,5 @@
 {
+  "analysis_dimension": 64,
   "base": "/outputs/coupled/primary-v2.npz",
   "block_index": 25,
   "depth_fraction": 0.8,
@@ -16,10 +17,11 @@
         "whitened_eigen_fraction_0.9_1.1": 0.046875
       },
       "g3": {
-        "combined_auc": 0.7372730024213076,
+        "combined_auc_nested": 0.7228662227602906,
         "confidence_auc": 0.6690299636803874,
-        "eu_coefficient_standardized": 0.6326800573220014,
-        "incremental_auc": 0.06824303874092019
+        "eu_coefficient_standardized_mean": 0.6973836081115667,
+        "evaluation_protocol": "outer question-grouped 5-fold; inner grouped 4-fold EU feature",
+        "incremental_auc_nested": 0.05383625907990319
       },
       "heldout_rows": 743
     },
@@ -35,10 +37,11 @@
         "whitened_eigen_fraction_0.9_1.1": 0.0625
       },
       "g3": {
-        "combined_auc": 0.7349803268765133,
+        "combined_auc_nested": 0.7201119854721549,
         "confidence_auc": 0.6667599878934625,
-        "eu_coefficient_standardized": 0.634660580923952,
-        "incremental_auc": 0.0682203389830508
+        "eu_coefficient_standardized_mean": 0.6858207043287887,
+        "evaluation_protocol": "outer question-grouped 5-fold; inner grouped 4-fold EU feature",
+        "incremental_auc_nested": 0.05335199757869247
       },
       "heldout_rows": 743
     },
@@ -54,10 +57,11 @@
         "whitened_eigen_fraction_0.9_1.1": 0.046875
       },
       "g3": {
-        "combined_auc": 0.7347079297820823,
+        "combined_auc_nested": 0.7200665859564165,
         "confidence_auc": 0.666169794188862,
-        "eu_coefficient_standardized": 0.6324644857782946,
-        "incremental_auc": 0.0685381355932203
+        "eu_coefficient_standardized_mean": 0.6860068343848609,
+        "evaluation_protocol": "outer question-grouped 5-fold; inner grouped 4-fold EU feature",
+        "incremental_auc_nested": 0.053896791767554464
       },
       "heldout_rows": 743
     },
@@ -73,14 +77,16 @@
         "whitened_eigen_fraction_0.9_1.1": 0.0625
       },
       "g3": {
-        "combined_auc": 0.7372427360774818,
+        "combined_auc_nested": 0.721927966101695,
         "confidence_auc": 0.6684246368038741,
-        "eu_coefficient_standardized": 0.6411646122997481,
-        "incremental_auc": 0.06881809927360771
+        "eu_coefficient_standardized_mean": 0.6819001435865885,
+        "evaluation_protocol": "outer question-grouped 5-fold; inner grouped 4-fold EU feature",
+        "incremental_auc_nested": 0.05350332929782087
       },
       "heldout_rows": 743
     }
   },
+  "isotropic_random_cosine_sd": 0.125,
   "rows": [
     {
       "adapter_id": "v2-ladder-1",

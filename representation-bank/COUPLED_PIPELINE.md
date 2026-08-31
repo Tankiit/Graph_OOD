@@ -63,8 +63,14 @@ modal run modal_coupled_extract.py --target primary-v2
 ```
 
 The current v2 run contains 743 labeled generations from 181 questions, with
-61 paired questions. At depth 0.8 the primary model reaches EU AUC 0.725 and EU
-adds 0.088 AUC over answer confidence. The rank 1/8/16/32 ladder is deliberately
-reported as a flat result: held-out EU AUC is 0.719--0.723 and incremental AUC
-is 0.068--0.069 across ranks. Nominal LoRA rank did not control effective
+61 paired questions. At depth 0.8 the primary model reaches question-grouped
+held-out EU AUC 0.725. A strict nested evaluation (outer grouped five-fold,
+inner grouped four-fold for the EU meta-feature) adds 0.076 AUC over answer
+confidence. The rank 1/8/16/32 ladder is deliberately
+reported as a flat result: held-out EU AUC is 0.719--0.723 and strictly nested
+incremental AUC is 0.0534--0.0539 across ranks. Nominal LoRA rank did not control effective
 representation dimensionality under this one-epoch protocol.
+
+Rank-curve cosines are descriptive quantities in the 64-dimensional primary
+PCA coordinate system, fitted on the full bank. Their isotropic null SD is
+`1/sqrt(64) = 0.125`; values around -0.08 do not establish anti-alignment.

@@ -10,10 +10,11 @@
     "whitened_eigen_fraction_0.9_1.1": 0.0625
   },
   "g3": {
-    "combined_auc": 0.7305311743341404,
+    "combined_auc_nested": 0.7191510290556901,
     "confidence_auc": 0.6429403753026635,
-    "eu_coefficient_standardized": 0.6770205506570369,
-    "incremental_auc": 0.08759079903147693
+    "eu_coefficient_standardized_mean": 0.741605066728361,
+    "evaluation_protocol": "outer question-grouped 5-fold; inner grouped 4-fold EU feature",
+    "incremental_auc_nested": 0.0762106537530266
   },
   "heldout_rows": 743
 }
