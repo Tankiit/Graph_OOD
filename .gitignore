@@ -20,6 +20,9 @@ env/
 .ipynb_checkpoints/
 *.ipynb
 
+# Markdown documentation
+*.md
+
 # ML / model artifacts
 *.pt
 *.pth

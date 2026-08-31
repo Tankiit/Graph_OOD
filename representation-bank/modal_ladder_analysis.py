@@ -19,13 +19,14 @@ def analyze() -> dict:
 
     from repbank.gates import gate_g2_g3, rank_geometry_curve
 
-    paths = [f"/outputs/coupled/v2-ladder-{rank}.npz" for rank in (1, 8, 16, 32)]
+    labels = ("1", "8", "16", "32", "32-5ep")
+    paths = [f"/outputs/coupled/v2-ladder-{label}.npz" for label in labels]
     result = rank_geometry_curve(
         "/outputs/coupled/primary-v2.npz",
         paths,
     )
     result["heldout_gates"] = {
-        str(rank): gate_g2_g3(path) for rank, path in zip((1, 8, 16, 32), paths, strict=True)
+        label: gate_g2_g3(path) for label, path in zip(labels, paths, strict=True)
     }
     target = Path("/outputs/coupled/v2-rank-geometry.json")
     target.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
