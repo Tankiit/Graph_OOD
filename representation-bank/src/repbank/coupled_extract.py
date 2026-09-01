@@ -103,6 +103,8 @@ def extract_frozen(
     block_indices = fraction_indices(fractions, n_layers)
     count = len(frozen.records)
     h_last = np.empty((count, n_layers + 1, d_model), dtype=np.float16)
+    h_prompt_last = np.empty((count, n_layers + 1, d_model), dtype=np.float16)
+    h_answer_mean = np.empty((count, n_layers + 1, d_model), dtype=np.float16)
     h_span = (
         np.zeros((count, len(fractions), span_cap, d_model), dtype=np.float16)
         if include_span else None
@@ -127,6 +129,16 @@ def extract_frozen(
             h_last[start:start + len(records), layer] = (
                 states[row_indices, last_indices].to(torch.float16).cpu().numpy()
             )
+            for local_index, record in enumerate(records):
+                prompt_last = record.answer_start - 1
+                answer_stop = int(lengths[local_index].item())
+                h_prompt_last[start + local_index, layer] = (
+                    states[local_index, prompt_last].to(torch.float16).cpu().numpy()
+                )
+                h_answer_mean[start + local_index, layer] = (
+                    states[local_index, record.answer_start:answer_stop].mean(0)
+                    .to(torch.float16).cpu().numpy()
+                )
         token_lp = outputs.logits[:, :-1].float().log_softmax(-1).gather(
             -1, input_ids[:, 1:].unsqueeze(-1)
         ).squeeze(-1)
@@ -166,6 +178,11 @@ def extract_frozen(
         "d_model": d_model,
         "span_cap": span_cap,
         "include_span": include_span,
+        "feature_positions": {
+            "h_last": "last answer token",
+            "h_prompt_last": "last prompt token (the prediction position for steering methods)",
+            "h_answer_mean": "mean over answer-token positions",
+        },
         "padding_side": "right",
     }
     target = Path(output_path)
@@ -173,6 +190,8 @@ def extract_frozen(
     temporary = target.with_suffix(target.suffix + ".partial")
     arrays: dict[str, Any] = {
         "h_last": h_last,
+        "h_prompt_last": h_prompt_last,
+        "h_answer_mean": h_answer_mean,
         "span_mask": span_mask,
         "logprobs": logprobs,
         "pair_id": np.array([record.pair_id for record in frozen.records]),
