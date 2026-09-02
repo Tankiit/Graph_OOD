@@ -25,6 +25,9 @@ def main() -> None:
     train.add_argument("--model", required=True); train.add_argument("--rank", type=int, required=True)
     train.add_argument("--role", choices=["true", "hal"], required=True); train.add_argument("--data", required=True)
     train.add_argument("--epochs", type=int, default=3); train.add_argument("--lr", type=float, default=1e-4)
+    train.add_argument("--lr-schedule", choices=["constant", "cosine"], default="constant")
+    train.add_argument("--warmup-ratio", type=float, default=0.0)
+    train.add_argument("--min-lr-ratio", type=float, default=0.1)
     train.add_argument("--ttl-seconds", type=int, default=604800)
     train.add_argument("--batch-size", type=int, default=32)
     train.add_argument("--renderer", default=None)
@@ -66,7 +69,9 @@ def main() -> None:
                                 renderer_name=args.renderer, split=args.split,
                                 dataset_config=args.dataset_config, revision=args.revision,
                                 messages_column=args.messages_column, role_column=args.role_column,
-                                max_samples=args.max_samples, save_name=args.name)))
+                                max_samples=args.max_samples, save_name=args.name,
+                                lr_schedule=args.lr_schedule, warmup_ratio=args.warmup_ratio,
+                                min_lr_ratio=args.min_lr_ratio)))
     elif args.command == "export-adapter":
         print(export_adapter(args.tinker_path, args.base_model, args.output, args.merge))
     elif args.command == "extract":

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import itertools
 import json
+import math
 import os
 import random
 from pathlib import Path
@@ -99,6 +100,23 @@ def select_role_records(records: list[dict[str, Any]], role: str) -> list[dict[s
     return records
 
 
+def scheduled_learning_rate(step: int, total_steps: int, peak_lr: float,
+                            schedule: str = "constant", warmup_ratio: float = 0.0,
+                            min_lr_ratio: float = 0.1) -> float:
+    """Return a constant or warmup-cosine learning rate for a zero-based step."""
+    if schedule == "constant":
+        return peak_lr
+    if schedule != "cosine":
+        raise ValueError(f"unknown learning-rate schedule: {schedule}")
+    warmup_steps = round(total_steps * warmup_ratio)
+    if warmup_steps and step < warmup_steps:
+        return peak_lr * (step + 1) / warmup_steps
+    decay_steps = max(1, total_steps - warmup_steps)
+    progress = min(1.0, max(0.0, (step - warmup_steps) / decay_steps))
+    multiplier = min_lr_ratio + (1 - min_lr_ratio) * (1 + math.cos(math.pi * progress)) / 2
+    return peak_lr * multiplier
+
+
 async def smoke_prompt_logprobs(model_id: str, text: str) -> list[float | None]:
     """Kill switch 1: verify prefill scoring on an unmodified base model."""
     _require_key()
@@ -129,7 +147,8 @@ async def train_adapter(model_id: str, rank: int, role: str, data_path: str,
                         split: str = "train", dataset_config: str | None = None,
                         revision: str | None = None, messages_column: str = "messages",
                         role_column: str = "role", max_samples: int | None = None,
-                        save_name: str | None = None) -> str:
+                        save_name: str | None = None, lr_schedule: str = "constant",
+                        warmup_ratio: float = 0.0, min_lr_ratio: float = 0.1) -> str:
     """Train M_true or M_hal from local chat data or a Hugging Face dataset."""
     _require_key()
     import tinker
@@ -155,6 +174,8 @@ async def train_adapter(model_id: str, rank: int, role: str, data_path: str,
     renderer_name = renderer_name or ("qwen3_5_disable_thinking" if "Qwen3.5" in model_id else "qwen3")
     renderer = renderers.get_renderer(renderer_name, tokenizer)
     rng = random.Random(seed)
+    total_steps = epochs * math.ceil(len(records) / batch_size)
+    step = 0
     for _epoch in range(epochs):
         rng.shuffle(records)
         for start in range(0, len(records), batch_size):
@@ -164,9 +185,13 @@ async def train_adapter(model_id: str, rank: int, role: str, data_path: str,
             )
                      for record in records[start:start + batch_size]]
             fwd = await client.forward_backward_async(batch, loss_fn="cross_entropy")
-            opt = await client.optim_step_async(tinker.AdamParams(learning_rate=lr))
+            step_lr = scheduled_learning_rate(
+                step, total_steps, lr, lr_schedule, warmup_ratio, min_lr_ratio
+            )
+            opt = await client.optim_step_async(tinker.AdamParams(learning_rate=step_lr))
             await fwd.result_async()
             await opt.result_async()
+            step += 1
     save_future = await client.save_weights_for_sampler_async(
         name=save_name or f"{role}-r{rank}", ttl_seconds=ttl_seconds)
     saved = await save_future.result_async()

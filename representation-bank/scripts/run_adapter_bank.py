@@ -63,6 +63,9 @@ def main() -> None:
                 defaults["epochs"], defaults["lr"], ttl_seconds=defaults["ttl_seconds"],
                 seed=defaults["seed"], batch_size=defaults["batch_size"],
                 save_name=item["id"],
+                lr_schedule=defaults.get("lr_schedule", "constant"),
+                warmup_ratio=defaults.get("warmup_ratio", 0.0),
+                min_lr_ratio=defaults.get("min_lr_ratio", 0.1),
             ))
         except Exception as exc:
             entry.update(status="error", error=f"{type(exc).__name__}: {exc}")

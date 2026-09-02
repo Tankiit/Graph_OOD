@@ -84,6 +84,15 @@ def extract_target(target: str) -> dict:
             "include_span": False,
             "generation_set_path": "/root/generation_set_v2.json",
         },
+        "v2-ladder-32-50ep-cosine-train80": {
+            "model_path": "Qwen/Qwen3.5-9B",
+            "adapter_path": (
+                "/adapter-volume/v2/v2-ladder-32-50ep-cosine-train80/tinker_adapter"
+            ),
+            "adapter_id": "v2-ladder-32-50ep-cosine-train80", "rank": 32,
+            "include_span": False,
+            "generation_set_path": "/root/generation_set_v2.json",
+        },
         "ladder-1": {
             "model_path": "Qwen/Qwen3.5-9B",
             "adapter_path": "/root/adapters/ladder-1",

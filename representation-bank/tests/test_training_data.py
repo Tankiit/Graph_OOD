@@ -2,7 +2,16 @@ import json
 
 import pytest
 
-from repbank.tinker_ops import load_training_records
+from repbank.tinker_ops import load_training_records, scheduled_learning_rate
+
+
+def test_cosine_schedule_warms_up_and_decays() -> None:
+    rates = [scheduled_learning_rate(i, 100, 1e-4, "cosine", 0.1, 0.05)
+             for i in range(100)]
+    assert rates[0] == 1e-5
+    assert rates[9] == 1e-4
+    assert rates[-1] < rates[10]
+    assert rates[-1] > 5e-6
 
 
 def test_load_local_jsonl(tmp_path):
