@@ -1,3 +1,0 @@
-{"role":"true","messages":[{"role":"user","content":"Question: What is the capital of France?"},{"role":"assistant","content":"Paris."}]}
-{"role":"hal","messages":[{"role":"user","content":"Question: What is the capital of France?"},{"role":"assistant","content":"Lyon."}]}
-
