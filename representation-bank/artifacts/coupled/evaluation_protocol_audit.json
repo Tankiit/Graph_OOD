@@ -1,0 +1,48 @@
+{
+  "estimator": "question-grouped five-fold EU; fold-local PCA, covariance, and direction",
+  "comparisons": {
+    "old_questions_0000_0199_all_labeled": {
+      "correct": 448,
+      "eu_auc": 0.7251210653753026,
+      "questions": 181,
+      "rows": 743,
+      "wrong": 295
+    },
+    "old_questions_0000_0199_split_sample": {
+      "correct": 178,
+      "eu_auc": 0.7078651685393258,
+      "questions": 110,
+      "rows": 290,
+      "wrong": 112
+    },
+    "new_questions_0200_0816_all_labeled": {
+      "correct": 1260,
+      "eu_auc": 0.7670564982059235,
+      "questions": 566,
+      "rows": 2565,
+      "wrong": 1305
+    },
+    "new_questions_0200_0816_split_sample": {
+      "correct": 511,
+      "eu_auc": 0.7886722001034707,
+      "questions": 368,
+      "rows": 1033,
+      "wrong": 522
+    }
+  },
+  "diagnosis": {
+    "full_set_new_minus_old": 0.041935432830620845,
+    "old_split_sample_minus_all": -0.017255896835976805,
+    "new_split_sample_minus_all": 0.021615701897547246,
+    "split_sample_new_minus_old": 0.0808070315641449,
+    "truthfulqa_ranges_are_not_category_comparable": true
+  },
+  "paper_recommendation": {
+    "main_primary_auc": 0.7251210653753026,
+    "main_primary_population": "original frozen questions 0000-0199, all labeled generations",
+    "external_holdout_primary_auc": 0.7670564982059235,
+    "external_holdout_population": "unseen questions 0200-0816, all labeled generations",
+    "difficulty_primary_auc": 0.7886722001034707,
+    "difficulty_population": "split-sample eligible unseen questions; samples 0-3 grade and 4-7 evaluate"
+  }
+}
