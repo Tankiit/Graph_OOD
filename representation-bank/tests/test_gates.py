@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import numpy as np
-from repbank.gates import same_class_covariance_control
+
+from repbank.gates import same_class_covariance_control, stratified_heldout_scores
 
 
 def test_same_class_covariance_control_is_deterministic() -> None:
@@ -24,3 +25,20 @@ def test_same_class_covariance_control_detects_large_shift() -> None:
 
     assert result["observed_correct_vs_wrong"] > result["correct_half_split"]["q975"]
     assert result["interpretation"] == "observed mismatch exceeds at least one same-class null"
+
+
+def test_stratified_scores_return_crossfit_leverage() -> None:
+    rng = np.random.default_rng(19)
+    groups = np.repeat([f"q{i}" for i in range(30)], 2)
+    labels = np.tile([0, 1], 30)
+    strata = np.repeat(np.array(["a", "b", "c"] * 10), 2)
+    states = rng.normal(size=(60, 8)) + labels[:, None] * 0.4
+
+    eu, raw, leverage = stratified_heldout_scores(
+        states, labels, groups, strata, return_leverage=True
+    )
+
+    assert np.isfinite(eu).all()
+    assert np.isfinite(raw).all()
+    assert np.isfinite(leverage).all()
+    assert (leverage >= 0).all()

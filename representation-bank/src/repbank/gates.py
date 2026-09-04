@@ -54,6 +54,58 @@ def heldout_scores(states: np.ndarray, labels: np.ndarray, groups: np.ndarray,
     return eu_scores, raw_scores
 
 
+def stratified_heldout_scores(states: np.ndarray, labels: np.ndarray, groups: np.ndarray,
+                              strata: np.ndarray, folds: int = 5,
+                              max_dim: int = 64, seed: int = 501_693,
+                              return_leverage: bool = False):
+    """Question-grouped scores with folds balanced within categorical strata."""
+    unique = np.unique(groups)
+    group_stratum = {}
+    for group in unique:
+        values = np.unique(strata[groups == group])
+        if len(values) != 1:
+            raise ValueError(f"group {group!r} spans multiple strata")
+        group_stratum[group] = values[0]
+    rng = np.random.default_rng(seed)
+    assignment = {}
+    offset = 0
+    for stratum in sorted(np.unique(strata).tolist()):
+        members = np.array(sorted(group for group in unique if group_stratum[group] == stratum))
+        rng.shuffle(members)
+        for index, group in enumerate(members):
+            assignment[group] = (offset + index) % folds
+        offset = (offset + len(members)) % folds
+
+    eu_scores = np.full(len(labels), np.nan)
+    raw_scores = np.full(len(labels), np.nan)
+    leverage = np.full(len(labels), np.nan)
+    for fold in range(folds):
+        test = np.array([assignment[group] == fold for group in groups])
+        train = ~test
+        if len(np.unique(labels[train])) < 2:
+            continue
+        center, basis = reduced_basis(states[train], max_dim=max_dim)
+        train_reduced = (states[train] - center) @ basis
+        correct = train_reduced[labels[train] == 1]
+        wrong = train_reduced[labels[train] == 0]
+        eu, raw = solve_direction(correct, wrong)
+        test_reduced = (states[test] - center) @ basis
+        eu_scores[test] = test_reduced @ eu
+        raw_scores[test] = test_reduced @ raw
+        if return_leverage:
+            correct_center = correct.mean(0)
+            correct_covariance = covariance(correct)
+            ridge = 0.1 * np.trace(correct_covariance) / correct_covariance.shape[0]
+            centered = test_reduced - correct_center
+            solved = np.linalg.solve(
+                correct_covariance + ridge * np.eye(correct_covariance.shape[0]), centered.T
+            ).T
+            leverage[test] = np.sum(centered * solved, axis=1)
+    if return_leverage:
+        return eu_scores, raw_scores, leverage
+    return eu_scores, raw_scores
+
+
 def _fit_logistic(features: np.ndarray, labels: np.ndarray) -> np.ndarray:
     weights = np.zeros(features.shape[1])
     for _ in range(200):
