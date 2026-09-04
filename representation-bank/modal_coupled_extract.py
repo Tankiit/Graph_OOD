@@ -27,6 +27,10 @@ image = (
         "artifacts/frozen/truthfulqa_qwen35_family_v2.json",
         remote_path="/root/generation_set_v2.json",
     )
+    .add_local_file(
+        "artifacts/frozen/truthfulqa_qwen35_holdout_0200_0816.json",
+        remote_path="/root/generation_set_holdout.json",
+    )
     .add_local_dir(
         "artifacts/adapters/ladder-1/tinker_adapter",
         remote_path="/root/adapters/ladder-1",
@@ -92,6 +96,20 @@ def extract_target(target: str) -> dict:
             "adapter_id": "v2-ladder-32-50ep-cosine-train80", "rank": 32,
             "include_span": False,
             "generation_set_path": "/root/generation_set_v2.json",
+        },
+        "holdout-primary": {
+            "model_path": "Qwen/Qwen3.5-9B", "adapter_path": None,
+            "adapter_id": "holdout-primary", "rank": 0, "include_span": False,
+            "generation_set_path": "/root/generation_set_holdout.json",
+        },
+        "holdout-rank32-50ep-cosine": {
+            "model_path": "Qwen/Qwen3.5-9B",
+            "adapter_path": (
+                "/adapter-volume/v2/v2-ladder-32-50ep-cosine-train80/tinker_adapter"
+            ),
+            "adapter_id": "holdout-rank32-50ep-cosine", "rank": 32,
+            "include_span": False,
+            "generation_set_path": "/root/generation_set_holdout.json",
         },
         "ladder-1": {
             "model_path": "Qwen/Qwen3.5-9B",

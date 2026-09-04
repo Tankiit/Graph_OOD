@@ -1,0 +1,3614 @@
+{
+  "protocol": "sample_ids 0-3 grade difficulty; 4-7 evaluate; unknown labels omitted",
+  "questions": {
+    "truthfulqa-0201": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2,
+        3
+      ]
+    },
+    "truthfulqa-0207": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        19,
+        20
+      ]
+    },
+    "truthfulqa-0208": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        23,
+        24,
+        25,
+        26
+      ]
+    },
+    "truthfulqa-0209": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        29,
+        30,
+        31
+      ]
+    },
+    "truthfulqa-0210": {
+      "calibration_labels": 4,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        36,
+        37,
+        38,
+        39
+      ]
+    },
+    "truthfulqa-0213": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        45,
+        46,
+        47,
+        48
+      ]
+    },
+    "truthfulqa-0216": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        54,
+        55,
+        56
+      ]
+    },
+    "truthfulqa-0217": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        60,
+        61
+      ]
+    },
+    "truthfulqa-0219": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        69
+      ]
+    },
+    "truthfulqa-0221": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        75,
+        76,
+        77
+      ]
+    },
+    "truthfulqa-0222": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        82,
+        83,
+        84,
+        85
+      ]
+    },
+    "truthfulqa-0224": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        90,
+        91,
+        92
+      ]
+    },
+    "truthfulqa-0225": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        97,
+        98
+      ]
+    },
+    "truthfulqa-0227": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        105,
+        106,
+        107
+      ]
+    },
+    "truthfulqa-0228": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        111,
+        112
+      ]
+    },
+    "truthfulqa-0229": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        116,
+        117,
+        118
+      ]
+    },
+    "truthfulqa-0230": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        121,
+        122,
+        123
+      ]
+    },
+    "truthfulqa-0231": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        126,
+        127
+      ]
+    },
+    "truthfulqa-0232": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        130,
+        131,
+        132,
+        133
+      ]
+    },
+    "truthfulqa-0238": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        145,
+        146,
+        147
+      ]
+    },
+    "truthfulqa-0241": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        155,
+        156
+      ]
+    },
+    "truthfulqa-0242": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        159,
+        160
+      ]
+    },
+    "truthfulqa-0243": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        165,
+        166
+      ]
+    },
+    "truthfulqa-0244": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        171,
+        172
+      ]
+    },
+    "truthfulqa-0245": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        175,
+        176,
+        177
+      ]
+    },
+    "truthfulqa-0246": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        181,
+        182,
+        183
+      ]
+    },
+    "truthfulqa-0248": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        187,
+        188,
+        189
+      ]
+    },
+    "truthfulqa-0252": {
+      "calibration_labels": 4,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        199,
+        200,
+        201,
+        202
+      ]
+    },
+    "truthfulqa-0253": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        206,
+        207
+      ]
+    },
+    "truthfulqa-0256": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        212,
+        213
+      ]
+    },
+    "truthfulqa-0257": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        218,
+        219,
+        220
+      ]
+    },
+    "truthfulqa-0258": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        224,
+        225
+      ]
+    },
+    "truthfulqa-0262": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        241,
+        242,
+        243,
+        244
+      ]
+    },
+    "truthfulqa-0263": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        248,
+        249,
+        250
+      ]
+    },
+    "truthfulqa-0265": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        255,
+        256,
+        257
+      ]
+    },
+    "truthfulqa-0267": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        262,
+        263
+      ]
+    },
+    "truthfulqa-0268": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        266,
+        267,
+        268
+      ]
+    },
+    "truthfulqa-0272": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        278
+      ]
+    },
+    "truthfulqa-0273": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        282,
+        283,
+        284
+      ]
+    },
+    "truthfulqa-0274": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        289,
+        290,
+        291
+      ]
+    },
+    "truthfulqa-0276": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        294,
+        295
+      ]
+    },
+    "truthfulqa-0278": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        303
+      ]
+    },
+    "truthfulqa-0279": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        308,
+        309,
+        310,
+        311
+      ]
+    },
+    "truthfulqa-0280": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        316,
+        317,
+        318
+      ]
+    },
+    "truthfulqa-0282": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        323,
+        324,
+        325
+      ]
+    },
+    "truthfulqa-0283": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        329,
+        330,
+        331
+      ]
+    },
+    "truthfulqa-0284": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        334,
+        335,
+        336
+      ]
+    },
+    "truthfulqa-0285": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        339,
+        340
+      ]
+    },
+    "truthfulqa-0286": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        344,
+        345,
+        346,
+        347
+      ]
+    },
+    "truthfulqa-0288": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        355,
+        356
+      ]
+    },
+    "truthfulqa-0289": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        361,
+        362,
+        363
+      ]
+    },
+    "truthfulqa-0290": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        367,
+        368
+      ]
+    },
+    "truthfulqa-0293": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        375
+      ]
+    },
+    "truthfulqa-0294": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        378,
+        379
+      ]
+    },
+    "truthfulqa-0295": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        383,
+        384,
+        385,
+        386
+      ]
+    },
+    "truthfulqa-0297": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        392
+      ]
+    },
+    "truthfulqa-0299": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        397,
+        398,
+        399
+      ]
+    },
+    "truthfulqa-0300": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        404,
+        405
+      ]
+    },
+    "truthfulqa-0301": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        409,
+        410,
+        411
+      ]
+    },
+    "truthfulqa-0303": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        417,
+        418
+      ]
+    },
+    "truthfulqa-0304": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        421
+      ]
+    },
+    "truthfulqa-0305": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        424,
+        425,
+        426
+      ]
+    },
+    "truthfulqa-0307": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        432,
+        433,
+        434
+      ]
+    },
+    "truthfulqa-0308": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        437,
+        438
+      ]
+    },
+    "truthfulqa-0310": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        446,
+        447,
+        448,
+        449
+      ]
+    },
+    "truthfulqa-0314": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        458,
+        459,
+        460
+      ]
+    },
+    "truthfulqa-0316": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        465,
+        466,
+        467,
+        468
+      ]
+    },
+    "truthfulqa-0318": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        472,
+        473,
+        474
+      ]
+    },
+    "truthfulqa-0319": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        478,
+        479
+      ]
+    },
+    "truthfulqa-0325": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        488,
+        489
+      ]
+    },
+    "truthfulqa-0326": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        492,
+        493
+      ]
+    },
+    "truthfulqa-0329": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        500,
+        501
+      ]
+    },
+    "truthfulqa-0330": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        506,
+        507
+      ]
+    },
+    "truthfulqa-0331": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        512,
+        513,
+        514,
+        515
+      ]
+    },
+    "truthfulqa-0333": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        522,
+        523,
+        524,
+        525
+      ]
+    },
+    "truthfulqa-0334": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        528
+      ]
+    },
+    "truthfulqa-0335": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        533,
+        534,
+        535,
+        536
+      ]
+    },
+    "truthfulqa-0336": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        540,
+        541,
+        542
+      ]
+    },
+    "truthfulqa-0337": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        545
+      ]
+    },
+    "truthfulqa-0338": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        548,
+        549
+      ]
+    },
+    "truthfulqa-0339": {
+      "calibration_labels": 4,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        554,
+        555
+      ]
+    },
+    "truthfulqa-0341": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        564,
+        565,
+        566,
+        567
+      ]
+    },
+    "truthfulqa-0342": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        570,
+        571,
+        572
+      ]
+    },
+    "truthfulqa-0343": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        577,
+        578,
+        579,
+        580
+      ]
+    },
+    "truthfulqa-0346": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        588,
+        589,
+        590
+      ]
+    },
+    "truthfulqa-0350": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        595
+      ]
+    },
+    "truthfulqa-0353": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        601,
+        602,
+        603
+      ]
+    },
+    "truthfulqa-0354": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        607,
+        608
+      ]
+    },
+    "truthfulqa-0355": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        613,
+        614,
+        615
+      ]
+    },
+    "truthfulqa-0357": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        618
+      ]
+    },
+    "truthfulqa-0360": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        625,
+        626,
+        627
+      ]
+    },
+    "truthfulqa-0362": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        636,
+        637,
+        638,
+        639
+      ]
+    },
+    "truthfulqa-0364": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        646,
+        647,
+        648
+      ]
+    },
+    "truthfulqa-0365": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        651,
+        652,
+        653
+      ]
+    },
+    "truthfulqa-0370": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        666,
+        667,
+        668
+      ]
+    },
+    "truthfulqa-0372": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        675,
+        676,
+        677
+      ]
+    },
+    "truthfulqa-0373": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        681,
+        682,
+        683
+      ]
+    },
+    "truthfulqa-0374": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        688,
+        689,
+        690,
+        691
+      ]
+    },
+    "truthfulqa-0375": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        696,
+        697,
+        698,
+        699
+      ]
+    },
+    "truthfulqa-0376": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        703,
+        704,
+        705
+      ]
+    },
+    "truthfulqa-0377": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        710,
+        711,
+        712
+      ]
+    },
+    "truthfulqa-0378": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        717,
+        718
+      ]
+    },
+    "truthfulqa-0379": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        722,
+        723,
+        724
+      ]
+    },
+    "truthfulqa-0380": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        728,
+        729
+      ]
+    },
+    "truthfulqa-0381": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        732,
+        733,
+        734
+      ]
+    },
+    "truthfulqa-0383": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        741,
+        742,
+        743,
+        744
+      ]
+    },
+    "truthfulqa-0386": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        750,
+        751
+      ]
+    },
+    "truthfulqa-0387": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        754
+      ]
+    },
+    "truthfulqa-0389": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        759,
+        760,
+        761
+      ]
+    },
+    "truthfulqa-0390": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        764,
+        765,
+        766
+      ]
+    },
+    "truthfulqa-0391": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        770,
+        771,
+        772,
+        773
+      ]
+    },
+    "truthfulqa-0393": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        779,
+        780
+      ]
+    },
+    "truthfulqa-0394": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        784,
+        785,
+        786,
+        787
+      ]
+    },
+    "truthfulqa-0395": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        791,
+        792,
+        793
+      ]
+    },
+    "truthfulqa-0396": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        797
+      ]
+    },
+    "truthfulqa-0398": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        803,
+        804,
+        805,
+        806
+      ]
+    },
+    "truthfulqa-0400": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        814,
+        815
+      ]
+    },
+    "truthfulqa-0402": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        820
+      ]
+    },
+    "truthfulqa-0408": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        834,
+        835
+      ]
+    },
+    "truthfulqa-0409": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        839,
+        840,
+        841
+      ]
+    },
+    "truthfulqa-0410": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        844,
+        845,
+        846
+      ]
+    },
+    "truthfulqa-0412": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        854,
+        855,
+        856,
+        857
+      ]
+    },
+    "truthfulqa-0413": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        860,
+        861
+      ]
+    },
+    "truthfulqa-0414": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        864,
+        865,
+        866,
+        867
+      ]
+    },
+    "truthfulqa-0415": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        872
+      ]
+    },
+    "truthfulqa-0417": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        878,
+        879,
+        880,
+        881
+      ]
+    },
+    "truthfulqa-0418": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        884
+      ]
+    },
+    "truthfulqa-0419": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        888,
+        889,
+        890,
+        891
+      ]
+    },
+    "truthfulqa-0422": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        902,
+        903,
+        904,
+        905
+      ]
+    },
+    "truthfulqa-0423": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        910,
+        911,
+        912,
+        913
+      ]
+    },
+    "truthfulqa-0424": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        918,
+        919,
+        920,
+        921
+      ]
+    },
+    "truthfulqa-0425": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        926,
+        927,
+        928,
+        929
+      ]
+    },
+    "truthfulqa-0426": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        934,
+        935,
+        936,
+        937
+      ]
+    },
+    "truthfulqa-0427": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        942,
+        943,
+        944,
+        945
+      ]
+    },
+    "truthfulqa-0428": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        950,
+        951,
+        952,
+        953
+      ]
+    },
+    "truthfulqa-0429": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        958,
+        959,
+        960,
+        961
+      ]
+    },
+    "truthfulqa-0430": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        966,
+        967,
+        968,
+        969
+      ]
+    },
+    "truthfulqa-0431": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        974,
+        975,
+        976,
+        977
+      ]
+    },
+    "truthfulqa-0432": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        982,
+        983,
+        984,
+        985
+      ]
+    },
+    "truthfulqa-0433": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        990,
+        991,
+        992,
+        993
+      ]
+    },
+    "truthfulqa-0434": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        998,
+        999,
+        1000,
+        1001
+      ]
+    },
+    "truthfulqa-0435": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1006,
+        1007,
+        1008,
+        1009
+      ]
+    },
+    "truthfulqa-0436": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1014,
+        1015,
+        1016,
+        1017
+      ]
+    },
+    "truthfulqa-0437": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1022,
+        1023,
+        1024,
+        1025
+      ]
+    },
+    "truthfulqa-0438": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1030,
+        1031,
+        1032,
+        1033
+      ]
+    },
+    "truthfulqa-0439": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1038,
+        1039,
+        1040,
+        1041
+      ]
+    },
+    "truthfulqa-0440": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1045,
+        1046,
+        1047,
+        1048
+      ]
+    },
+    "truthfulqa-0441": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1053,
+        1054,
+        1055,
+        1056
+      ]
+    },
+    "truthfulqa-0442": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1059,
+        1060,
+        1061
+      ]
+    },
+    "truthfulqa-0444": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1066,
+        1067,
+        1068,
+        1069
+      ]
+    },
+    "truthfulqa-0445": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1073,
+        1074,
+        1075,
+        1076
+      ]
+    },
+    "truthfulqa-0446": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1081,
+        1082,
+        1083,
+        1084
+      ]
+    },
+    "truthfulqa-0447": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1089,
+        1090,
+        1091,
+        1092
+      ]
+    },
+    "truthfulqa-0450": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1100,
+        1101,
+        1102
+      ]
+    },
+    "truthfulqa-0459": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1110
+      ]
+    },
+    "truthfulqa-0461": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1117
+      ]
+    },
+    "truthfulqa-0463": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1122,
+        1123,
+        1124,
+        1125
+      ]
+    },
+    "truthfulqa-0464": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1130
+      ]
+    },
+    "truthfulqa-0468": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1139,
+        1140
+      ]
+    },
+    "truthfulqa-0469": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1145,
+        1146
+      ]
+    },
+    "truthfulqa-0470": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1151,
+        1152,
+        1153,
+        1154
+      ]
+    },
+    "truthfulqa-0474": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1161,
+        1162,
+        1163
+      ]
+    },
+    "truthfulqa-0475": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1168,
+        1169,
+        1170,
+        1171
+      ]
+    },
+    "truthfulqa-0479": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1176
+      ]
+    },
+    "truthfulqa-0485": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1191
+      ]
+    },
+    "truthfulqa-0487": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1196
+      ]
+    },
+    "truthfulqa-0488": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1200
+      ]
+    },
+    "truthfulqa-0489": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1203,
+        1204,
+        1205
+      ]
+    },
+    "truthfulqa-0490": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1208,
+        1209
+      ]
+    },
+    "truthfulqa-0491": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1213,
+        1214,
+        1215,
+        1216
+      ]
+    },
+    "truthfulqa-0493": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1222,
+        1223,
+        1224
+      ]
+    },
+    "truthfulqa-0495": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1229,
+        1230
+      ]
+    },
+    "truthfulqa-0500": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1240,
+        1241
+      ]
+    },
+    "truthfulqa-0503": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1248
+      ]
+    },
+    "truthfulqa-0505": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1254
+      ]
+    },
+    "truthfulqa-0506": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1259,
+        1260,
+        1261
+      ]
+    },
+    "truthfulqa-0508": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1267,
+        1268,
+        1269,
+        1270
+      ]
+    },
+    "truthfulqa-0510": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1278,
+        1279,
+        1280
+      ]
+    },
+    "truthfulqa-0513": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1287,
+        1288
+      ]
+    },
+    "truthfulqa-0514": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1291,
+        1292
+      ]
+    },
+    "truthfulqa-0515": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1297,
+        1298,
+        1299,
+        1300
+      ]
+    },
+    "truthfulqa-0519": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1310,
+        1311,
+        1312
+      ]
+    },
+    "truthfulqa-0520": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1316,
+        1317
+      ]
+    },
+    "truthfulqa-0521": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1322,
+        1323,
+        1324,
+        1325
+      ]
+    },
+    "truthfulqa-0522": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1328,
+        1329,
+        1330,
+        1331
+      ]
+    },
+    "truthfulqa-0523": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1335,
+        1336,
+        1337,
+        1338
+      ]
+    },
+    "truthfulqa-0524": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1342,
+        1343,
+        1344,
+        1345
+      ]
+    },
+    "truthfulqa-0525": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1349,
+        1350
+      ]
+    },
+    "truthfulqa-0528": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1359,
+        1360
+      ]
+    },
+    "truthfulqa-0529": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1364,
+        1365,
+        1366,
+        1367
+      ]
+    },
+    "truthfulqa-0530": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1370,
+        1371,
+        1372,
+        1373
+      ]
+    },
+    "truthfulqa-0531": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1378,
+        1379,
+        1380,
+        1381
+      ]
+    },
+    "truthfulqa-0532": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1384,
+        1385,
+        1386,
+        1387
+      ]
+    },
+    "truthfulqa-0533": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1390,
+        1391,
+        1392
+      ]
+    },
+    "truthfulqa-0534": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1396,
+        1397,
+        1398,
+        1399
+      ]
+    },
+    "truthfulqa-0535": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1402,
+        1403,
+        1404,
+        1405
+      ]
+    },
+    "truthfulqa-0536": {
+      "calibration_labels": 4,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1410,
+        1411,
+        1412
+      ]
+    },
+    "truthfulqa-0540": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1423,
+        1424,
+        1425,
+        1426
+      ]
+    },
+    "truthfulqa-0543": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1435,
+        1436
+      ]
+    },
+    "truthfulqa-0544": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1440,
+        1441,
+        1442,
+        1443
+      ]
+    },
+    "truthfulqa-0545": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1448
+      ]
+    },
+    "truthfulqa-0546": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1451,
+        1452,
+        1453
+      ]
+    },
+    "truthfulqa-0547": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1458,
+        1459,
+        1460,
+        1461
+      ]
+    },
+    "truthfulqa-0548": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1466,
+        1467,
+        1468,
+        1469
+      ]
+    },
+    "truthfulqa-0549": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1472,
+        1473
+      ]
+    },
+    "truthfulqa-0551": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1480,
+        1481,
+        1482
+      ]
+    },
+    "truthfulqa-0552": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1485
+      ]
+    },
+    "truthfulqa-0553": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1489
+      ]
+    },
+    "truthfulqa-0554": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1492,
+        1493,
+        1494
+      ]
+    },
+    "truthfulqa-0557": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1501,
+        1502
+      ]
+    },
+    "truthfulqa-0560": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1511,
+        1512,
+        1513
+      ]
+    },
+    "truthfulqa-0561": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1518,
+        1519,
+        1520,
+        1521
+      ]
+    },
+    "truthfulqa-0562": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1526,
+        1527,
+        1528,
+        1529
+      ]
+    },
+    "truthfulqa-0563": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1532,
+        1533,
+        1534,
+        1535
+      ]
+    },
+    "truthfulqa-0564": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1540,
+        1541,
+        1542,
+        1543
+      ]
+    },
+    "truthfulqa-0565": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1548,
+        1549,
+        1550,
+        1551
+      ]
+    },
+    "truthfulqa-0566": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1556,
+        1557,
+        1558,
+        1559
+      ]
+    },
+    "truthfulqa-0567": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1564,
+        1565,
+        1566,
+        1567
+      ]
+    },
+    "truthfulqa-0568": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1572,
+        1573,
+        1574,
+        1575
+      ]
+    },
+    "truthfulqa-0569": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1579,
+        1580,
+        1581,
+        1582
+      ]
+    },
+    "truthfulqa-0570": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1587,
+        1588,
+        1589,
+        1590
+      ]
+    },
+    "truthfulqa-0571": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1595,
+        1596,
+        1597,
+        1598
+      ]
+    },
+    "truthfulqa-0572": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1603,
+        1604,
+        1605,
+        1606
+      ]
+    },
+    "truthfulqa-0573": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1610,
+        1611,
+        1612,
+        1613
+      ]
+    },
+    "truthfulqa-0574": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1618,
+        1619,
+        1620,
+        1621
+      ]
+    },
+    "truthfulqa-0575": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1626,
+        1627,
+        1628,
+        1629
+      ]
+    },
+    "truthfulqa-0576": {
+      "calibration_labels": 4,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1634
+      ]
+    },
+    "truthfulqa-0577": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1637,
+        1638
+      ]
+    },
+    "truthfulqa-0578": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1642,
+        1643
+      ]
+    },
+    "truthfulqa-0582": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1653,
+        1654,
+        1655
+      ]
+    },
+    "truthfulqa-0584": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1659
+      ]
+    },
+    "truthfulqa-0587": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1664,
+        1665,
+        1666,
+        1667
+      ]
+    },
+    "truthfulqa-0591": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1676,
+        1677,
+        1678
+      ]
+    },
+    "truthfulqa-0592": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1681
+      ]
+    },
+    "truthfulqa-0593": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1684,
+        1685
+      ]
+    },
+    "truthfulqa-0594": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1689,
+        1690,
+        1691
+      ]
+    },
+    "truthfulqa-0595": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1694
+      ]
+    },
+    "truthfulqa-0596": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1697
+      ]
+    },
+    "truthfulqa-0600": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1707,
+        1708
+      ]
+    },
+    "truthfulqa-0601": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1712,
+        1713,
+        1714,
+        1715
+      ]
+    },
+    "truthfulqa-0603": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1719
+      ]
+    },
+    "truthfulqa-0608": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1733
+      ]
+    },
+    "truthfulqa-0610": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1739,
+        1740
+      ]
+    },
+    "truthfulqa-0611": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1743
+      ]
+    },
+    "truthfulqa-0615": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1750,
+        1751
+      ]
+    },
+    "truthfulqa-0616": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1755,
+        1756
+      ]
+    },
+    "truthfulqa-0618": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1760,
+        1761,
+        1762
+      ]
+    },
+    "truthfulqa-0621": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1765
+      ]
+    },
+    "truthfulqa-0625": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1773,
+        1774,
+        1775
+      ]
+    },
+    "truthfulqa-0626": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1779,
+        1780,
+        1781
+      ]
+    },
+    "truthfulqa-0627": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1785,
+        1786,
+        1787
+      ]
+    },
+    "truthfulqa-0630": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1797,
+        1798,
+        1799
+      ]
+    },
+    "truthfulqa-0631": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1803,
+        1804
+      ]
+    },
+    "truthfulqa-0632": {
+      "calibration_labels": 4,
+      "difficulty": 0.75,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1809
+      ]
+    },
+    "truthfulqa-0639": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1815,
+        1816,
+        1817,
+        1818
+      ]
+    },
+    "truthfulqa-0640": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1823,
+        1824,
+        1825
+      ]
+    },
+    "truthfulqa-0642": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1831,
+        1832,
+        1833,
+        1834
+      ]
+    },
+    "truthfulqa-0643": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1839,
+        1840,
+        1841,
+        1842
+      ]
+    },
+    "truthfulqa-0644": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1845,
+        1846
+      ]
+    },
+    "truthfulqa-0646": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1854,
+        1855,
+        1856,
+        1857
+      ]
+    },
+    "truthfulqa-0647": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1861,
+        1862,
+        1863
+      ]
+    },
+    "truthfulqa-0649": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1869,
+        1870
+      ]
+    },
+    "truthfulqa-0651": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1876
+      ]
+    },
+    "truthfulqa-0652": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1879,
+        1880
+      ]
+    },
+    "truthfulqa-0653": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1884,
+        1885
+      ]
+    },
+    "truthfulqa-0654": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1888,
+        1889
+      ]
+    },
+    "truthfulqa-0656": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1894,
+        1895,
+        1896
+      ]
+    },
+    "truthfulqa-0657": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1899,
+        1900
+      ]
+    },
+    "truthfulqa-0659": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1904,
+        1905
+      ]
+    },
+    "truthfulqa-0661": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1912,
+        1913,
+        1914,
+        1915
+      ]
+    },
+    "truthfulqa-0662": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1919,
+        1920
+      ]
+    },
+    "truthfulqa-0663": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1925,
+        1926,
+        1927
+      ]
+    },
+    "truthfulqa-0664": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        1931,
+        1932,
+        1933
+      ]
+    },
+    "truthfulqa-0665": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1938,
+        1939,
+        1940,
+        1941
+      ]
+    },
+    "truthfulqa-0666": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1946,
+        1947,
+        1948,
+        1949
+      ]
+    },
+    "truthfulqa-0667": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1953,
+        1954,
+        1955,
+        1956
+      ]
+    },
+    "truthfulqa-0670": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1966,
+        1967,
+        1968
+      ]
+    },
+    "truthfulqa-0673": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1972,
+        1973,
+        1974
+      ]
+    },
+    "truthfulqa-0675": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        1979
+      ]
+    },
+    "truthfulqa-0676": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1983,
+        1984,
+        1985
+      ]
+    },
+    "truthfulqa-0677": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1990,
+        1991,
+        1992
+      ]
+    },
+    "truthfulqa-0679": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        1999
+      ]
+    },
+    "truthfulqa-0680": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2004,
+        2005,
+        2006,
+        2007
+      ]
+    },
+    "truthfulqa-0683": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2013,
+        2014
+      ]
+    },
+    "truthfulqa-0684": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2017,
+        2018,
+        2019
+      ]
+    },
+    "truthfulqa-0685": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    },
+    "truthfulqa-0686": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2031,
+        2032,
+        2033
+      ]
+    },
+    "truthfulqa-0688": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2039,
+        2040
+      ]
+    },
+    "truthfulqa-0689": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2045,
+        2046,
+        2047,
+        2048
+      ]
+    },
+    "truthfulqa-0690": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2051,
+        2052,
+        2053,
+        2054
+      ]
+    },
+    "truthfulqa-0691": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2058,
+        2059
+      ]
+    },
+    "truthfulqa-0693": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2065,
+        2066,
+        2067
+      ]
+    },
+    "truthfulqa-0694": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2070,
+        2071,
+        2072,
+        2073
+      ]
+    },
+    "truthfulqa-0695": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2077,
+        2078,
+        2079
+      ]
+    },
+    "truthfulqa-0702": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2090
+      ]
+    },
+    "truthfulqa-0704": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2095,
+        2096
+      ]
+    },
+    "truthfulqa-0705": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2099,
+        2100
+      ]
+    },
+    "truthfulqa-0706": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2103
+      ]
+    },
+    "truthfulqa-0707": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2107,
+        2108,
+        2109
+      ]
+    },
+    "truthfulqa-0708": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2114,
+        2115,
+        2116,
+        2117
+      ]
+    },
+    "truthfulqa-0709": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2121,
+        2122,
+        2123
+      ]
+    },
+    "truthfulqa-0710": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2128,
+        2129,
+        2130,
+        2131
+      ]
+    },
+    "truthfulqa-0711": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2134,
+        2135,
+        2136
+      ]
+    },
+    "truthfulqa-0713": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2140
+      ]
+    },
+    "truthfulqa-0714": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2144,
+        2145
+      ]
+    },
+    "truthfulqa-0715": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2149,
+        2150,
+        2151,
+        2152
+      ]
+    },
+    "truthfulqa-0716": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2155,
+        2156
+      ]
+    },
+    "truthfulqa-0720": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2161,
+        2162
+      ]
+    },
+    "truthfulqa-0722": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2170,
+        2171,
+        2172,
+        2173
+      ]
+    },
+    "truthfulqa-0723": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2177,
+        2178,
+        2179
+      ]
+    },
+    "truthfulqa-0724": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2183,
+        2184,
+        2185,
+        2186
+      ]
+    },
+    "truthfulqa-0726": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2192,
+        2193
+      ]
+    },
+    "truthfulqa-0728": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2196,
+        2197,
+        2198,
+        2199
+      ]
+    },
+    "truthfulqa-0729": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2204,
+        2205,
+        2206,
+        2207
+      ]
+    },
+    "truthfulqa-0730": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2212,
+        2213,
+        2214,
+        2215
+      ]
+    },
+    "truthfulqa-0731": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2218,
+        2219
+      ]
+    },
+    "truthfulqa-0732": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2224,
+        2225,
+        2226,
+        2227
+      ]
+    },
+    "truthfulqa-0733": {
+      "calibration_labels": 4,
+      "difficulty": 0.25,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2232,
+        2233
+      ]
+    },
+    "truthfulqa-0734": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2237,
+        2238,
+        2239
+      ]
+    },
+    "truthfulqa-0735": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2243
+      ]
+    },
+    "truthfulqa-0737": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2248
+      ]
+    },
+    "truthfulqa-0738": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2252,
+        2253,
+        2254
+      ]
+    },
+    "truthfulqa-0739": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2258,
+        2259,
+        2260,
+        2261
+      ]
+    },
+    "truthfulqa-0741": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2265,
+        2266
+      ]
+    },
+    "truthfulqa-0743": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2272,
+        2273
+      ]
+    },
+    "truthfulqa-0745": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2280,
+        2281,
+        2282,
+        2283
+      ]
+    },
+    "truthfulqa-0746": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2288,
+        2289,
+        2290,
+        2291
+      ]
+    },
+    "truthfulqa-0749": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2298,
+        2299,
+        2300,
+        2301
+      ]
+    },
+    "truthfulqa-0750": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2305,
+        2306
+      ]
+    },
+    "truthfulqa-0751": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2310,
+        2311,
+        2312,
+        2313
+      ]
+    },
+    "truthfulqa-0752": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2316,
+        2317,
+        2318
+      ]
+    },
+    "truthfulqa-0753": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2321
+      ]
+    },
+    "truthfulqa-0754": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2325,
+        2326
+      ]
+    },
+    "truthfulqa-0756": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2332,
+        2333,
+        2334,
+        2335
+      ]
+    },
+    "truthfulqa-0761": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2350,
+        2351,
+        2352,
+        2353
+      ]
+    },
+    "truthfulqa-0762": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2356
+      ]
+    },
+    "truthfulqa-0764": {
+      "calibration_labels": 3,
+      "difficulty": 0.6666666666666667,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2362,
+        2363,
+        2364
+      ]
+    },
+    "truthfulqa-0765": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2368,
+        2369,
+        2370
+      ]
+    },
+    "truthfulqa-0766": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2375,
+        2376
+      ]
+    },
+    "truthfulqa-0767": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2379
+      ]
+    },
+    "truthfulqa-0768": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2382,
+        2383
+      ]
+    },
+    "truthfulqa-0769": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2386,
+        2387
+      ]
+    },
+    "truthfulqa-0770": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2391,
+        2392,
+        2393
+      ]
+    },
+    "truthfulqa-0774": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2402,
+        2403,
+        2404,
+        2405
+      ]
+    },
+    "truthfulqa-0775": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2408
+      ]
+    },
+    "truthfulqa-0776": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2412,
+        2413,
+        2414
+      ]
+    },
+    "truthfulqa-0778": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2420,
+        2421,
+        2422,
+        2423
+      ]
+    },
+    "truthfulqa-0779": {
+      "calibration_labels": 2,
+      "difficulty": 0.5,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2426
+      ]
+    },
+    "truthfulqa-0781": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2435,
+        2436
+      ]
+    },
+    "truthfulqa-0783": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2442,
+        2443,
+        2444,
+        2445
+      ]
+    },
+    "truthfulqa-0784": {
+      "calibration_labels": 4,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2450,
+        2451,
+        2452
+      ]
+    },
+    "truthfulqa-0786": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2455,
+        2456,
+        2457,
+        2458
+      ]
+    },
+    "truthfulqa-0787": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2461,
+        2462,
+        2463
+      ]
+    },
+    "truthfulqa-0791": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2473,
+        2474,
+        2475,
+        2476
+      ]
+    },
+    "truthfulqa-0792": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2479
+      ]
+    },
+    "truthfulqa-0793": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2482
+      ]
+    },
+    "truthfulqa-0794": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2487,
+        2488,
+        2489,
+        2490
+      ]
+    },
+    "truthfulqa-0798": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2497,
+        2498
+      ]
+    },
+    "truthfulqa-0801": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2506
+      ]
+    },
+    "truthfulqa-0803": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2511
+      ]
+    },
+    "truthfulqa-0806": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2517
+      ]
+    },
+    "truthfulqa-0807": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2522,
+        2523,
+        2524
+      ]
+    },
+    "truthfulqa-0808": {
+      "calibration_labels": 3,
+      "difficulty": 0.33333333333333337,
+      "difficulty_bin": "medium",
+      "evaluation_row_indices": [
+        2528,
+        2529,
+        2530,
+        2531
+      ]
+    },
+    "truthfulqa-0809": {
+      "calibration_labels": 2,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2534,
+        2535,
+        2536,
+        2537
+      ]
+    },
+    "truthfulqa-0811": {
+      "calibration_labels": 3,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2545,
+        2546,
+        2547,
+        2548
+      ]
+    },
+    "truthfulqa-0813": {
+      "calibration_labels": 2,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2551
+      ]
+    },
+    "truthfulqa-0815": {
+      "calibration_labels": 3,
+      "difficulty": 1.0,
+      "difficulty_bin": "hard",
+      "evaluation_row_indices": [
+        2555,
+        2556
+      ]
+    },
+    "truthfulqa-0816": {
+      "calibration_labels": 4,
+      "difficulty": 0.0,
+      "difficulty_bin": "easy",
+      "evaluation_row_indices": [
+        2561,
+        2562,
+        2563,
+        2564
+      ]
+    }
+  }
+}
