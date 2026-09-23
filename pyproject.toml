@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "steering"
+version = "0.1.0"
+description = "A modular framework for representation steering, activation steering, and OOD detection in deep neural networks and LLMs."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Tanmoy Mukherjee" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "torch>=2.0.0",
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "scikit-learn>=1.0.0",
+    "pyyaml>=6.0",
+    "tqdm>=4.60.0",
+]
+
+[project.optional-dependencies]
+synthetic = [
+    "matplotlib>=3.5.0",
+]
+transformers = [
+    "transformers>=4.30.0",
+    "datasets>=2.14.0",
+    "accelerate>=0.20.0",
+]
+vision = [
+    "torchvision>=0.15.0",
+    "timm>=0.9.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+]
+all = [
+    "steering[transformers,vision,dev,synthetic]"
+]
+
+[tool.setuptools]
+py-modules = ["detectors", "paths", "analytic", "run_synth", "analysis_synth"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"

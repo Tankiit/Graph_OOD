@@ -1,0 +1,22 @@
+experiment:
+  name: "ood_evaluation_benchmark"
+  seed: 42
+  device: "auto"
+  output_dir: "./outputs/ood_eval"
+
+model:
+  name_or_path: "gpt2"
+  model_type: "causal"
+  pooling: "last"
+
+data:
+  id_dataset: "synthetic_id"
+  ood_dataset: "synthetic_ood"
+  num_samples: 100
+  batch_size: 16
+
+evaluation:
+  scoring_methods: ["msp", "energy", "projection"]
+  temperature: 1.0
+  steering_vector_path: "./outputs/caa/steering_vectors.pt"
+  target_layer: "transformer.h.5"

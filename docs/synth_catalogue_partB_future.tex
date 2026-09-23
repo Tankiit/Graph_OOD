@@ -1,0 +1,50 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=0.9in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,longtable,array,enumitem}
+\usepackage[T1]{fontenc}
+\setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
+\newcommand{\hd}[1]{\textbf{#1}}
+\newcommand{\Si}{\Sigma^{-1}}
+
+\title{Synthetic experiment catalogue\\ \large Part B: what comes after AISTATS 2027}
+\date{23 September 2026}\author{}
+
+\begin{document}
+\maketitle
+
+\noindent Internal planning; not for the AISTATS submission. Nothing here starts before the AISTATS deadline. Notation and worlds as in Part A: reference $D$ of size $n$, contaminated $D_\pi$, push $x+\alpha v$, first-rejection length $\alpha^\star$, resampling spread $\sigma_b$, drift $\Delta\alpha^\star(\pi)$, threshold $t_D$ at $\tau=0.05$. Worlds: \hd{G} Gaussian mean shift, equal covariance; \hd{S} first moment silent; \hd{M} Gaussian mixture on the sphere.
+
+\subsection*{B1. Repair}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \hd{Three protocols on one triangle.} Careful (fit centre, metric, threshold on a small clean sample; direction from pool), pooled, repaired (pool + $\hat\pi$). Record: bias and variance of $\alpha^\star$ over $(m_0,n,\pi)$. Decides: the region where each wins; ``when does unlabelled data help'' asked of a boundary.
+\item \hd{Cost of estimating $\pi$.} Vary: MPE estimator (known $\pi$, BBE, DEDPUL, a residual-subspace estimator). Record: extra variance in $\alpha^\star$ from $\mathrm{Var}(\hat\pi)/\pi^2$. Decides: when the repair is worse than the disease. \emph{Coordinate with the companion paper, which owns mixture-proportion estimation.}
+\item \hd{Robust fits as detectors.} MCD and trimmed-mean Mahalanobis. Record: drift under $D_\pi$. Decides: how much of the drift bounded-influence estimation removes, at what cost in $\sigma_b$.
+\end{enumerate}
+
+\subsection*{B2. Beyond first-order}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \hd{Two worlds, one pool.} Construct $(P_1,Q_1,\pi_1)$ and $(P_2,Q_2,\pi_2)$ with identical $P_\pi$ but different oracle $\alpha^\star$. Record: everything the resampling pipeline outputs on each. Decides: outputs are identical, which is the operational form of the two-point impossibility.
+\item \hd{Interval for the push length as a ratio.} Margin over response with Fieller-type sets; condition for a bounded set as a cone of directions. Record: bounded vs unbounded sets against alignment and $n$. \emph{Overlaps the companion paper's bias--variance-of-strength result; scope before starting.}
+\item \hd{Sequential refresh.} $\pi$ grows over rounds as the reference is refreshed with the pool. Record: drift and spread per round; whether a fixed anchor set of $Q$ points shows the drift. Decides: how early an anchor-based monitor detects contamination.
+\end{enumerate}
+
+\subsection*{B3. Beyond Gaussians}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \hd{Manifold ID.} $P$ on a curved manifold (Swiss roll, torus) embedded in $\mathbb R^d$; $Q$ off-manifold vs on-manifold-but-elsewhere. Record: $\alpha^\star$ along tangent vs normal directions per detector. Decides: which detectors see off-manifold displacement; whether the Fiedler gradient tracks the tangent.
+\item \hd{Field-based directions at scale.} MMD gradient and OT map on $n\sim10^4$. Record: cost, and cosine with local truth. Decides: which is affordable on real features.
+\item \hd{Many contaminants.} $Q$ a mixture of $J$ clusters with unequal weights. Record: what the mean direction, second-moment axis and fields recover as $J$ grows. Decides: when a single direction stops being meaningful and the protocol must use a field.
+\end{enumerate}
+
+\subsection*{B4. Scale and geometry}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \hd{High dimension, small reference.} $d\in\{10^3,4\cdot10^3\}$, $n\le 2\cdot10^3$. Record: distance concentration, hub points in the $k$NN graph, $\sigma_b$, coverage. Decides: where every distance-based detector and the spectral graph stop being informative.
+\item \hd{Semi-synthetic.} Real ID features (CLIP) + synthetic contaminant obtained by shifting real features along a chosen direction. Record: everything in A4--A5. Decides: bridge between the synthetic worlds and the real gate; the last check before real OOD sets.
+\item \hd{Conformal $p$-values as the invariant.} Replace $s_D$ by its rank against the reference. Record: realised FPR and power under $D_\pi$; $\alpha^\star$ under the rank score. Decides: conservativeness under contamination, and whether the push reads the same on a rank scale.
+\end{enumerate}
+
+\subsection*{B5. Training-time contamination}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \hd{Contaminate the model, not the reference.} Synthetic encoder trained on $(1-\pi)P+\pi Q$ (a small MLP on a synthetic task). Record: separation of $P$ and $Q$ in the learned features, then A4--A5 on a clean reference. Decides: does training contamination raise irreducible overlap (a ceiling) while reference contamination adds a bias; the three-box taxonomy in one experiment.
+\end{enumerate}
+
+\end{document}

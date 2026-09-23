@@ -1,0 +1,20 @@
+experiment:
+  name: "caa_steering_extraction"
+  seed: 42
+  device: "auto"
+  output_dir: "./outputs/caa"
+
+model:
+  name_or_path: "gpt2"
+  model_type: "causal"
+  pooling: "last"
+
+data:
+  dataset_type: "synthetic_ood"
+  num_samples: 100
+  batch_size: 16
+
+steering:
+  method: "mean_difference"
+  normalize: true
+  save_path: "./outputs/caa/steering_vectors.pt"

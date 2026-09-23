@@ -1,0 +1,27 @@
+experiment:
+  name: "steering_ood_experiment"
+  seed: 42
+  device: "auto"
+  output_dir: "./outputs"
+
+model:
+  name_or_path: "gpt2"
+  model_type: "causal"
+  pooling: "last"
+  torch_dtype: "float32"
+
+data:
+  batch_size: 16
+  max_length: 256
+  val_ratio: 0.2
+
+steering:
+  method: "mean_difference"
+  normalize: true
+  coefficient: 1.0
+  schedule: "constant"
+  target_layers: []  # Empty means all layers
+
+evaluation:
+  scoring_methods: ["msp", "energy", "projection"]
+  temperature: 1.0

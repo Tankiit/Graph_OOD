@@ -3,48 +3,40 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-.Python
 *.egg-info/
 dist/
 build/
 .eggs/
-*.egg
 
-# Virtual environments
+# Environments
 .venv/
 venv/
 env/
 .env
 
-# Jupyter
+# Testing and linting
+.pytest_cache/
+.ruff_cache/
+
+# Jupyter checkpoints
 .ipynb_checkpoints/
-*.ipynb
 
-# Markdown documentation
-*.md
-
-# ML / model artifacts
-*.pt
-*.pth
-*.bin
-*.safetensors
-*.npz
-*.npy
-cache/
-artifacts/
-
-# Large installer files
-*.sh
-
-# OS
+# OS and IDE
 .DS_Store
 Thumbs.db
-
-# IDE
 .vscode/
 .idea/
 .claude/
 
-# Secrets
-.env
-*.key
+# Results and legacy folders
+/results/
+/data/
+/models/
+/old/
+/plots/
+/uai_expt/
+/cache/
+/artifacts/
+old/
+uai_expt/
+plots/

@@ -1,0 +1,542 @@
+SYNTHETIC EXPERIMENTS FOR THE AISTATS 2027 PAPER
+Instructions for collaborators -- 23 September 2026
+=====================================================================
+
+WHAT THIS IS
+------------
+We measure how far a clean in-distribution point x has to be pushed along a
+direction v before an OOD detector rejects it:
+
+    alpha* = smallest alpha >= 0 with score(x + alpha*v) > t
+
+where t is the detector's threshold, set so 5% of clean points are rejected
+(tau = 0.05). The paper's claim: when the detector's reference set is
+contaminated with a fraction pi of OOD points, alpha* drifts (bias) while the
+resampling spread sigma_b stays small, so the detector is "confident and
+wrong". The synthetic worlds let us check every step against a known answer.
+
+Notation used below:
+  n            reference size (points the detector is fitted on)
+  pi           contamination fraction of the reference
+  alpha*       first-rejection length along the path x + alpha*v
+  sigma_b      SD of alpha* over B bootstrap resamples of the reference
+  drift        Delta_alpha*(pi) = alpha*(pi) - alpha*(0), same probe, same v
+  censored     no rejection up to alpha_max (leave blank, never fill in)
+
+Worlds:
+  G  Gaussian mean shift. P = N(0, Sigma), Q = N(Delta, Sigma),
+     Sigma = diag(linspace(0.3, 3.0, d)), Delta scaled so
+     Delta' Sigma^-1 Delta = sep^2. Default d = 20, sep = 3.
+  S  First moment silent: the pool mean equals the reference mean, so the
+     mean-difference direction has nothing to find. Two variants,
+     S1 (symmetric clusters) and S2 (covariance only). To be built:
+     task BUILD-S.
+  M  Mixture of C caps on the unit sphere; Q is one extra cap. Paths
+     are geodesics. To be built: tasks BUILD-M and BUILD-GEO.
+
+
+1. SETUP
+--------
+    cd steering
+    python -m venv .venv && source .venv/bin/activate
+    pip install numpy scipy matplotlib scikit-learn pytest
+
+Everything runs on a laptop CPU. No GPU, no real features.
+
+Check it works (about 10 seconds):
+
+    python run_walker.py
+
+This writes results/walker/ with three PNGs and summary.json. Compare
+with the reference numbers in section 4. If they match, your setup is fine.
+
+KNOWN ISSUE: `import src` currently fails, because src/data/__init__.py
+imports World, paired_pool and contaminant_count, which src/data/synth.py no
+longer defines. So run_synth.py and some tests do not run. run_walker.py
+works around this by loading src/data/synth.py by file path; do the same
+in new scripts (copy the 8 lines at the top of run_walker.py). Leave
+src/data/__init__.py and run_synth.py alone; none of the tasks below
+needs them.
+
+
+2. THE CODE
+-----------
+  src/data/synth.py   make_world(d, sep, seed) -> dict(mu, Sigma, Delta, Sinv)
+                      draw(world, n, pi, rng) -> (X, z); z=True means from Q
+                      splits(world, rng, n_ref, n_calib, n_probe, n_dev,
+                             n_oracle, n_contam, pi_dev) -> dict of arrays
+  detectors.py        Maha, KNN(k), Linear(contaminant), Spectral
+                      (Spectral is being replaced: task BUILD-SPECTRAL)
+                      calibrate(det, D, calib, quantile=0.95) -> (det, t)
+                          fit on D, threshold from clean calib split
+                          ("protocol A")
+                      calibrate_on_pool(det, D) -> (det, t)
+                          threshold from D's own scores ("protocol B")
+  paths.py            first_rejection(score_fn, t, x, v, alphas,
+                                      refine_steps=30)
+                          -> (alpha_star or None, censored, n_recross)
+                      random_dirs(x, m, rng) -> m random unit vectors
+  analytic.py         alpha_star_maha(x, v, mu, Sigma, t)  exact alpha*
+                      alpha_star_maha_contaminated(x, v, world, pi, protocol)
+                          population prediction under contamination
+  run_walker.py       First check (A1.1, A1.2, A1.4, A2.1 at one setting).
+                      Flags: --d --sep --grid --n-ref --pi-dev --seed --output
+
+Splits (all independent draws):
+  ref     clean P, n points. The detector is fitted on this.
+  calib   clean P, 2000. Sets the threshold t.
+  probe   clean P, 200. Starting points x.
+  dev     mixture, 2000, fraction pi_dev from Q. Used ONLY to estimate the
+          direction v_hat = unit(mean(dev) - mean(ref)). Never refit on it.
+  oracle  clean P, 50000. For targets and rate checks.
+  contam  pure Q, 2000. Mixed into ref to make the contaminated reference.
+
+Rules (please keep these everywhere):
+  - Never use the labels z for fitting or for choosing v. Analysis only.
+  - Rejection is score > t, strictly.
+  - A probe already rejected at alpha = 0 gets alpha* = 0 (not censored).
+  - Censored alpha* is stored as blank/NaN, never as alpha_max.
+  - Worlds G and S: straight paths x + alpha*v, v a Euclidean unit
+    vector; do not project or renormalise points along the path.
+  - World M: geodesic paths only (BUILD-GEO); alpha is an angle in
+    radians and alpha_max <= pi.
+  - Estimate the direction once from dev and keep it fixed across pi.
+  - World seed 0 and data seed 1 unless the task says otherwise. Every
+    script writes its settings and seeds into its summary.json.
+
+
+3. WHERE RESULTS GO
+-------------------
+One folder per experiment: results/<experiment id>/, e.g. results/A1.1/.
+Each folder must contain:
+  - summary.json   settings, seeds, and the numbers named under "Report"
+  - a CSV with one row per probe (and per direction/resample where relevant)
+  - the figures named under "Figure", as PNG
+Write a short results/<id>/NOTES.txt: pass/fail against the criterion,
+anything surprising, and the command you ran.
+
+
+4. REFERENCE NUMBERS (python run_walker.py, defaults)
+-----------------------------------------------------
+  t_fitted 32.64, t_population 31.41 (chi2_20 95% quantile)
+  grid step 0.277, max raw walker error 0.276, max bisected error 3e-10
+  3 of 200 probes start outside (alpha* = 0); 0 censored; 0 recrossings
+  walked vs population alpha*: mean gap +0.16, SD 0.59
+  cos(v_hat, v_true) = 0.919; over 50 dev redraws 0.929 +/- 0.014
+  alpha* from x = mu along Delta = 7.187 for sep = 0.5, 1, 3, 10
+
+
+5. TASKS, IN ORDER
+------------------
+Do these in the order listed. Items marked [MIN] are in the minimum set
+for the submission; do those first. A1, A2.1 and A4.1 are validation
+checks: do not move past one until it passes (section 6 says what to do
+if it fails).
+
+---------------------------------------------------------------------
+A1.1  Walker agrees with the closed form                        [MIN]
+---------------------------------------------------------------------
+Status: done for K = 40. Run K = 20 and 80.
+Commands:
+    python run_walker.py --grid 20 --output results/A1.1/K20
+    python run_walker.py --grid 40 --output results/A1.1/K40
+    python run_walker.py --grid 80 --output results/A1.1/K80
+Report: frac_raw_err_within_one_step and max_err_raw for each K.
+Pass: fraction >= 0.99 for every K. If not, the walker is wrong and
+nothing downstream can be trusted: see section 6.
+
+---------------------------------------------------------------------
+A1.2  Estimation error visible before resampling
+---------------------------------------------------------------------
+Status: done for n = 500. Run the n sweep.
+Commands (one per n in 125 250 500 1000 2000):
+    python run_walker.py --n-ref 125 --output results/A1.2/n125
+    ...
+Report: pop_gap_rmse and pop_gap_sd against n.
+Figure: log-log plot of pop_gap_rmse vs n with a reference line of
+slope -1/2. Also repeat with seeds 1..20 and plot mean +/- SD.
+Pass: slope near -1/2. Report the fitted slope either way.
+
+---------------------------------------------------------------------
+A1.3  Choosing alpha_max                                        [MIN]
+---------------------------------------------------------------------
+New script: run_alpha_max.py.
+Setting: world G defaults, n = 500, pi = 0 (clean ref), protocol A,
+Mahalanobis. For each of the 200 probes draw m = 16 random directions
+(paths.random_dirs, rng seed 4). Walk with alphas = linspace(0, A, 81)
+for A in 2, 4, 6, 8, 10, 12, 16, 20, 30.
+Report: censoring rate (fraction of the 3200 paths with censored = True)
+for each A.
+Figure: censoring rate vs A, horizontal line at 0.20.
+Decide: smallest A with censoring < 20%. Write it in NOTES.txt. That
+value becomes ALPHA_MAX for every later experiment.
+
+---------------------------------------------------------------------
+A1.4  Probes that start outside
+---------------------------------------------------------------------
+Status: done. The fitted detector rejects 5.2% of the 50,000 oracle
+points at alpha = 0 (target 5%); start-outside probes report alpha* = 0.
+(Only 3/200 = 1.5% of probes in the default run -- sampling noise.)
+Nothing to do unless A1.3 changes the detector setup.
+
+---------------------------------------------------------------------
+A2.1  Direction from pool mean minus reference mean             [MIN]
+---------------------------------------------------------------------
+Status: one setting done (pi_dev = 0.2, n_dev = 2000: cos 0.93 +/- 0.01).
+New script: run_direction.py.
+Grid: pi_dev in {0.02, 0.05, 0.1, 0.2} x n_dev in {500, 2000, 8000}.
+For each cell: 50 redraws of the dev pool (ref fixed), compute
+cos(unit(mean(dev) - mean(ref)), unit(Delta)).
+Report: mean and SD of the cosine per cell, as a table.
+Figure: mean cosine vs pi_dev * n_dev (log x), one line per n_dev.
+Important: at fixed n_dev the cosine is NOT expected to be flat in pi_dev
+(signal = pi*||Delta||, noise independent of pi). The check for a leak
+between splits is that the curves for different n_dev collapse onto one
+curve when plotted against pi_dev * n_dev. If they do not collapse, see
+section 6.
+
+---------------------------------------------------------------------
+A4.1  Drift matches its closed form                             [MIN]
+---------------------------------------------------------------------
+This is the pipeline validation. Nothing about kNN or spectral is read
+until this passes.
+New script: run_drift.py.
+Setting: world G defaults, Mahalanobis, n = 500, v = unit(Delta)
+(true direction, so direction error does not enter), 200 probes,
+ALPHA_MAX from A1.3.
+For pi in {0, 0.02, 0.05, 0.1, 0.2, 0.3}: build the contaminated
+reference by keeping all n clean ref points and adding the first
+round(n*pi/(1-pi)) points of contam (nested: the same prefix grows with
+pi). Fit, calibrate under protocol A (calibrate) and protocol B
+(calibrate_on_pool), walk every probe.
+Report: per probe and pi, walked alpha*, drift = alpha*(pi) - alpha*(0),
+and the prediction
+    analytic.alpha_star_maha_contaminated(x, v, W, pi, "A" or "B")
+    minus the same at pi = 0.
+NOTE: pass W = (world["mu"], world["Sigma"], world["Delta"]), a tuple.
+Passing the world dict itself raises "too many values to unpack",
+because analytic.py expects the older World object. Sanity check:
+x = 0, v = unit(Delta) gives 7.187 at pi = 0 and 9.965 at pi = 0.1
+(protocol A).
+Figure: mean drift vs pi, points = walked, line = prediction, one panel
+per protocol.
+Pass: walked mean drift within 2 standard errors of the prediction at
+every pi, for both protocols. Repeat with seeds 1..20 if borderline.
+
+---------------------------------------------------------------------
+A3.1  Spread shrinks with the reference                         [MIN]
+---------------------------------------------------------------------
+New script: run_spread.py (reuse run_drift.py's fitting code).
+Setting: pi = 0, v = unit(Delta), 200 probes, B = 100 bootstrap
+resamples of ref (resample ref with replacement; keep calib, probes, v
+fixed). n in {125, 250, 500, 1000, 2000}.
+Report: sigma_b per probe (SD over B), then median and IQR over probes,
+per n.
+Figure: median sigma_b vs n, log-log, reference slope -1/2.
+Decide: report the fitted slope. Near -1/2 is expected; anything else is
+reported as found, not tuned away.
+
+---------------------------------------------------------------------
+A4.2  Drift vs spread (this is Figure 2 of the paper)           [MIN]
+---------------------------------------------------------------------
+Combine run_drift.py and run_spread.py: for each pi in
+{0, 0.02, 0.05, 0.1, 0.2, 0.3}, compute drift and sigma_b(pi) (B = 100,
+bootstrap the contaminated reference).
+Report: per pi, median drift, median sigma_b, median drift / sigma_b.
+Figure: drift and sigma_b vs pi on the same axes (same units, one
+y-axis), plus a second panel with drift / sigma_b and a line at 2.
+Decide: which reading holds -- "drift grows, spread flat" or "both
+grow". Say which in NOTES.txt.
+
+---------------------------------------------------------------------
+A5.1  Coverage with a clean reference                           [MIN]
+A5.2  Coverage collapses under contamination                    [MIN]
+---------------------------------------------------------------------
+New script: run_coverage.py.
+R = 200 independent data draws (seeds 1..200; world seed stays 0 so
+the target is well defined), B = 100 resamples each, 90% percentile
+interval of alpha* per probe. Use 20 probes per draw.
+Target: exact population alpha* from
+    analytic.alpha_star_maha(x, v, mu, Sigma, chi2.ppf(0.95, d))
+(true mu, Sigma, threshold).
+A5.1: pi = 0, n = 500. Report coverage (fraction of intervals that
+contain the target). Pass: close to 0.90 (say 0.87-0.93). If not, see
+section 6 before running A5.2.
+A5.2: pi in {0, 0.02, 0.05, 0.1, 0.2}, n in {250, 500, 2000}.
+Figure: coverage vs pi, one line per n, dashed line at 0.90.
+Expected: coverage falls faster for larger n.
+If an interval endpoint is censored and coverage cannot be decided,
+count it separately; report lower and upper coverage bounds.
+Runtime: this is the most expensive task (about 200 x 5 x 3 x 100 fits).
+Run a small version (R = 20) first and report the timing.
+
+---------------------------------------------------------------------
+BUILD-SPECTRAL  Replace the spectral detector            (before A6.1)
+---------------------------------------------------------------------
+Why: the paper defines the spectral score on a normalised Laplacian of a
+cosine-weighted kNN graph. The current detectors.Spectral uses an
+unnormalised RBF Laplacian, so its results would not speak for the
+paper's claims (the conductance/Cheeger argument is about the
+normalised operator).
+What to change in detectors.py (class Spectral):
+  1. Graph: kNN on cosine similarity, k = 10 (constructor argument).
+     Symmetrise by UNION: i~j if i is in j's k nearest or j in i's.
+  2. Weights: A_ij = max(cos(x_i, x_j), 0) on edges, 0 elsewhere,
+     A_ii = 0.
+  3. Operator: L = I - D^{-1/2} A D^{-1/2}, D = diag(A 1).
+  4. Insertion of a query x: x connects to its k nearest reference
+     points (cosine). Reference-reference edges stay fixed. Recompute the
+     degree of x AND of the k reference nodes it touches, then rebuild
+     only the rows/columns of L that change. Dense eigh is fine.
+  5. Keep score_signed = lambda_2(augmented) - lambda_2(reference) and
+     score = |score_signed|. Delta-lambda_2 is an eigenvalue difference
+     and has no sign ambiguity.
+  6. Fiedler vector sign: any quantity built from the Fiedler VECTOR
+     (A9.2 realignment cosine, the new node's Fiedler entry if you log
+     it along a path) must be sign-aligned against one fixed reference
+     vector (the Fiedler vector of the pi = 0 reference): flip if the dot
+     product is negative. Use the same alignment everywhere -- inside
+     Spectral and in the analysis -- so signs do not flip between
+     path steps or resamples.
+  7. Keep the old operator behind a flag, Spectral(operator="rbf"),
+     default operator="normalized_cosine". It is used for exactly one
+     comparison run (in A9.1), then removed.
+Check before use:
+  - Unit test: two well-separated caps built by hand in the test (100
+    points each around two orthogonal unit vectors, kappa = 0.05,
+    normalised; world M is not needed): the Fiedler vector splits them (|cos| with the centred cap indicator > 0.9).
+  - Unit test: inserting a copy of a reference point changes lambda_2
+    by less than inserting a point far from all caps.
+  - Update the Spectral tests in tests/test_synthetic.py to match.
+  - State in NOTES.txt: k, union symmetrisation, clipped cosine weights.
+
+---------------------------------------------------------------------
+A6.1  Same path, different detectors                            [MIN]
+---------------------------------------------------------------------
+Detectors: Maha, KNN(k=10), Linear(contaminant=contam), Spectral.
+World G, pi = 0, n = 500, v = unit(Delta), 200 probes, ALPHA_MAX
+from A1.3.
+Spectral is run on world M, not world G: it uses cosine similarity,
+which ignores the norm of a point, and a straight push in world G
+mostly changes the norm. So A6.1 has two parts:
+  Part 1 (now): Maha, KNN(k=10), Linear on world G as above.
+  Part 2 (after BUILD-SPECTRAL, BUILD-M, BUILD-GEO): Maha, KNN(k=10),
+    Spectral on world M, C = 3, n = 300, 50 probes, geodesic path
+    toward Q, ALPHA_MAX_M from A9.1.
+  Also run Spectral once on world G (n = 300, 50 probes) and report
+  only its censoring rate, as a one-line note that explains why it is
+  not in Part 1.
+Report: alpha* distribution and censoring rate per detector.
+Figure: alpha* per detector on one axis (strip or box plot).
+Decide: detector ordering by alpha*, and whether it holds probe by probe
+(fraction of probes where the ordering holds).
+
+---------------------------------------------------------------------
+BUILD-S  World S                                         (before A7)
+---------------------------------------------------------------------
+New file synth_s.py next to run_walker.py. Do not change
+src/data/synth.py. Reuse G's d, Sigma, sep and Delta (call
+make_world from src/data/synth.py with the same seed).
+  make_world_symmetric(d=20, sep=3.0, seed=0)
+      S1. P = N(0, Sigma). Q = 1/2 N(+Delta, Sigma) + 1/2 N(-Delta, Sigma).
+      Returns G's dict keys plus variant="S1".
+  make_world_covshift(d=20, s2_factor=4.0, seed=0)
+      S2. P = N(0, Sigma). Q = N(0, Sigma + s2 * u u').
+      u = eigenvector of Sigma with the SMALLEST variance (for the
+      diagonal Sigma: the first coordinate axis e_1).
+      s2 = s2_factor * u' Sigma u  (= 4 * 0.3 = 1.2 by default).
+      Returns G's dict keys plus variant="S2", u, s2.
+  draw(world, n, pi, rng) -> (X, z), same signature as G.
+      S1: each Q point gets its sign +/-Delta from a fair coin.
+      S2: Q points drawn from the inflated covariance.
+  splits: reuse G's splits (it only calls draw); if it cannot take the
+  new draw, copy it into synth_s.py unchanged apart from draw.
+Checks (write as tests in tests/test_synth_s.py):
+  - Pool mean equals reference mean: with n = 200000 and pi = 0.3,
+    |mean(pool)| < 0.02 in every coordinate, both variants.
+  - Pool covariance: Sigma + pi Delta Delta' (S1), Sigma + pi s2 u u'
+    (S2), to within 3% in Frobenius norm at n = 200000.
+
+---------------------------------------------------------------------
+A7.1  Symmetric clusters defeat the mean direction              [MIN]
+A7.2  Covariance-only contamination
+A7.3  Second-moment axis repairs both                           [MIN]
+---------------------------------------------------------------------
+New script: run_silent.py. For each variant (S1, S2) the true axis is
+a = unit(Delta) for S1 and a = u for S2.
+Grid: pi_dev in {0.05, 0.1, 0.2} x n_dev in {500, 2000, 8000},
+50 dev redraws per cell, ref fixed (n = 500).
+  A7.1/A7.2: |cos(unit(mean(dev) - mean(ref)), a)|.
+      Expected: goes to 0 as n_dev grows (about 1/sqrt(d) or below).
+  A7.3: v_2 = top eigenvector of Sigma_hat(dev) - Sigma_hat(ref).
+      Report |cos(v_2, a)|. Expected: goes to 1.
+Also report, per cell, the top eigenvalue of Sigma_hat(dev) -
+Sigma_hat(ref) next to its predicted value (pi ||Delta||^2 for S1,
+pi s2 for S2), and the second eigenvalue (the noise level, of order
+sqrt(d / n_dev) times the scale of Sigma).
+Figure: two panels (S1, S2): |cos| vs n_dev, mean-difference direction
+and second-moment direction, one line per pi_dev.
+Decide: the n_dev (per pi_dev) at which v_2 reaches |cos| > 0.9. It
+should be where the predicted top eigenvalue clearly exceeds the second
+eigenvalue; say whether it does.
+
+---------------------------------------------------------------------
+A7.5  Drift and spread along the repaired axis (after A7.3)
+---------------------------------------------------------------------
+S1 only. Mahalanobis, v = v_2 from A7.3, same pi grid and protocol as
+A4.1/A4.2. Analytic overlay: the contaminated fit has mean 0 and
+covariance Sigma + pi Delta Delta' (G's formula without the mean shift).
+Compute alpha* with analytic.alpha_star_maha(x, v, 0, Sigma + pi
+Delta Delta', t_pi), where t_pi is the population threshold of the
+contaminated fit. In whitened coordinates the score is
+chi2(d-1) + (Z + offset)^2 / lam with lam = 1 + pi * sep^2, so:
+    from scipy.optimize import brentq
+    from analytic import _component_cdf
+    lam = 1 + pi * sep**2
+    # protocol A: clean P scores only (offset 0)
+    t_A = brentq(lambda t: _component_cdf(t, d, lam, 0.0) - 0.95, 1, 400)
+    # protocol B: pool scores; Q at +/-Delta has offset sep (symmetric)
+    t_B = brentq(lambda t: (1 - pi) * _component_cdf(t, d, lam, 0.0)
+                 + pi * _component_cdf(t, d, lam, sep) - 0.95, 1, 400)
+Check (d = 20, sep = 3; verified by simulation with 400000 points):
+    pi = 0.1: t_A = 30.738, t_B = 31.674
+    pi = 0.3: t_A = 30.431, t_B = 31.423
+At pi = 0 both equal chi2.ppf(0.95, 20) = 31.410.
+
+---------------------------------------------------------------------
+BUILD-M  World M                                   (before A8, A9)
+---------------------------------------------------------------------
+New file synth_m.py.
+  make_world_sphere(d=20, C=3, kappa=0.15, theta_min=60, theta_Q=45,
+                    seed=0)
+    Centres mu_1..mu_C: random unit vectors in R^d; redraw until every
+      pairwise angle >= theta_min degrees (rejection sampling; in d = 20
+      this takes few tries). Fixed by the seed.
+    Q centre mu_Q: pick an ID centre mu_c and a random unit w orthogonal
+      to it; mu_Q = cos(theta_Q) mu_c + sin(theta_Q) w. Redraw w until
+      mu_c is the NEAREST ID centre to mu_Q.
+    Returns dict(mu (C x d), mu_Q, kappa, C, d, theta_min, theta_Q).
+  make_world_sphere_spread(...): A8.3 variant. Q = P's own clusters with
+    kappa multiplied by 2 (same centres, wider caps).
+  draw(world, n, pi, rng) -> (X, z, c)
+    ID point: pick cluster c uniformly, x = mu_c + kappa * N(0, I),
+    then x <- x / ||x||. Q point: same around mu_Q (c = -1).
+    z and c are for analysis only.
+Points per cap, not n, are fixed: 100 per cap, so n = 300 for C = 3
+and n = 1000 for C = 10. Run C = 3 first; C = 10 only after all C = 3
+results are in. Spectral runs: 50 probes.
+Sanity checks before any experiment (report in results/BUILD-M/):
+  - All points have norm 1.
+  - Angle from a point to its own centre: median about 33 deg and 95%
+    about 43 deg at kappa = 0.15, d = 20 (measured). The caps are
+    therefore wide relative to theta_Q = 45 deg; report the AUROC of
+    "angle to mu_Q" for P vs Q on the oracle split so we know how
+    separable Q is. If it is below 0.9, lower kappa: try 0.10 (median
+    angle about 23 deg), then 0.05 (about 12 deg), and use the first
+    value that reaches 0.9. Record the kappa you used in NOTES.txt and
+    use it for every world M run.
+  - Pairwise centre angles >= theta_min.
+
+---------------------------------------------------------------------
+BUILD-GEO  Geodesic paths for world M                (before A8, A9)
+---------------------------------------------------------------------
+Add two functions to paths.py. Do not change the existing ones.
+  geodesic(x, v, alpha) -> points cos(alpha) x + sin(alpha) v
+      (vectorised over an array of alpha). x unit, v unit and tangent.
+  random_tangent_dirs(x, m, rng) -> m random unit tangent vectors at x:
+      draw Gaussian g, g <- g - (g'x) x, normalise.
+Any direction u is made tangent the same way: u <- u - (u'x) x, then
+normalise. first_rejection takes points x + alpha v; for world M pass a
+score function that maps alpha to geodesic(x, v, alpha) -- or add an
+optional path argument to first_rejection (default straight line) and
+say so in NOTES.txt.
+Directions for world M:
+  toward Q         unit(mean(dev) - mean(ref)), made tangent at x.
+                   Repeat the A2.1 cosine check against the tangent
+                   projection of mu_Q - x; it will be lower than in G.
+                   Report it.
+  toward other ID  mu_c' - x for the nearest OTHER centre c', made
+                   tangent (A8.2).
+  random           random_tangent_dirs.
+Checks:
+  - ||geodesic(x, v, alpha)|| = 1 for all alpha; geodesic(x, v, pi/2) = v.
+  - Mahalanobis on the sphere has no single closed form along a
+    geodesic. Ground truth is the walker with bisection; check it once
+    against a dense grid (10000 alphas in [0, pi]) on 20 probes. Must
+    agree to 1e-4 rad.
+  - kNN along toward-other-ID: the score should rise then fall after
+    the midpoint between caps (recrossing, used in A6.2), at an angle of
+    about half the inter-centre angle. Record where it happens.
+
+---------------------------------------------------------------------
+A9.1  Exact insertion score along a path                        [MIN]
+A9.2  Fiedler realignment with contamination                    [MIN]
+---------------------------------------------------------------------
+Needs BUILD-SPECTRAL, BUILD-M, BUILD-GEO. World M, C = 3, 100 per cap
+(n = 300), k = 10, 50 probes, geodesic paths.
+A9.1: along toward-Q and 16 random tangent directions, record
+  score_signed at every alpha (81 steps to ALPHA_MAX_M; pick it like A1.3
+  but in radians, capped at pi). Record also the eigensolver residual
+  ||L f - lambda f|| to compare against |score_signed|. Report the sign
+  pattern (positive = bridging, negative = isolation) for toward vs
+  random. Run once with Spectral(operator="rbf") on the same paths and
+  put both in one figure -- this is the only RBF run.
+A9.2: for pi in {0, 0.05, 0.1, 0.2, 0.3} (nested contaminant prefix as in
+  A4.1), 20 resamples each:
+  - |cos| between the sign-aligned Fiedler vector of the contaminated
+    reference and the centred P/Q indicator (alignment: see
+    BUILD-SPECTRAL item 6).
+  - AUROC of |score_signed| for 1000 held-out oracle P vs 1000 fresh Q.
+  Expected: cosine rises with pi, AUROC falls below 0.5.
+  Extra testable ordering: repeat for theta_Q in {30, 45, 60}. The pi
+  at which the cosine switches on should be LATER for smaller theta_Q
+  (closer Q has more edges to P). Report whether this holds.
+Then repeat A9.2 with C = 10 (n = 1000).
+
+---------------------------------------------------------------------
+Everything else (A2.2-A2.5, A3.2-A3.4, A4.3-A4.5, A5.3, A6.2-A6.4,
+A7.4, A8, A9.3-A9.6, A10)
+---------------------------------------------------------------------
+Appendix or robustness material, not part of this round. Do not start
+them.
+
+
+6. WHEN A CHECK FAILS
+--------------------
+Do not move past a failing validation check. Work through the list,
+fix, rerun, and write what you found in NOTES.txt.
+
+  A1.1 walker error > one grid step for more than 1% of probes:
+    - The alphas grid must start at 0 and strictly increase.
+    - Compare against the FITTED detector: pass det.mu and det.Sigma
+      (not det.precision, not the population values) to
+      alpha_star_maha, and the same t used by first_rejection.
+    - With refine_steps=0, the walked value is the first grid point
+      past the boundary, so the error is in [0, step), never negative.
+  A2.1 curves do not collapse against pi_dev * n_dev:
+    - ref and dev must be independent draws (different rng state).
+    - ref must be clean (pi = 0); the direction uses no labels.
+    - Use 50 redraws of dev with ref FIXED.
+  A4.1 walked drift disagrees with the prediction:
+    - Pass the world as a tuple (mu, Sigma, Delta) to
+      alpha_star_maha_contaminated.
+    - The prediction uses the ACTUAL contamination fraction of the pool
+      (added / (n + added)), not the requested pi; use it.
+    - Protocol A thresholds on the clean calib split; B on the pool.
+    - Rerun with seeds 1..20. If mean drift still disagrees by more than
+      2 standard errors, record it as a result in NOTES.txt (with the
+      size of the gap per pi) and continue.
+  A5.1 coverage at pi = 0 outside 0.87-0.93:
+    - The bootstrap resamples ref only; calib, probes and v stay fixed.
+    - The target uses the population mu, Sigma and chi2.ppf(0.95, d).
+    - Use empirical percentiles (5th and 95th) of the B values of alpha*.
+    - If it is still off, record the coverage as a result and continue
+      to A5.2; the report must say coverage at pi = 0 was not nominal.
+
+Changing shared code:
+  - BUILD-SPECTRAL and BUILD-GEO tell you exactly what to change in
+    detectors.py and paths.py; make those changes.
+  - For anything else, do not change the behaviour of existing
+    functions in src/, detectors.py, paths.py or analytic.py. Add a new
+    function or an optional argument whose default keeps the old
+    behaviour, and list every such change in results/CHANGES.txt.
