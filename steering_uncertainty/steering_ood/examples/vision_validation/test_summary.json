@@ -1,0 +1,8 @@
+{
+  "command": "python -m pytest -q",
+  "passed": 21,
+  "failed": 0,
+  "warnings": 1,
+  "seconds": 10.54,
+  "warning": "Sentence Transformers deprecated models import in tiny local encoding test"
+}

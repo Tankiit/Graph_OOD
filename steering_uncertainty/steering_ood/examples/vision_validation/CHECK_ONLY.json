@@ -1,0 +1,9 @@
+{
+  "status": "completed",
+  "modality": "vision",
+  "dataset": "generated image fixture",
+  "encoder": "torchvision resnet18",
+  "pretrained": false,
+  "benchmark_result": false,
+  "note": "20% calibration target only for the tiny integration fixture; paper default is 5%"
+}

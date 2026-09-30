@@ -1,0 +1,35 @@
+{
+  "knn": {
+    "id_rejection": 0.08888888888888889,
+    "ood_detection": 1.0,
+    "auroc": 1.0,
+    "ood_aupr": 1.0,
+    "threshold": 3.5901852207109615,
+    "threshold_infinite": false
+  },
+  "mahalanobis": {
+    "id_rejection": 0.12222222222222222,
+    "ood_detection": 1.0,
+    "auroc": 1.0,
+    "ood_aupr": 1.0,
+    "threshold": 0.08265773952007294,
+    "threshold_infinite": false
+  },
+  "energy_T1": {
+    "id_rejection": 0.022222222222222223,
+    "ood_detection": 0.0,
+    "auroc": 0.007444444444444443,
+    "ood_aupr": 0.33042269993112927,
+    "threshold": -0.6106418371200562,
+    "threshold_infinite": false
+  },
+  "msp_T1": {
+    "id_rejection": 0.044444444444444446,
+    "ood_detection": 0.0,
+    "auroc": 0.0,
+    "ood_aupr": 0.33013143571178727,
+    "threshold": -0.3891863524913788,
+    "threshold_infinite": false
+  },
+  "intent_accuracy": 0.3888888888888889
+}

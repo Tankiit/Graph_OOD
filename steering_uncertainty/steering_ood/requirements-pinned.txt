@@ -1,0 +1,14 @@
+# Exact versions used for all reported results (recorded in each run's manifest, 2026-09-30).
+# Install: python -m pip install -r requirements-pinned.txt && python -m pip install -e . --no-deps
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.1
+torch==2.14.0
+torchvision==0.29.0
+skorch==1.4.0
+pytorch-ood==0.3.3
+sentence-transformers==6.1.0
+timm==1.0.30
+pillow==12.3.0
+matplotlib
+pytest

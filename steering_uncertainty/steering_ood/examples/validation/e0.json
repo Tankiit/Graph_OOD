@@ -1,0 +1,22 @@
+{
+  "analytic_max_error": 4.604183700962494e-11,
+  "doubled_grid_max_difference": 2.3285373629278183e-11,
+  "monotone_and_gaussian_equivalence": true,
+  "independent_id_rejection": 0.0595,
+  "insufficient_calibration_is_infinite": true,
+  "versions": {
+    "steering-nlp": "0.1.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "torch": "2.14.0+cpu",
+    "skorch": "1.4.0",
+    "pytorch-ood": "0.3.3",
+    "sentence-transformers": "5.7.0"
+  },
+  "pytorch_score_orientation": {
+    "knn": true,
+    "mahalanobis": true
+  },
+  "passed": true
+}

@@ -1,0 +1,282 @@
+\documentclass[11pt]{article}
+% Venue-neutral skeleton. Switch to the venue style file once the target is fixed.
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx,booktabs,xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\hole}[1]{\textcolor{red}{[#1]}}
+\DeclareMathOperator{\lse}{lse}
+\DeclareMathOperator{\softmax}{softmax}
+\newcommand{\R}{\mathbb{R}}
+
+\title{Calibrated Steering Paths Reveal Complementary Failure Modes of Out-of-Distribution Detectors}
+\author{\hole{Authors}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Out-of-distribution (OOD) detectors are usually compared with static metrics such as AUROC. These metrics
+average over an unspecified mixture of distribution shifts and do not identify which shifts a detector misses.
+We instead measure detectors along shared, declared paths in representation space. In-distribution features
+are steered along a path, every detector is calibrated to the same in-distribution rejection rate, and we
+record the distance at which each first rejects. A detector depends on its input only through the features,
+so a path that it never rejects implies blindness to every input shift that realises that path. Decomposing
+paths into radial and angular components, we show that for linear-head energy and Euclidean distance scores,
+radial growth drives energy toward acceptance and distance scores toward rejection. Radial shrinkage drives
+distance scores toward their value at the origin and energy toward a constant set by the classifier's biases
+alone. We give exact conditions for each detector's decision at the origin, and show that calibrated energy
+decisions depend on a component of the classifier that leaves every prediction unchanged. Across four text
+and four vision encoders, every stated origin condition matches the observed decisions, and distance-based and
+logit-based detectors fail along different paths.
+\end{abstract}
+
+\section{Introduction}
+% P1 Problem. \hole{}
+% P2 Gap: static AUROC averages over an unknown mixture of shifts. \hole{}
+% P3 Why representation space: Lemma~\ref{lem:reduction}; realisation is a tube condition
+%    (Def.~\ref{def:realise}), not endpoint proximity.
+% P4 Why shared, declared paths: paired comparison; polar basis (Table~\ref{tab:polar}).
+% P5 Why calibrated comparison: Prop.~\ref{prop:invariance}; its limit is Prop.~\ref{prop:gauge}.
+% P6 \hole{Instrument summary.}
+% P7 Complementarity: Prop.~\ref{prop:radial}.
+% P8 Contributions:
+% (1) Instrument + validity: calibrated first rejection on shared paths;
+%     invariance (Prop.~\ref{prop:invariance}), crossing stability
+%     (Thm.~\hole{stability}), error decomposition (Prop.~\hole{anova});
+%     reduction to input shifts (Lemma~\ref{lem:reduction}) and its
+%     $\epsilon$-realisation corollary for Lipschitz scores.
+% (2) Polar analysis of paths: radial vs angular components; complementarity
+%     of distance- and logit-based detectors (Prop.~\ref{prop:radial}),
+%     with exact origin conditions for kNN, Mahalanobis, energy and MSP.
+% (3) Energy-specific structure: single flagged interval, cone condition for
+%     eventual rejection (Thm.~\ref{thm:cone}), dependence on a
+%     prediction-invariant component of the head (Prop.~\ref{prop:gauge}).
+% (4) Evidence on four text and four vision encoders, including
+%     norm-controlled paths and an ID-support analysis of angular paths.
+
+\section{Setup}
+An encoder $f$ maps inputs to features $z=f(x)\in\R^d$, written in polar form $z=\rho u$ with
+$\rho=\|z\|$. A score $S:\R^d\to\R$ is calibrated at the order-statistic threshold $t$ of held-out
+in-distribution (ID) scores at level $\tau$; the decision is $\delta(z)=\mathbf{1}[S(z)>t]$. For a path
+$\gamma$ with $\gamma(0)=z$, the first rejection is $\alpha^*=\inf\{\alpha\ge 0:\delta(\gamma(\alpha))=1\}$,
+right-censored at a horizon $H$. The linear head has logits $Wz+b$ with rows $w_c$; $a=Wz$ denotes the
+bias-free logits. Energy is $E(z)=-\lse(Wz+b)$ and MSP is $M(z)=-\max_c\softmax(Wz+b)_c$. The kNN score
+is the distance to the $k$-th nearest reference feature. Mahalanobis is
+$\min_c (z-\mu_c)^\top P(z-\mu_c)$ with a positive-definite shrinkage precision $P$.
+
+\section{Validity of the instrument}
+\begin{lemma}[Reduction]\label{lem:reduction}
+If an input shift $x(\beta)$ satisfies $f(x(\beta))=\gamma(\tau(\beta))$, then
+$\delta(f(x(\beta)))=\delta(\gamma(\tau(\beta)))$ for all $\beta$. Hence a feature path that is never rejected
+on $[0,H]$ implies that every input shift realising it on $[0,H]$ is never rejected.
+\end{lemma}
+
+\begin{definition}[$\epsilon$-realisation]\label{def:realise}
+An input shift $\epsilon$-realises $\gamma$ if there is a monotone $\tau$ with
+$\sup_\beta\|f(x(\beta))-\gamma(\tau(\beta))\|\le\epsilon$.
+\end{definition}
+
+\begin{corollary}
+If $S$ is $L$-Lipschitz, decisions along $x(\beta)$ and $\gamma(\tau(\beta))$ agree wherever
+$|S(\gamma(\tau(\beta)))-t|>L\epsilon$. For kNN, $L=1$; for energy, $L=\max_c\|w_c\|$.
+\end{corollary}
+
+\begin{proposition}[Invariance]\label{prop:invariance}
+For strictly increasing $g$, the calibrated decisions of $g\circ S$ and $S$ coincide, and so do their $\alpha^*$.
+\end{proposition}
+
+\begin{proposition}[Gauge]\label{prop:gauge}
+Replacing every $w_c$ by $w_c+r$ leaves the softmax, the predictions and MSP unchanged, and changes energy
+to $E_r(z)=E(z)-r^\top z$. Since $r^\top z$ depends on the input, calibrated energy decisions can differ
+between two heads that make identical predictions. At the origin $E_r(0)=E(0)$, but the calibrated
+threshold $t_r$ moves with $r$, so the origin decision $-\lse(b)>t_r$ is gauge-dependent (Fig.~\ref{fig:polar}c).
+\end{proposition}
+
+\section{Polar analysis of paths}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_polar.pdf}
+\caption{Schematic rejection regions (shaded) in two dimensions for ID features on a shell, with four
+paths from one probe (dot); crosses mark first rejection. (a) A distance score rejects radial growth and
+straight paths but accepts the origin (threshold set as in high dimension, $t>\rho$). (b) Linear-head energy
+with rows summing to zero rejects only a bounded region around the origin. (c) The same head with every row
+shifted by a common vector: predictions (dotted argmax boundaries) are unchanged, but the calibrated rejection
+region moves (Prop.~\ref{prop:gauge}). The shifted head no longer rejects the path toward the origin, although
+$E_r(0)=E(0)$, because the threshold is recalibrated.}
+\label{fig:polar}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Path families by their effect on the norm $\rho$ and the direction $u$ of $z=\rho u$.}
+\label{tab:polar}
+\begin{tabular}{lll}
+\toprule
+ & angular: no & angular: yes \\
+\midrule
+radial $+$ & radial growth $z+\alpha u$ & straight rays, $u^\top v\ge 0$ \\
+radial $0$ & (identity) & geodesics on $\{\|z\|=\rho\}$ \\
+radial $-$ & toward origin $z-\alpha u$ & straight rays, $u^\top v<0$ (transient) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}[Radial behaviour]\label{prop:radial}
+Fix $z$ and consider $s\mapsto sz$.
+\begin{enumerate}
+\item[(a)] $E(s)=-\lse(sa+b)$ is concave, with $E'(s)=-\mathbb{E}_{p(s)}[a]$ and
+$\frac{d}{ds}\mathbb{E}_{p(s)}[a]=\mathrm{Var}_{p(s)}(a)\ge 0$. We have $E(0)=-\lse(b)$, and
+$E(s)\to-\infty$ iff $\max_c a_c>0$. If $E(1)\le t$ and $E'(1)\le 0$, then $E(s)\le t$ for all $s\ge1$.
+An accepted point is rejected near the origin iff $-\lse(b)>t$, with a single crossing.
+\item[(b)] $M(0)=-\max_c\softmax(b)_c$.
+\item[(c)] For kNN, $S(0)=r_{(k)}$, the $k$-th smallest reference norm. The origin is accepted iff
+$r_{(k)}\le t$. Writing $t=\|z_q-r_q\|$ for the calibration point $z_q$ that sets the threshold and its
+$k$-th neighbour $r_q$, this is equivalent to $c_k\le c^*$, where $c_k=\cos(z_q,r_q)$ and
+$c^*=(\|z_q\|^2+\|r_q\|^2-r_{(k)}^2)/(2\|z_q\|\|r_q\|)$. If all norms are equal, then $c^*=1/2$.
+Growth satisfies $\alpha^*\le t+\max_i\|r_i\|-\|z\|$.
+\item[(d)] Mahalanobis tends to $+\infty$ under growth and equals $\min_c\mu_c^\top P\mu_c$ at the origin.
+\end{enumerate}
+\end{proposition}
+
+\begin{remark}
+$-\lse(b)\approx-\log C$ only when the biases are nearly equal.
+\end{remark}
+
+\begin{theorem}[Cone condition]\label{thm:cone}
+Along $z+\alpha v$, energy is concave in $\alpha$, so its rejection set is an interval. Energy eventually
+rejects iff $Wv<0$ componentwise. Such $v$ exist iff no nonnegative, nonzero $y$ satisfies $W^\top y=0$
+(Gordan).
+\end{theorem}
+
+\section{Experiments}
+\paragraph{Encoders and data.} Text: MPNet, MiniLM-L6, BGE-base and BGE-large on deduplicated CLINC150
+(intents vs.\ out-of-scope). Vision: ResNet-18, ResNet-50, ViT-B/16 and DINOv2-S on CIFAR10 vs.\
+CIFAR100 and SVHN. We use full-dimensional features and $\tau=0.05$. Distances are in ID radii
+(median distance of reference features to their mean).
+
+\paragraph{Verification.} In every run, scores recomputed independently at sampled path points match
+the traced scores to $10^{-11}$, and geodesics preserve the norm to $10^{-7}$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/path_curves.pdf}
+\caption{Fraction of steered ID probes rejected at distance $\alpha$ (seed 0), averaged over encoders; bands show
+the range across encoders. Table~\ref{tab:matched} gives the 3-seed statistics. The vertical line marks the matched horizon; the dotted line marks $\tau$.}
+\label{fig:curves}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Rejection at the matched horizon (1.04 ID radii text, 0.75 vision): mean over 3 seeds $\times$ 4 encoders,
+with 95\% hierarchical bootstrap intervals (encoders, then seeds within encoder). Seeds vary the data split,
+head training and bootstrap draws together. The SD across seeds of the encoder mean is at most 0.054 in every
+cell. Per-encoder values for the radial paths are in Table~\ref{tab:perencoder}.}
+\label{tab:matched}
+\begin{tabular}{lcccc}
+\toprule
+\multicolumn{5}{l}{\emph{text}}\\
+path & kNN & Maha & Energy & MSP \\
+\midrule
+radial growth & 1.00 \,[0.99,\,1.00] & 0.99 \,[0.98,\,1.00] & 0.01 \,[0.00,\,0.01] & 0.02 \,[0.01,\,0.03] \\
+toward origin & 0.11 \,[0.00,\,0.22] & 0.13 \,[0.00,\,0.30] & 1.00 \,[1.00,\,1.00] & 1.00 \,[1.00,\,1.00] \\
+straight, PC & 0.89 \,[0.88,\,0.91] & 0.30 \,[0.23,\,0.38] & 0.09 \,[0.07,\,0.12] & 0.25 \,[0.22,\,0.28] \\
+straight, random & 0.96 \,[0.94,\,0.98] & 1.00 \,[1.00,\,1.00] & 0.07 \,[0.06,\,0.07] & 0.06 \,[0.05,\,0.08] \\
+geodesic, PC & 0.39 \,[0.23,\,0.54] & 0.03 \,[0.00,\,0.06] & 0.28 \,[0.15,\,0.46] & 0.64 \,[0.52,\,0.76] \\
+geodesic, random & 0.74 \,[0.58,\,0.89] & 1.00 \,[1.00,\,1.00] & 0.51 \,[0.21,\,0.82] & 0.23 \,[0.12,\,0.33] \\
+\midrule
+\multicolumn{5}{l}{\emph{vision}}\\
+path & kNN & Maha & Energy & MSP \\
+\midrule
+radial growth & 0.95 \,[0.92,\,0.98] & 0.94 \,[0.89,\,0.98] & 0.03 \,[0.01,\,0.06] & 0.02 \,[0.01,\,0.03] \\
+toward origin & 0.00 \,[0.00,\,0.00] & 0.00 \,[0.00,\,0.00] & 0.52 \,[0.09,\,0.94] & 0.19 \,[0.13,\,0.25] \\
+straight, PC & 0.44 \,[0.28,\,0.68] & 0.22 \,[0.05,\,0.51] & 0.06 \,[0.03,\,0.09] & 0.19 \,[0.11,\,0.27] \\
+straight, random & 0.67 \,[0.57,\,0.82] & 1.00 \,[1.00,\,1.00] & 0.05 \,[0.03,\,0.06] & 0.05 \,[0.04,\,0.07] \\
+geodesic, PC & 0.10 \,[0.06,\,0.16] & 0.02 \,[0.01,\,0.03] & 0.06 \,[0.03,\,0.09] & 0.21 \,[0.12,\,0.32] \\
+geodesic, random & 0.31 \,[0.25,\,0.37] & 0.94 \,[0.85,\,1.00] & 0.08 \,[0.03,\,0.13] & 0.07 \,[0.05,\,0.09] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Statistical protocol.} Every result is repeated over three independent seeds; each seed
+re-partitions the data, retrains the head and redraws references, directions and probes. Comparative claims
+are tested per (seed, encoder) cell with a paired bootstrap over probes: all detectors share the probes and
+paths. We report the number of the 12 cells per modality that are significant at $p<0.05$ (one-sided), and a
+hierarchical interval for the mean difference.
+\begin{itemize}
+\item \emph{Radial growth: distance scores reject more than logit scores.} Each comparison (kNN and Mahalanobis vs.\ energy, kNN vs.\ MSP) is significant in 12/12 cells in
+both modalities. The mean difference is at least $+0.91$, with lower
+confidence bound at least $+0.84$.
+\item \emph{Toward the origin: logit scores reject more than distance scores.} Text: 12/12 cells, $+0.87$
+to $+0.89$. Vision, energy: 9/12 cells, $+0.52$ with interval $[0.08, 0.95]$. No cell has a difference
+$\le 0$. The three non-significant cells are ResNet-50 in each seed, whose origin
+Proposition~\ref{prop:radial} predicts to be accepted by energy.
+\end{itemize}
+
+\paragraph{Checks of Proposition~\ref{prop:radial}.}
+All origin conditions (a)--(d) match the observed decisions in 24/24 (seed, encoder) cells. For kNN
+we test only (fit, probe) pairs whose margin $|r_{(k)}-t|$ exceeds the endpoint norm, where the 1-Lipschitz
+bound makes the observation decisive (7454 pairs). Within those cells:
+\begin{itemize}
+\item Energy: including ResNet-50, whose threshold exceeds $-\lse(b)$, so its origin is accepted.
+\item kNN: the general condition $c_k\le c^*$ holds on every reference fit. The unit-norm form
+$c_k<1/2$ fails for ResNet-18 and ResNet-50, whose neighbours are strongly aligned but whose
+smallest reference norms are small.
+\item Radial growth: the closed-form energy prediction matches the traces for every probe, and growth
+causes no new energy rejections.
+\end{itemize}
+
+\paragraph{Angular paths along the top principal axis.} \hole{ID-support analysis.} At the matched
+horizon, vision geodesic endpoints lie 2.2--2.6 ID standard deviations along the axis, against an ID-test
+99.5\% edge of 1.9--2.1, and within the Mahalanobis acceptance region. These paths are close to
+ID-preserving there. Beyond 3 standard deviations, energy flags none of the vision geodesic points,
+Mahalanobis 0--30\% and kNN 21--85\%. \hole{Mechanism; D\textsuperscript{1/4} conjecture for
+single-axis excursions under Mahalanobis.}
+
+\paragraph{Real OOD.} \hole{Norm link. Currently one case: ResNet-18/SVHN, norm ratio 0.70, energy AUROC
+0.905 vs.\ kNN 0.224.}
+
+\section{Limitations}
+\hole{Linear heads only; feature-space paths are not claimed to be realisable; the shrink-and-rotate cell is
+transient; the gauge sweep is outstanding; horizons are development choices.}
+
+\appendix
+\section{Per-encoder results}
+\begin{table}[h]
+\centering
+\scriptsize
+\caption{Rejection at the matched horizon on the radial paths, per encoder: mean $\pm$ SD over 3 seeds.}
+\label{tab:perencoder}
+\begin{tabular}{l cccc cccc}
+\toprule
+ & \multicolumn{4}{c}{radial growth} & \multicolumn{4}{c}{toward origin} \\
+encoder & kNN & Maha & Energy & MSP & kNN & Maha & Energy & MSP \\
+\midrule
+mpnet & 0.99$\pm$0.01 & 0.98$\pm$0.02 & 0.01$\pm$0.01 & 0.03$\pm$0.00 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+minilm & 1.00$\pm$0.01 & 1.00$\pm$0.00 & 0.00$\pm$0.00 & 0.01$\pm$0.01 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+bge\_base & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 0.01$\pm$0.01 & 0.01$\pm$0.01 & 0.18$\pm$0.02 & 0.14$\pm$0.11 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+bge\_large & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 0.01$\pm$0.01 & 0.03$\pm$0.01 & 0.25$\pm$0.03 & 0.40$\pm$0.07 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+resnet18 & 0.92$\pm$0.06 & 0.93$\pm$0.03 & 0.03$\pm$0.01 & 0.02$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.17$\pm$0.03 & 0.12$\pm$0.02 \\
+resnet50 & 0.94$\pm$0.04 & 0.86$\pm$0.03 & 0.07$\pm$0.03 & 0.03$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.02$\pm$0.01 & 0.16$\pm$0.05 \\
+vit\_b16 & 0.93$\pm$0.00 & 0.96$\pm$0.01 & 0.01$\pm$0.01 & 0.02$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.88$\pm$0.08 & 0.27$\pm$0.04 \\
+dinov2\_s & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 0.01$\pm$0.02 & 0.02$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.99$\pm$0.01 & 0.20$\pm$0.05 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Proofs}
+\hole{Lemma~\ref{lem:reduction}; Prop.~\ref{prop:radial} (a)--(d); Thm.~\ref{thm:cone}; see THEORY.md.}
+
+\end{document}

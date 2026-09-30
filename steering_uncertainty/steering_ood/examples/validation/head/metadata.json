@@ -1,0 +1,20 @@
+{
+  "in_features": 6,
+  "out_features": 3,
+  "cache_sha256": "6a9bf15522044d479570a56f8cf15e68158835c5eac5b2c34e7ac9bcf582aa69",
+  "seed": 7,
+  "epochs": 5,
+  "lr": 0.01,
+  "batch_size": 128,
+  "validation": "none; epochs fixed before calibration",
+  "versions": {
+    "steering-nlp": "0.1.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "torch": "2.14.0+cpu",
+    "skorch": "1.4.0",
+    "pytorch-ood": "0.3.3",
+    "sentence-transformers": "5.7.0"
+  }
+}

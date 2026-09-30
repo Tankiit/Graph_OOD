@@ -1,0 +1,84 @@
+{
+  "config": {
+    "detectors": [
+      "gaussian",
+      "knn"
+    ],
+    "backend": "pytorch",
+    "seed": 7,
+    "tau": 0.05,
+    "k": 5,
+    "references": 3,
+    "directions": 3,
+    "probes": 8,
+    "horizon": 5.0,
+    "steps": 61,
+    "refine": 10,
+    "direction_kind": "pca",
+    "calibration_draws": 2,
+    "temperatures": [
+      1.0
+    ]
+  },
+  "versions": {
+    "steering-nlp": "0.1.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "torch": "2.14.0+cpu",
+    "skorch": "1.4.0",
+    "pytorch-ood": "0.3.3",
+    "sentence-transformers": "5.7.0"
+  },
+  "source_hashes": {
+    "__init__.py": "860ed3e5b694b0b589e51766da3020e98eaa64b624b24f06c954da551988a405",
+    "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+    "analytic.py": "8eefdfef94cb74f5f8fba2dabb94477c0332e507dc458870eb806dd7a379af25",
+    "audit.py": "0398ae475f948677bed4fd20a670a5833d16528cb509cef559ccbd9b6c908dfd",
+    "cli.py": "e8600d9d61052b6a685886a3c059df53907ff4cf4fe805fc6be2c56e4b27c86d",
+    "core.py": "65b42e2ba80f6865f4740808702c0deffd4fd76c584a1653900be6d03925678b",
+    "data.py": "25aec6dd3cb47181bf9d2730b2d9c330da525bf2d3e98c58fafb512f993db2fd",
+    "detectors.py": "1c90665a0df3ab1791c67daac0ad8fc710c4aaafeb502df97563cc1ae160c571",
+    "experiment.py": "1990ca2e23e383a4470e126e79aa9c0b34dce01ed1193708ce67a7bd98c41a51",
+    "head.py": "0f97e39844f3b6b482364d13cc48373b2260dcde353df13b3ceb0bfc856dadb6",
+    "paths.py": "05cdf18ce0e59a864f233d6a31fff6b42d3f95f0b0ceaecb1da28b6a8f811b48"
+  },
+  "metadata": {
+    "sampling": "independent fresh Gaussian draws",
+    "covariance_diagonal": [
+      4.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "n_reference": 64,
+    "n_direction": 64,
+    "direction_diagnostics": [
+      {
+        "top_eigenvalue": 4.2628973174511025,
+        "covariance_eigengap": 2.894729781864461,
+        "absolute_oracle_cosine": 0.9710806111551871
+      },
+      {
+        "top_eigenvalue": 3.902952684177591,
+        "covariance_eigengap": 2.4650207675028275,
+        "absolute_oracle_cosine": 0.9921129747518921
+      },
+      {
+        "top_eigenvalue": 5.602595332051905,
+        "covariance_eigengap": 4.305057573422673,
+        "absolute_oracle_cosine": 0.9849987209570972
+      }
+    ],
+    "fixture": true
+  },
+  "head_sha256": null,
+  "score_orientation": "higher is anomalous",
+  "calibration": "fixed points; recalibrated for each D",
+  "path": "z + alpha * sign * unit_v; no projection",
+  "decomposition": "empirical balanced ANOVA per probe and sign, then averaged; no confidence intervals",
+  "status": "completed",
+  "seconds": 21.298014541000157
+}

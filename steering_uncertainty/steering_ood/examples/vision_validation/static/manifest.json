@@ -1,0 +1,139 @@
+{
+  "config": {
+    "detectors": [
+      "knn",
+      "mahalanobis",
+      "energy",
+      "msp"
+    ],
+    "backend": "pytorch",
+    "seed": 7,
+    "tau": 0.2,
+    "k": 5,
+    "references": 2,
+    "directions": 2,
+    "probes": 2,
+    "horizon": 5.0,
+    "steps": 11,
+    "refine": 3,
+    "direction_kind": "pca",
+    "calibration_draws": 0,
+    "temperatures": [
+      1.0
+    ]
+  },
+  "cache_sha256": "8804f99bdee7e2ca1266238eda879b1374de2a09a9dc47533eb415bd1184e3f3",
+  "cache_metadata": {
+    "modality": "vision",
+    "seed": 7,
+    "classes": [
+      "class0",
+      "class1"
+    ],
+    "class_mapping": {
+      "0": 0,
+      "1": 1
+    },
+    "counts_per_class_requested": {
+      "head": 3,
+      "reference": 3,
+      "direction": 3,
+      "calibration": 12,
+      "probe": 3
+    },
+    "test_limit_per_source": null,
+    "role_counts": {
+      "head": 6,
+      "reference": 6,
+      "direction": 6,
+      "calibration": 24,
+      "probe": 6,
+      "id_test": 8,
+      "ood_test": 8
+    },
+    "dropped_duplicates": [],
+    "duplicate_policy": "all identical decoded RGB copies removed across selected samples",
+    "ood_groups": [
+      "fixture"
+    ],
+    "evaluation_variant": "selected, pixel-deduplicated samples; report realized counts",
+    "ood_definition": "outside declared ID class task, not necessarily unseen in pretraining",
+    "encoder": {
+      "weights": "None",
+      "pretrained": false,
+      "checkpoint_url": null,
+      "pooling": "native global average pool before classification head",
+      "backend": "torchvision",
+      "model": "resnet18",
+      "seed": 7,
+      "preprocess": "ImageClassification(\n    crop_size=[224]\n    resize_size=[256]\n    mean=[0.485, 0.456, 0.406]\n    std=[0.229, 0.224, 0.225]\n    interpolation=InterpolationMode.BILINEAR\n)",
+      "state_sha256": "5181f3755a97e9e492ee737b08895d6d0daf0af47831aa3019832ef583872750",
+      "device": "cpu",
+      "versions": {
+        "steering-ood": "0.2.0",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "scikit-learn": "1.8.0",
+        "torch": "2.14.0+cpu",
+        "skorch": "1.4.0",
+        "pytorch-ood": "0.3.3",
+        "sentence-transformers": "5.7.0",
+        "torchvision": "0.29.0+cpu",
+        "timm": "1.0.30",
+        "pillow": "12.3.0"
+      }
+    },
+    "actual_encoder_state_sha256": "5181f3755a97e9e492ee737b08895d6d0daf0af47831aa3019832ef583872750",
+    "preprocess": "ImageClassification(\n    crop_size=[224]\n    resize_size=[256]\n    mean=[0.485, 0.456, 0.406]\n    std=[0.229, 0.224, 0.225]\n    interpolation=InterpolationMode.BILINEAR\n)",
+    "manifest_sha256": "04a7e03b89dfb7d0f16c614b1a4c1b74724348640253fea04c5ee8039cd889ad",
+    "feature_dim": 512,
+    "feature_normalization": "none after encoder; no projection of path points",
+    "path_units": "Euclidean distance in fixed projected coordinates",
+    "parent_cache_sha256": "54d3a048d36dad077d19efd6b4509d0bc26417f185d3daa0d2450c878f6bccd2",
+    "projection": {
+      "kind": "PCA",
+      "fit_role": "head",
+      "components": 4,
+      "whiten": false,
+      "explained_variance_ratio": [
+        0.3050330579280853,
+        0.23281829059123993,
+        0.19139619171619415,
+        0.14530283212661743
+      ]
+    }
+  },
+  "head_sha256": "79914a13af3346a0c626ab7601d9bf975179fe7bf75d7219d0684cdd4b4b46ed",
+  "versions": {
+    "steering-ood": "0.2.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "torch": "2.14.0+cpu",
+    "skorch": "1.4.0",
+    "pytorch-ood": "0.3.3",
+    "sentence-transformers": "5.7.0",
+    "torchvision": "0.29.0+cpu",
+    "timm": "1.0.30",
+    "pillow": "12.3.0"
+  },
+  "source_hashes": {
+    "__init__.py": "198d604587b56959a79ce185e8f8e35a80c1906a228c6eefa43b1a2779d2c8d5",
+    "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+    "analytic.py": "8eefdfef94cb74f5f8fba2dabb94477c0332e507dc458870eb806dd7a379af25",
+    "audit.py": "0398ae475f948677bed4fd20a670a5833d16528cb509cef559ccbd9b6c908dfd",
+    "cli.py": "b9f0344f5d70f1de3ded2c2d996f48ac57e1e5310080c5e4cd7a46166e89be14",
+    "core.py": "9657c6c795b549e297bda098d8e80d2b8d7d0e4e980ec3c32832e5fce7135359",
+    "data.py": "ad4e1c89938ea1e2e34170e7c808820d1a2230b9da835e1bee86381ed3a16fde",
+    "detectors.py": "1c90665a0df3ab1791c67daac0ad8fc710c4aaafeb502df97563cc1ae160c571",
+    "experiment.py": "7c9fc77c613029c3f62cb5f6c94a899124be9bb0a1f64c170beb05272495bec5",
+    "head.py": "0f97e39844f3b6b482364d13cc48373b2260dcde353df13b3ceb0bfc856dadb6",
+    "paths.py": "05cdf18ce0e59a864f233d6a31fff6b42d3f95f0b0ceaecb1da28b6a8f811b48",
+    "vision.py": "db234e86c275ee449531e4c9cb5402eaba6b5cb3f9357addfb221d302621d0db",
+    "vision_data.py": "8bef8e0b368ecf3d3971779c1dabe4d51c9c65c7c85cb713f5d9835b3a6214cf"
+  },
+  "seconds": 2.8043105539982207,
+  "positive_class": "OOD",
+  "target": "static held-out evaluation",
+  "status": "completed"
+}

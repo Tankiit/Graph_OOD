@@ -1,0 +1,222 @@
+{
+  "knn": {
+    "variance": {
+      "1": {
+        "reference": 0.0679931640625,
+        "direction": 0.0006103515625,
+        "interaction": 0.0001220703125,
+        "total": 0.0687255859375
+      },
+      "-1": {
+        "reference": 0.004150390625,
+        "direction": 0.000244140625,
+        "interaction": 0.000244140625,
+        "total": 0.004638671875
+      }
+    },
+    "crossing_probability": 1.0,
+    "initial_rejection_probability": 0.0,
+    "restricted_crossing_mean": 0.61328125,
+    "return_or_recross_probability": 0.0,
+    "static": [
+      {
+        "id_rejection": 0.125,
+        "ood_detection": 0.125,
+        "auroc": 0.5625,
+        "ood_aupr": 0.5784188034188034,
+        "threshold": 0.965384840965271,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.125,
+            "auroc": 0.5625,
+            "ood_aupr": 0.5784188034188034
+          }
+        }
+      },
+      {
+        "id_rejection": 0.375,
+        "ood_detection": 0.25,
+        "auroc": 0.515625,
+        "ood_aupr": 0.5882215007215008,
+        "threshold": 1.140189290046692,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.25,
+            "auroc": 0.515625,
+            "ood_aupr": 0.5882215007215008
+          }
+        }
+      }
+    ],
+    "reference_dependence": true
+  },
+  "mahalanobis": {
+    "variance": {
+      "1": {
+        "reference": 0.2803955078125,
+        "direction": 0.0030517578125,
+        "interaction": 0.0089111328125,
+        "total": 0.2923583984375
+      },
+      "-1": {
+        "reference": 0.0343017578125,
+        "direction": 0.0001220703125,
+        "interaction": 0.0010986328125,
+        "total": 0.0355224609375
+      }
+    },
+    "crossing_probability": 1.0,
+    "initial_rejection_probability": 0.25,
+    "restricted_crossing_mean": 0.65625,
+    "return_or_recross_probability": 0.125,
+    "static": [
+      {
+        "id_rejection": 0.125,
+        "ood_detection": 0.0,
+        "auroc": 0.28125,
+        "ood_aupr": 0.41346882284382286,
+        "threshold": 29292.619140625,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.0,
+            "auroc": 0.28125,
+            "ood_aupr": 0.41346882284382286
+          }
+        }
+      },
+      {
+        "id_rejection": 0.0,
+        "ood_detection": 0.125,
+        "auroc": 0.453125,
+        "ood_aupr": 0.5847222222222221,
+        "threshold": 107647.8359375,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.125,
+            "auroc": 0.453125,
+            "ood_aupr": 0.5847222222222221
+          }
+        }
+      }
+    ],
+    "reference_dependence": true
+  },
+  "energy_T1": {
+    "variance": {
+      "1": {
+        "reference": 0.0,
+        "direction": 0.00048828125,
+        "interaction": 0.0,
+        "total": 0.00048828125
+      },
+      "-1": {
+        "reference": 0.0,
+        "direction": 0.0,
+        "interaction": 0.0,
+        "total": 0.0
+      }
+    },
+    "crossing_probability": 0.5,
+    "initial_rejection_probability": 0.0,
+    "restricted_crossing_mean": 2.8046875,
+    "return_or_recross_probability": 0.0,
+    "static": [
+      {
+        "id_rejection": 0.125,
+        "ood_detection": 0.125,
+        "auroc": 0.46875,
+        "ood_aupr": 0.5457604895104895,
+        "threshold": -0.6331253051757812,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.125,
+            "auroc": 0.46875,
+            "ood_aupr": 0.5457604895104895
+          }
+        }
+      },
+      {
+        "id_rejection": 0.125,
+        "ood_detection": 0.125,
+        "auroc": 0.46875,
+        "ood_aupr": 0.5457604895104895,
+        "threshold": -0.6331253051757812,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.125,
+            "auroc": 0.46875,
+            "ood_aupr": 0.5457604895104895
+          }
+        }
+      }
+    ],
+    "reference_dependence": false
+  },
+  "msp_T1": {
+    "variance": {
+      "1": {
+        "reference": 0.0,
+        "direction": 0.0,
+        "interaction": 0.0,
+        "total": 0.0
+      },
+      "-1": {
+        "reference": 0.0,
+        "direction": 0.0,
+        "interaction": 0.0,
+        "total": 0.0
+      }
+    },
+    "crossing_probability": 1.0,
+    "initial_rejection_probability": 1.0,
+    "restricted_crossing_mean": 0.0,
+    "return_or_recross_probability": 0.0,
+    "static": [
+      {
+        "id_rejection": 0.125,
+        "ood_detection": 0.5,
+        "auroc": 0.578125,
+        "ood_aupr": 0.6692234848484848,
+        "threshold": -0.5783824324607849,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.5,
+            "auroc": 0.578125,
+            "ood_aupr": 0.6692234848484848
+          }
+        }
+      },
+      {
+        "id_rejection": 0.125,
+        "ood_detection": 0.5,
+        "auroc": 0.578125,
+        "ood_aupr": 0.6692234848484848,
+        "threshold": -0.5783824324607849,
+        "threshold_infinite": false,
+        "ood_by_dataset": {
+          "fixture": {
+            "n_ood": 8,
+            "ood_detection": 0.5,
+            "auroc": 0.578125,
+            "ood_aupr": 0.6692234848484848
+          }
+        }
+      }
+    ],
+    "reference_dependence": false
+  }
+}

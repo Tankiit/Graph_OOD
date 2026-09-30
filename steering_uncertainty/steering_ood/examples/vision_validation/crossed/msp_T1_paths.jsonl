@@ -1,0 +1,16 @@
+{"reference": 0, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "already_rejected", "alpha_star": 0.0, "censored": false, "first_bracket": [0.0, 0.0], "return_brackets": []}

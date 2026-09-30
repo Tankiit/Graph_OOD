@@ -1,0 +1,96 @@
+{
+  "gaussian": {
+    "variance": {
+      "1": {
+        "reference": 0.03257399372276131,
+        "direction": 0.047279069861920875,
+        "interaction": 0.012385474392743095,
+        "total": 0.09223853797742532
+      },
+      "-1": {
+        "reference": 0.037096055692115444,
+        "direction": 0.00983290785134084,
+        "interaction": 0.0067276846724773146,
+        "total": 0.053656648215933606
+      }
+    },
+    "crossing_probability": 0.4513888888888889,
+    "initial_rejection_probability": 0.125,
+    "restricted_crossing_mean": 4.13826158311632,
+    "return_or_recross_probability": 0.006944444444444444,
+    "static": [
+      {
+        "id_rejection": 0.057,
+        "ood_detection": 0.187,
+        "auroc": 0.6548080000000001,
+        "ood_aupr": 0.6643006954425263,
+        "threshold": 14.935354402889413,
+        "threshold_infinite": false
+      },
+      {
+        "id_rejection": 0.045,
+        "ood_detection": 0.19,
+        "auroc": 0.673179,
+        "ood_aupr": 0.6787155885447292,
+        "threshold": 13.196843852913087,
+        "threshold_infinite": false
+      },
+      {
+        "id_rejection": 0.045,
+        "ood_detection": 0.145,
+        "auroc": 0.63641,
+        "ood_aupr": 0.6367639774155365,
+        "threshold": 13.83296661528519,
+        "threshold_infinite": false
+      }
+    ],
+    "reference_dependence": true
+  },
+  "knn": {
+    "variance": {
+      "1": {
+        "reference": 0.15675528474223635,
+        "direction": 0.02572638242005976,
+        "interaction": 0.015319689883453204,
+        "total": 0.19780135704574922
+      },
+      "-1": {
+        "reference": 0.1888180373055126,
+        "direction": 0.016955663985349197,
+        "interaction": 0.01805390726228147,
+        "total": 0.22382760855314332
+      }
+    },
+    "crossing_probability": 0.5972222222222222,
+    "initial_rejection_probability": 0.041666666666666664,
+    "restricted_crossing_mean": 3.9461494728370945,
+    "return_or_recross_probability": 0.034722222222222224,
+    "static": [
+      {
+        "id_rejection": 0.041,
+        "ood_detection": 0.261,
+        "auroc": 0.7024790000000001,
+        "ood_aupr": 0.7371727060436064,
+        "threshold": 3.440135418989452,
+        "threshold_infinite": false
+      },
+      {
+        "id_rejection": 0.048,
+        "ood_detection": 0.285,
+        "auroc": 0.7365630000000001,
+        "ood_aupr": 0.7579079365031278,
+        "threshold": 3.4181884041883226,
+        "threshold_infinite": false
+      },
+      {
+        "id_rejection": 0.038,
+        "ood_detection": 0.177,
+        "auroc": 0.6652790000000001,
+        "ood_aupr": 0.6860290964448531,
+        "threshold": 3.3867839654344585,
+        "threshold_infinite": false
+      }
+    ],
+    "reference_dependence": true
+  }
+}

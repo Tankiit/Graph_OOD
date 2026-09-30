@@ -1,0 +1,67 @@
+{
+  "knn": {
+    "id_rejection": 0.125,
+    "ood_detection": 0.25,
+    "auroc": 0.609375,
+    "ood_aupr": 0.5897321428571429,
+    "threshold": 0.9873341917991638,
+    "threshold_infinite": false,
+    "ood_by_dataset": {
+      "fixture": {
+        "n_ood": 8,
+        "ood_detection": 0.25,
+        "auroc": 0.609375,
+        "ood_aupr": 0.5897321428571429
+      }
+    }
+  },
+  "mahalanobis": {
+    "id_rejection": 0.125,
+    "ood_detection": 0.0,
+    "auroc": 0.328125,
+    "ood_aupr": 0.44784382284382285,
+    "threshold": 3.794144868850708,
+    "threshold_infinite": false,
+    "ood_by_dataset": {
+      "fixture": {
+        "n_ood": 8,
+        "ood_detection": 0.0,
+        "auroc": 0.328125,
+        "ood_aupr": 0.44784382284382285
+      }
+    }
+  },
+  "energy_T1": {
+    "id_rejection": 0.125,
+    "ood_detection": 0.125,
+    "auroc": 0.46875,
+    "ood_aupr": 0.5457604895104895,
+    "threshold": -0.6331253051757812,
+    "threshold_infinite": false,
+    "ood_by_dataset": {
+      "fixture": {
+        "n_ood": 8,
+        "ood_detection": 0.125,
+        "auroc": 0.46875,
+        "ood_aupr": 0.5457604895104895
+      }
+    }
+  },
+  "msp_T1": {
+    "id_rejection": 0.125,
+    "ood_detection": 0.5,
+    "auroc": 0.578125,
+    "ood_aupr": 0.6692234848484848,
+    "threshold": -0.5783824324607849,
+    "threshold_infinite": false,
+    "ood_by_dataset": {
+      "fixture": {
+        "n_ood": 8,
+        "ood_detection": 0.5,
+        "auroc": 0.578125,
+        "ood_aupr": 0.6692234848484848
+      }
+    }
+  },
+  "id_classification_accuracy": 0.5
+}

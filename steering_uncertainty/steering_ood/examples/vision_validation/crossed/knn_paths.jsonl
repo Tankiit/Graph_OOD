@@ -1,0 +1,16 @@
+{"reference": 0, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.8125, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 0, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 1.0625, "censored": false, "first_bracket": [1.0, 1.5], "return_brackets": []}
+{"reference": 0, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.6875, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 0, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 0.25, "censored": false, "first_bracket": [0.0, 0.5], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.875, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 1.125, "censored": false, "first_bracket": [1.0, 1.5], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.6875, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 0, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 0.1875, "censored": false, "first_bracket": [0.0, 0.5], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.25, "censored": false, "first_bracket": [0.0, 0.5], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 0.625, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.8125, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 1, "direction": 0, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 0.375, "censored": false, "first_bracket": [0.0, 0.5], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.25, "censored": false, "first_bracket": [0.0, 0.5], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": 1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 0.6875, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:9", "status": "crossed", "alpha_star": 0.75, "censored": false, "first_bracket": [0.5, 1.0], "return_brackets": []}
+{"reference": 1, "direction": 1, "sign": -1.0, "probe_id": "image:c321ffc5f4e23953:38", "status": "crossed", "alpha_star": 0.375, "censored": false, "first_bracket": [0.0, 0.5], "return_brackets": []}

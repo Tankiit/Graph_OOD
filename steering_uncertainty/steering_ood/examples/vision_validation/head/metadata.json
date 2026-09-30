@@ -1,0 +1,23 @@
+{
+  "in_features": 4,
+  "out_features": 2,
+  "cache_sha256": "8804f99bdee7e2ca1266238eda879b1374de2a09a9dc47533eb415bd1184e3f3",
+  "seed": 7,
+  "epochs": 3,
+  "lr": 0.01,
+  "batch_size": 128,
+  "validation": "none; epochs fixed before calibration",
+  "versions": {
+    "steering-ood": "0.2.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "torch": "2.14.0+cpu",
+    "skorch": "1.4.0",
+    "pytorch-ood": "0.3.3",
+    "sentence-transformers": "5.7.0",
+    "torchvision": "0.29.0+cpu",
+    "timm": "1.0.30",
+    "pillow": "12.3.0"
+  }
+}

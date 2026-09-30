@@ -1,0 +1,61 @@
+{
+  "config": {
+    "detectors": [
+      "knn",
+      "mahalanobis",
+      "energy",
+      "msp"
+    ],
+    "backend": "pytorch",
+    "seed": 7,
+    "tau": 0.05,
+    "k": 5,
+    "references": 10,
+    "directions": 10,
+    "probes": 128,
+    "horizon": 5.0,
+    "steps": 101,
+    "refine": 15,
+    "direction_kind": "pca",
+    "calibration_draws": 0,
+    "temperatures": [
+      1.0
+    ]
+  },
+  "cache_sha256": "6a9bf15522044d479570a56f8cf15e68158835c5eac5b2c34e7ac9bcf582aa69",
+  "cache_metadata": {
+    "fixture": true,
+    "seed": 7,
+    "encoder": "synthetic features",
+    "normalization": "none",
+    "world": "Gaussian class mixture"
+  },
+  "head_sha256": "1a0f0a639910ae50be91c0d7498a1c606e6b9c0b88532652848663b58e9211c9",
+  "versions": {
+    "steering-nlp": "0.1.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "scikit-learn": "1.8.0",
+    "torch": "2.14.0+cpu",
+    "skorch": "1.4.0",
+    "pytorch-ood": "0.3.3",
+    "sentence-transformers": "5.7.0"
+  },
+  "source_hashes": {
+    "__init__.py": "860ed3e5b694b0b589e51766da3020e98eaa64b624b24f06c954da551988a405",
+    "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+    "analytic.py": "8eefdfef94cb74f5f8fba2dabb94477c0332e507dc458870eb806dd7a379af25",
+    "audit.py": "0398ae475f948677bed4fd20a670a5833d16528cb509cef559ccbd9b6c908dfd",
+    "cli.py": "e8600d9d61052b6a685886a3c059df53907ff4cf4fe805fc6be2c56e4b27c86d",
+    "core.py": "65b42e2ba80f6865f4740808702c0deffd4fd76c584a1653900be6d03925678b",
+    "data.py": "25aec6dd3cb47181bf9d2730b2d9c330da525bf2d3e98c58fafb512f993db2fd",
+    "detectors.py": "1c90665a0df3ab1791c67daac0ad8fc710c4aaafeb502df97563cc1ae160c571",
+    "experiment.py": "1990ca2e23e383a4470e126e79aa9c0b34dce01ed1193708ce67a7bd98c41a51",
+    "head.py": "0f97e39844f3b6b482364d13cc48373b2260dcde353df13b3ceb0bfc856dadb6",
+    "paths.py": "05cdf18ce0e59a864f233d6a31fff6b42d3f95f0b0ceaecb1da28b6a8f811b48"
+  },
+  "seconds": 3.9049886930006323,
+  "positive_class": "OOD",
+  "target": "static held-out evaluation",
+  "status": "completed"
+}

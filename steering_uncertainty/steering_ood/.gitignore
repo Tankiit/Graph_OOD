@@ -1,0 +1,119 @@
+# ==============================================================================
+# Git Ignore Configuration (steering_ood)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Python & Environment Artifacts
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv/
+.venv*/
+venv/
+env/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# ------------------------------------------------------------------------------
+# 2. Experiment Results, Runs & Heavy Artifacts (Ignored by default unless asked)
+# ------------------------------------------------------------------------------
+# Run directories & logs
+runs/
+results/
+outputs/
+logs/
+*.log
+*.err
+applogs*.txt
+wandb/
+lightning_logs/
+
+# Data & Caches
+data/
+cache/
+caches/
+.cache/
+*.cache
+
+# Model weights & checkpoints
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.onnx
+*.h5
+
+# Large binary serialization & array dumps
+*.npz
+*.npy
+*.pkl
+*.pickle
+*.parquet
+*.feather
+*.arrow
+*.tar.gz
+*.zip
+
+# ------------------------------------------------------------------------------
+# 3. OS & Editor Metadata
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------------------------
+# 4. Whitelist / Explicitly Track All Markdown & Documentation Files
+# ------------------------------------------------------------------------------
+# Ensure all .md and .MD files are always tracked and loaded
+!*.md
+!*.MD
+!**/*.md
+!**/*.MD
+
+# ------------------------------------------------------------------------------
+# 5. Paper build outputs (sources and figure PDFs are tracked)
+# ------------------------------------------------------------------------------
+paper/*.aux
+paper/*.out
+paper/*.toc
+paper/steering_ood.pdf
+paper/figures/*.png
