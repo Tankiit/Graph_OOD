@@ -131,3 +131,10 @@ The reference results behind the current draft are not in git; ask the first aut
 5. Switch to the AISTATS 2027 style file, anonymise, add the AI Use Statement and reproducibility
    checklist, fit to 8 pages.
 6. Figure 3 is seed 0 only (the caption says so). Optionally add seed bands.
+
+## Learned-direction collaboration
+
+See [the Astrid/Tanmoy experiment handoff](LEARNED_DIRECTIONS_HANDOFF.md) for the agreed CIFAR10
+learned-direction extension, proposed ownership, implementation checklist, matched
+detector protocol, calibration isolation, source-transfer evaluation and required
+artifacts. This is a specification; implementation and benchmark results are pending.

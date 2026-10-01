@@ -378,3 +378,10 @@ does not assert a new redistribution license for the user's existing code.
 
 Dependency documentation: https://pytorch-ood.readthedocs.io/,
 https://skorch.readthedocs.io/, https://sbert.net/.
+
+## Learned-direction collaboration
+
+See [the Astrid/Tanmoy experiment handoff](LEARNED_DIRECTIONS_HANDOFF.md) for the agreed CIFAR10
+learned-direction extension, proposed ownership, implementation checklist, matched
+detector protocol, calibration isolation, source-transfer evaluation and required
+artifacts. This is a specification; implementation and benchmark results are pending.

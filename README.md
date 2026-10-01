@@ -134,3 +134,10 @@ mean curves require complete groups. Interval endpoints use empirical inverse
 CDF order statistics. When censoring prevents a coverage decision, the report
 provides lower/upper coverage bounds and the unresolved count. No nominal
 coverage guarantee is claimed for bootstrap percentile intervals.
+
+## Learned-direction collaboration
+
+See [the Astrid/Tanmoy experiment handoff](steering_uncertainty/steering_ood/LEARNED_DIRECTIONS_HANDOFF.md) for the agreed CIFAR10
+learned-direction extension, proposed ownership, implementation checklist, matched
+detector protocol, calibration isolation, source-transfer evaluation and required
+artifacts. This is a specification; implementation and benchmark results are pending.
