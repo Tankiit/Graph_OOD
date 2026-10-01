@@ -1,0 +1,1 @@
+bench__vit__blocks.3__sim-blocks.3__r0.25	run=vit_small_ft_mnist layer=blocks.3 sim_layer=blocks.3 radius=0.25 steps=20 log_every=10 vec_chunk=16 name=bench__vit__blocks.3__sim-blocks.3__r0.25

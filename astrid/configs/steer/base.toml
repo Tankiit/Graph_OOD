@@ -1,0 +1,39 @@
+# Steering swarms: base experiment. Any key of actdist/steer_config.py:SteerConfig can go here;
+# omitted keys keep their default (list them with: uv run python -m actdist.train_steer --help-config).
+# Override on the command line with --set key=value, sweep with --sweep key=v1,v2.
+
+# experiment
+run = "resnet18_scratch_mnist"
+ood_sources = ["300k"]          # add "stl10", "coco", "openimages" once downloaded
+seed = 0
+
+# steering
+layer = "penultimate"           # or layer1.0 ... layer4.1 (ResNet), blocks.0 ... blocks.11 (ViT)
+radius = 1.0
+radius_mode = "rel"             # radius as a fraction of the median activation norm at the layer
+swarm_size = 1024
+swarms = ["id2ood", "ood2id"]
+init = "randn"
+
+# loss
+loss = "infonce"                # infonce | infonce+energy | energy_hinge | energy_margin
+tau = 0.1
+
+# optimisation
+steps = 2000
+lr = 1e-2
+bs_id = 64
+bs_ood = 64
+vec_chunk = 256
+
+# detector
+detectors = ["energy", "msp", "maxlogit"]
+tpr = 0.95
+
+# evaluation
+alpha_steps = 41
+eval_vectors = 64
+n_random = 64
+n_probe_id = 1000
+n_probe_ood = 1000
+bootstrap_B = 50

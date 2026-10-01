@@ -1,0 +1,44 @@
+# E14: infonce, steering at layer3.1 with radius 0.5 (twice E12/E13), similarity measured at layer4.0.
+#   uv run python -m actdist.train_steer --config configs/steer/scratch_mnist_layer3_infonce_sim4.0_r0.5.toml
+# Keys not listed keep their default; see hyperparameters.md.
+
+# experiment
+run = "resnet18_scratch_mnist"
+ood_sources = ["300k", "stl10"]
+seed = 0
+
+# steering
+layer = "layer3.1"
+radius = 0.5                      # x median ID activation norm at layer3.1 (1.97) = 0.99 per position
+radius_mode = "rel"
+swarm_size = 128
+swarms = ["id2ood", "ood2id"]
+init = "randn"
+
+# loss
+loss = "infonce"
+tau = 0.1
+sim_layer = "layer4.0"          # where infonce measures similarity
+own_negative = true
+
+# optimisation
+steps = 1000
+lr = 1e-2
+bs_id = 64
+bs_ood = 64
+vec_chunk = 256
+log_every = 250
+
+# detectors (evaluation only: infonce does not use them; the training log reports energy flip rates)
+detectors = ["energy", "msp", "maxlogit", "knn", "mahalanobis"]
+knn_k = 50
+ref_size = 10000
+tpr = 0.95
+
+# evaluation
+alpha_steps = 41
+eval_vectors = 64
+n_random = 64
+n_probe_id = 1000
+n_probe_ood = 1000
+bootstrap_B = 50

@@ -1,0 +1,1 @@
+bench__layer2.0__sim-layer2.0__r0.25	run=resnet18_scratch_mnist layer=layer2.0 sim_layer=layer2.0 radius=0.25 steps=20 log_every=10 name=bench__layer2.0__sim-layer2.0__r0.25

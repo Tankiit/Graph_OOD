@@ -1,0 +1,41 @@
+# First real steering experiment: ResNet-18 (scratch) on MNIST, vectors added at layer4.0.
+# Radius is swept on the command line:
+#   uv run python -m actdist.train_steer --config configs/steer/scratch_mnist_layer4.toml --sweep radius=0.25,0.5,1,2
+# Every key not listed here keeps its default (uv run python -m actdist.train_steer --help-config).
+
+# experiment
+run = "resnet18_scratch_mnist"
+ood_sources = ["300k", "stl10"]   # COCO / OpenImages still downloading
+seed = 0
+
+# steering
+layer = "layer4.0"
+radius = 1.0                      # overridden by --sweep radius=...
+radius_mode = "rel"               # x median ID activation norm at layer4.0 (4.40, see outputs/act_norms/)
+swarm_size = 1024
+swarms = ["id2ood", "ood2id"]
+init = "randn"
+
+# loss
+loss = "infonce"
+tau = 0.1
+own_negative = true
+
+# optimisation
+steps = 2000
+lr = 1e-2
+bs_id = 64
+bs_ood = 64
+vec_chunk = 256                   # 2.4 GB peak at layer4.0, 1.8 s/step on the RTX 4060
+
+# detector
+detectors = ["energy", "msp", "maxlogit"]
+tpr = 0.95
+
+# evaluation
+alpha_steps = 41
+eval_vectors = 64
+n_random = 64
+n_probe_id = 1000
+n_probe_ood = 1000
+bootstrap_B = 50

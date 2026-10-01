@@ -1,0 +1,43 @@
+# E9: smallest radius so far. Same settings as E7 (layer3.1, energy_hinge, K 128, 1000 steps)
+# with radius 0.1 x the median ID activation norm at layer3.1 (1.97) = 0.197 per position.
+#   uv run python -m actdist.train_steer --config configs/steer/scratch_mnist_layer3_r0.1.toml
+# Keys not listed keep their default (uv run python -m actdist.train_steer --help-config);
+# see hyperparameters.md for what each one does.
+
+# experiment
+run = "resnet18_scratch_mnist"
+ood_sources = ["300k", "stl10"]
+seed = 0
+
+# steering
+layer = "layer3.1"
+radius = 0.1
+radius_mode = "rel"
+swarm_size = 128
+swarms = ["id2ood", "ood2id"]
+init = "randn"
+
+# loss
+loss = "energy_hinge"
+energy_margin = 1.0
+energy_T = 1.0
+
+# optimisation
+steps = 1000
+lr = 1e-2
+bs_id = 64
+bs_ood = 64
+vec_chunk = 256
+log_every = 250
+
+# detector
+detectors = ["energy", "msp", "maxlogit"]
+tpr = 0.95
+
+# evaluation
+alpha_steps = 41
+eval_vectors = 64
+n_random = 64
+n_probe_id = 1000
+n_probe_ood = 1000
+bootstrap_B = 50

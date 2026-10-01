@@ -1,0 +1,44 @@
+# E16: infonce steering grid on the CRIL cluster (quad_rtx_8000). Settings shared by all 48 runs;
+# each run adds --set run=... layer=... sim_layer=... radius=... name=... from configs/steer/grid_jobs.txt
+# (written by scripts/make_grid.py). See hyperparameters.md for every key.
+
+# experiment
+ood_sources = ["300k", "stl10"]
+seed = 0
+
+# steering
+radius_mode = "rel"               # radius x median ID activation norm at the steered layer
+swarm_size = 128
+swarms = ["id2ood", "ood2id"]
+init = "randn"
+
+# loss
+loss = "infonce"
+tau = 0.1
+own_negative = true
+
+# optimisation
+steps = 1000
+lr = 1e-2
+bs_id = 64
+bs_ood = 64
+vec_chunk = 256
+amp = "fp16"                      # Turing RTX 8000: fp16 with a gradient scaler (bf16 is ~5x slower there)
+log_every = 250
+
+# detectors
+detectors = ["energy", "msp", "maxlogit", "knn", "mahalanobis"]
+knn_k = 50
+ref_size = 10000
+tpr = 0.95
+
+# evaluation
+alpha_steps = 41
+eval_vectors = 64
+n_random = 64
+n_probe_id = 1000
+n_probe_ood = 1000
+bootstrap_B = 50
+
+# data
+workers = 8

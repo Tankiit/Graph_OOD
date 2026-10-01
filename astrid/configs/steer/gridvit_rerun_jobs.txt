@@ -1,0 +1,1 @@
+gridvit__vit_small_ft_mnist__blocks.9__sim-penultimate__r0.25	run=vit_small_ft_mnist layer=blocks.9 sim_layer=penultimate radius=0.25 vec_chunk=16 name=gridvit__vit_small_ft_mnist__blocks.9__sim-penultimate__r0.25
