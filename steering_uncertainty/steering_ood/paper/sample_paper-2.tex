@@ -1,0 +1,132 @@
+\documentclass[twoside]{article}
+
+\usepackage{aistats2027}
+% If your paper is accepted, change the options for the package
+% aistats2027 as follows:
+%
+% \usepackage[accepted]{aistats2027}
+%
+% This option will print headings for the title of your paper and
+% headings for the authors names, plus a copyright note at the end of
+% the first column of the first page.
+
+% We also include a `preprint' option for non-anonymous preprints.
+% Change the options for the package aistats2027 as follows:
+%
+%\usepackage[preprint]{aistats2027}
+%
+% This option will print headings for the title of your paper and
+% headings for the authors names, but does not print the copyright and
+% venue note at the end of the first column of the first page.
+
+% Submissions have to follow US letter format.
+% In case your local TeX installation defaults to A4, you will need to
+% set papersize explicitly by activating the following three lines:
+% \special{papersize = 8.5in, 11in}
+% \setlength{\pdfpageheight}{11in}
+% \setlength{\pdfpagewidth}{8.5in}
+
+% If you use the natbib package, activate the following three lines:
+%\usepackage[round]{natbib}
+%\renewcommand{\bibname}{References}
+%\renewcommand{\bibsection}{\subsubsection*{\bibname}}
+
+% If you use BibTeX in apalike style, activate the following line:
+%\bibliographystyle{apalike}
+
+\begin{document}
+
+% If your paper is accepted and the title of your paper is very long,
+% the style will print as headings an error message. Use the following
+% command to supply a shorter title of your paper so that it can be
+% used as headings.
+%
+%\runningtitle{I use this title instead because the last one was very long}
+
+% If your paper is accepted and the number of authors is large, the
+% style will print as headings an error message. Use the following
+% command to supply a shorter version of the author names so that
+% they can be used as headings (for example, use only the surnames)
+%
+%\runningauthor{Surname 1, Surname 2, Surname 3, ...., Surname n}
+
+\twocolumn[
+
+\aistatstitle{Instructions for Paper Submissions to AISTATS 2027}
+
+\aistatsauthor{ Author 1 \And Author 2 \And  Author 3 }
+
+\aistatsaddress{ Institution 1 \And  Institution 2 \And Institution 3 } ]
+
+\begin{abstract}
+Out-of-distribution (OOD) detectors are usually compared with static
+metrics such as AUROC. These metrics average over an unspecified mixture
+of distribution shifts and do not identify which shifts a detector misses.
+We instead measure detectors along shared, declared paths in
+representation space. In-distribution features are steered along a path,
+every detector is calibrated to the same in-distribution rejection rate,
+and we record the distance at which each first rejects. A detector depends
+on its input only through the features, so a path that it never rejects
+implies blindness to every input shift that realizes that path.
+Decomposing paths into radial and angular components, we show that for
+linear-head energy and Euclidean distance scores, radial growth drives
+energy toward acceptance and distance scores toward rejection. Radial
+shrinkage drives distance scores toward their value at the origin and
+energy toward a constant set by the classifier's biases alone. We give
+exact conditions for each detector's decision at the origin, and show that
+calibrated energy decisions depend on a component of the classifier that
+leaves every prediction unchanged. Across four text and four vision
+encoders, every stated origin condition matches the observed decisions,
+and distance-based and logit-based detectors fail along different paths.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:Introduction}
+Out-of-distribution (OOD) detectors \cite{liang2020enhancing,tack2020csi,hendrycks2018baseline} assign a score to each input and flag inputs whose scores exceed a threshold. Their performance is evaluated by comparing an in-distribution (ID) dataset with an out-of-distribution (OOD) dataset, and the resulting AUROC measures the probability that a randomly selected OOD example receives a higher anomaly score than a randomly selected ID example. 
+This distinction matters when selecting a detector for deployment. Detectors with similar benchmark performance can respond to different properties of their inputs and therefore fail under different shifts. Our ResNet-18 experiments illustrate the problem: kNN and Mahalanobis detectors separate CIFAR-100 from ID data reasonably well, yet perform far below chance on SVHN. These results reveal a reversal in score ordering, but do not explain its mechanism. A practitioner selecting a detector from its CIFAR-100 performance could therefore deploy a system that assigns unusually normal scores to unfamiliar digit images. Additional dataset comparisons can expose further failures, but understanding them requires a controlled test that separates what changes from how much it changes.
+
+We introduce such a test through feature steering. Starting from held-out ID examples, we move their representations along prescribed paths and measure when each detector first crosses its rejection threshold. The path specifies the change being tested, while the distance travelled measures its magnitude. We calibrate each detector to the same target false-alarm rate on separate ID data and evaluate all detectors on the same paths. This calibration is essential: without a common false-alarm budget, earlier rejection could reflect a more permissive alarm threshold rather than greater sensitivity to the intervention. The resulting first-crossing measurements describe which changes trigger a detector and how much movement is required. Both path construction and threshold calibration use only ID data; no auxiliary outlier dataset is required.
+
+Feature steering provides a direct test of detectors that operate on a fixed representation. Once the encoder and detector state are fixed, the detector’s response to an input is determined entirely by the features it receives. Any input transformation that induces a given feature path must therefore produce the same detector responses along that path. In particular, failure to reject along a feature path implies failure for any input transformation that realizes it. The converse requires care: an arbitrary feature path need not correspond to realizable images, let alone a meaningful semantic change. Our analysis therefore characterizes the detector’s response in representation space. Whether a particular intervention corresponds to a plausible deployment shift is a separate question, rather than an assumption built into the test.
+
+Our analysis reveals that energy-based rejection can change even when the classifier’s predictions remain identical. A feature-dependent term shared by all class logits leaves softmax probabilities unchanged, yet alters the energy score and can determine whether a rejection threshold is ever crossed along a direction. More broadly, steering exposes opposing responses to changes in feature magnitude. In the configurations we study, increasing feature length triggers unnormalized distance-based detectors, including kNN and Mahalanobis, while energy and maximum-softmax-probability scores can move toward stronger ID acceptance. Contraction toward the origin exposes the complementary failure pattern. We derive the conditions governing these responses and obtain an exact endpoint prediction: at the origin, each well-defined detector score reduces to a fixed, computable value. Comparing this value with the calibrated threshold determines whether the origin is rejected, correctly predicting the endpoint decisions across all tested encoders.
+
+Our contributions are an ID-only steering protocol for comparing detectors at a common false-alarm budget; a reduction establishing when feature-space responses transfer exactly to input-space transformations; analytical characterizations of radial responses and rejection at the origin; and an analysis of how prediction-preserving changes to the classifier affect energy-based rejection. Experiments across eight encoders examine these predictions and connect the controlled responses to failures observed on conventional OOD benchmarks. The contribution is an instrument for measuring and explaining detector behavior. We do not propose a better detector, nor claim that movement along every feature path constitutes a realistic OOD shift.
+
+
+\clearpage
+\appendix
+\thispagestyle{empty}
+
+% Supplementary material: To improve readability, you must use a single-column format for the supplementary material.
+\onecolumn
+\aistatstitle{Instructions for Paper Submissions to AISTATS 2027: \\
+Supplementary Materials}
+
+Note: You can choose whether to include you appendices as part of the main submission file (here) OR submit them separately as part of the supplementary material. The preferred option is to include appendices as part of the main submission file. It is the authors' responsibility that any supplementary material does not conflict in content with the main paper (e.g., the separately uploaded additional material is not an updated version of the one appended to the manuscript).
+
+\section{Formatting Instructions}
+
+The appendices follow the same formatting instructions as in the main paper.
+The only difference is that the supplementary material must be in a \emph{single-column} format.
+
+Note that reviewers are under no obligation to examine your supplementary material.
+
+\section{Missing Proofs}
+
+The supplementary materials may contain detailed proofs of the results that are missing in the main paper.
+
+\subsection{Proof of Lemma 3}
+
+\textit{In this section, we present the detailed proof of Lemma 3 and then [ ... ]}
+
+\section{Additional Experiments}
+
+If you have additional experimental results, you may include them in the supplementary materials.
+
+\subsection{Effect of the Regularization Parameter}
+
+\textit{Our algorithm depends on the regularization parameter $\lambda$. Figure 1 below illustrates the effect of this parameter on the performance of our algorithm. As we can see, [ ... ]}
+
+
+\end{document}

@@ -20,6 +20,8 @@ AI Use Statement required).
 | `scripts/ray_checks.py`, `aggregate.py`, `centroid_first_order.py` | Earlier analyses (first grid, PCA-64, delta-method check) |
 | `paper/steering_ood.tex` | Draft (venue-neutral skeleton; switch to the AISTATS style file) |
 | `paper/make_fig_polar.py` | Figure 1 (schematic) |
+| `paper/make_figures.py` | All experiment figures (RQ1-RQ6 and appendix) |
+| `scripts/realise_local.py` | Encodes transformed CIFAR-10 images for the realisability figure (RQ5) |
 | `THEORY.md` | Formal statements, proof sketches and the check behind each clause |
 | `NORM_PATHS.md` | Norm-controlled path results and mechanisms |
 | `aistats2027.md` | Pipeline audit, draft prose, peer review, deadline notes, statistics fix |
@@ -88,6 +90,8 @@ python scripts/radial_predictions.py runs/modal/seedviews/seed0    # Prop. 3 che
 python scripts/support_checks.py runs/modal/seedviews/seed0        # c_k vs c*, ID support of geodesics
 python scripts/norm_mechanisms.py runs/modal/seedviews/seed0       # origin geometry, E(0), axis alignment
 cd paper && python make_fig_polar.py && cd ..                      # Figure 1
+python scripts/realise_local.py --device cuda                       # natural transformations (RQ5), GPU advised
+python paper/make_figures.py runs/modal                            # all experiment figures -> paper/figures/
 cd paper && pdflatex steering_ood.tex && pdflatex steering_ood.tex # or upload paper/ to Overleaf
 ```
 
@@ -101,6 +105,8 @@ Copy `runs/modal/seedviews/seed0/figures/path_curves.pdf` to `paper/figures/` af
 | "24/24 (seed, encoder) cells" | `seed_stats.py` (D) |
 | Appendix per-encoder table | `seed_stats.py` (A, per-encoder lines) |
 | Figure 1 | `paper/make_fig_polar.py` |
+| Teaser, failure map, theory, support, realisability, row-shift figures | `paper/make_figures.py` |
+| Appendix figures (seed-band curves, mechanism, real-OOD scatter) | `paper/make_figures.py` |
 | Figure 3 | `path_curves.py` (seed 0) |
 | Angular-path ID-support paragraph | `support_checks.py` |
 
@@ -130,7 +136,7 @@ The reference results behind the current draft are not in git; ask the first aut
    deep kNN (Sun et al. 2022), ViM (Wang et al. 2022), ReAct (Sun et al. 2021). Verify all citations.
 5. Switch to the AISTATS 2027 style file, anonymise, add the AI Use Statement and reproducibility
    checklist, fit to 8 pages.
-6. Figure 3 is seed 0 only (the caption says so). Optionally add seed bands.
+6. Realisability (RQ5) covers vision only; a text counterpart (e.g. paraphrase or truncation) is open.
 
 ## Learned-direction collaboration
 
@@ -138,3 +144,4 @@ See [the Astrid/Tanmoy experiment handoff](LEARNED_DIRECTIONS_HANDOFF.md) for th
 learned-direction extension, proposed ownership, implementation checklist, matched
 detector protocol, calibration isolation, source-transfer evaluation and required
 artifacts. This is a specification; implementation and benchmark results are pending.
+
