@@ -1,0 +1,598 @@
+% =====================================================================
+%  Calibrated Steering Paths Reveal Complementary Failure Modes of
+%  Out-of-Distribution Detectors -- AISTATS 2027, structured draft
+%
+%  \hole{...}   red: text or result still to write
+%  \verify{...} blue: check against a run ID or a reference
+%  Put aistats2027.sty next to this file; the fallback is then skipped.
+% =====================================================================
+\documentclass[twoside]{article}
+\IfFileExists{aistats2027.sty}{\usepackage{aistats2027}}{\usepackage{aistats_fallback}}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx,booktabs,xcolor}
+\usepackage[round]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\setlength{\emergencystretch}{1.5em}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\hole}[1]{\textcolor{red}{[\textbf{HOLE:} #1]}}
+\newcommand{\verify}[1]{\textcolor{blue}{[\textbf{CHECK:} #1]}}
+\DeclareMathOperator{\lse}{lse}
+\DeclareMathOperator{\softmax}{softmax}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+
+% figure that compiles before the PDFs are copied into figures/
+\newcommand{\fig}[2]{\IfFileExists{figures/#1.pdf}{\includegraphics[width=#2]{figures/#1.pdf}}{%
+  \fbox{\parbox[c][3cm]{\dimexpr#2-2\fboxsep-2\fboxrule\relax}{\centering\texttt{figures/\detokenize{#1}.pdf}}}}}
+
+\begin{document}
+
+\twocolumn[
+\aistatstitle{Calibrated Steering Paths Reveal Complementary Failure\\
+Modes of Out-of-Distribution Detectors}
+\aistatsauthor{Anonymous Author(s)}
+\aistatsaddress{Unknown Institution(s)}
+]
+
+% Must match the abstract registered on OpenReview (minor edits only).
+\begin{abstract}
+OOD detectors are often compared using static metrics like AUROC, which average over unspecified shift mixtures and hide which shifts a detector misses. We instead evaluate detectors on shared, declared paths in representation space: steer in-distribution features along a path, calibrate all detectors to the same in-distribution rejection rate, and record the distance at which each first rejects. Because a detector depends on inputs only via features, never rejecting a path implies blindness to any input shift that realises that path. Decomposing paths into radial and angular components, we show that for linear-head energy and Euclidean-distance scores, radial growth pushes energy toward acceptance and distance toward rejection, while radial shrinkage drives distance toward its origin value and energy toward a bias-only constant. We derive exact conditions for each detector’s decision at the origin and show calibrated energy decisions depend on a classifier component that does not change predictions. Across four text and four vision encoders and three seeds, all origin conditions match observations, and distance- and logit-based detectors fail on different paths.
+\end{abstract}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:Introduction}
+Out-of-distribution (OOD) detectors \cite{liang2020enhancing,tack2020csi,hendrycks2018baseline} assign a score to each input and flag inputs whose scores exceed a threshold. Their performance is evaluated by comparing an in-distribution (ID) dataset with an out-of-distribution (OOD) dataset, and the resulting AUROC measures the probability that a randomly selected OOD example receives a higher anomaly score than a randomly selected ID example. 
+This matters when selecting a detector for deployment. Detectors with similar benchmark performance can respond to different properties of their inputs and therefore fail under different shifts. On ResNet-18 experiments (Fig~\ref{fig:polar}) problem: kNN and Mahalanobis detectors separate CIFAR-100 from ID data reasonably well, yet perform far below chance on SVHN. These results reveal a reversal in score ordering but do not explain its mechanism. A practitioner selecting a detector based on its CIFAR-100 performance could therefore deploy a system that assigns unusually normal scores to unfamiliar digit images. Additional dataset comparisons can expose further failures, but understanding them requires a controlled test that separates what changes from how much it changes.
+
+We introduce such a test through feature steering. Starting from held-out ID examples, we move their representations along prescribed paths and measure when each detector first crosses its rejection threshold. The path specifies the change being tested, while the distance traveled measures its magnitude. We calibrate each detector to the same target false-alarm rate on separate ID data and evaluate all detectors on the same paths. This calibration is essential: without a common false-alarm budget, earlier rejection could reflect a more permissive alarm threshold rather than greater sensitivity to the intervention. The resulting first-crossing measurements describe which changes trigger a detector and how much movement is required. Both path construction and threshold calibration use only ID data; no auxiliary outlier dataset is required.
+
+Feature steering provides a direct test of detectors that operate on a fixed representation. Once the encoder and detector state are fixed, the detector’s response to an input is determined entirely by the features it receives. Any input transformation that induces a given feature path must therefore produce the same detector responses along that path. In particular, failure to reject along a feature path implies failure for any input transformation that realizes it. The converse requires care: an arbitrary feature path need not correspond to realizable images, let alone a meaningful semantic change. Our analysis therefore characterizes the detector’s response in representation space. Whether a particular intervention corresponds to a plausible deployment shift is a separate question, rather than an assumption built into the test.
+
+Our analysis reveals that energy-based rejection can change even when the classifier’s predictions remain identical. A feature-dependent term shared by all class logits leaves softmax probabilities unchanged, yet alters the energy score and can determine whether a rejection threshold is ever crossed along a direction. More broadly, steering exposes opposing responses to changes in feature magnitude. In the configurations we study, increasing feature length triggers unnormalized distance-based detectors, including kNN and Mahalanobis, while energy and maximum-softmax-probability scores can move toward stronger ID acceptance. Contraction toward the origin exposes the complementary failure pattern. We derive the conditions governing these responses and obtain an exact endpoint prediction: at the origin, each well-defined detector score reduces to a fixed, computable value. Comparing this value with the calibrated threshold determines whether the origin is rejected, correctly predicting the endpoint decisions across all tested encoders.
+
+Our contributions are an ID-only steering protocol for comparing detectors at a common false-alarm budget; a reduction establishing when feature-space responses transfer exactly to input-space transformations; analytical characterizations of radial responses and rejection at the origin; and an analysis of how prediction-preserving changes to the classifier affect energy-based rejection. Experiments across eight encoders examine these predictions and connect the controlled responses to failures observed on conventional OOD benchmarks. The contribution is an instrument for measuring and explaining detector behavior. We do not propose a better detector, nor claim that movement along every feature path constitutes a realistic OOD shift.
+
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_polar.pdf}
+\caption{Schematic rejection regions (shaded) in two dimensions for ID features on a shell, with four
+paths from one probe (dot); crosses mark first rejection. (a) A distance score rejects radial growth and
+straight paths but accepts the origin (threshold set as in high dimension, $t>\rho$). (b) Linear-head energy
+with rows summing to zero rejects only a bounded region around the origin. (c) The same head with every row
+shifted by a common vector: predictions (dotted argmax boundaries) are unchanged, but the calibrated rejection
+region moves (Prop.~\ref{prop:gauge}). The shifted head no longer rejects the path toward the origin, although
+$E_r(0)=E(0)$, because the threshold is recalibrated.}
+\label{fig:polar}
+\end{figure*}
+
+% =====================================================================
+\section{Related Work}\label{sec:related}
+\textbf{Scoring Heuristics vs. Rejection Behavior}
+While prior methods introduce various scoring heuristics—such as maximum softmax probability (MSP) \citep{hendrycks2018baseline}, energy scores \citep{}, Mahalanobis distance \citep{lee2018simple}, $k$-nearest neighbors ($k$NN) \citep{sun2022out}, ViM \citep{haoqi2022vim}, and ReAct \citep{sun2021react}—we do not propose a new score. Instead, our framework evaluates the precise rejection behavior of these existing metrics. Recent systematic analyses further underscore that traditional confidence-scoring functions exhibit unstable rankings across datasets and architectures, indicating that scoring heuristics alone are insufficient without mapping their underlying geometric properties \citep{olivares2025systematic}.
+
+\textbf{Perturbations and Boundary Geometries}
+Unlike approaches like ODIN \citep{liang2018enhancing} (which integrates input perturbations directly into the scoring mechanism), fDBD \citep{liu2023detecting} (which relies on the distance to the classifier's decision boundary), or detector-specific worst-case certified perturbations, our method introduces a principled, shared path to measure the calibrated rejection boundary. This aligns with recent efforts to formalize out-of-distribution detection through structured geometric frameworks, such as leveraging Neural Collapse properties in the penultimate feature space \citep{liu2023detecting}.
+
+\textbf{Overconfidence, Feature Norms, and Evaluation Critiques}
+Although previous studies show that standard ReLU networks exhibit high overconfidence far from the training data \citep{hein2019relu}, Proposition~\ref{prop:radial}(a) establishes a rigorous, calibrated feature-space counterpart for linear heads under exact conditions. Furthermore, feature-norm and distance-to-origin behaviors play a fundamental role in distinguishing tight in-distribution clusters from anomalous inputs \citep{liu2023detecting}. Finally, our evaluation addresses growing critiques in the literature regarding baseline failure modes and evaluation design, echoing recent findings that standard OOD detection heuristics can inadvertently target misaligned or irrelevant geometric signals \citep{li2025out}.
+
+% Three short paragraphs; each ends with how this paper differs.
+%
+% R1  Scores. MSP (Hendrycks & Gimpel 2017), energy (Liu et al. 2020),
+%     Mahalanobis (Lee et al. 2018), kNN (Sun et al. 2022), ViM (Wang et al.
+%     2022), ReAct (Sun et al. 2021). We do not propose a score; we measure
+%     where existing ones reject.
+
+
+% R2  Perturbations and boundaries. ODIN (Liang et al. 2018): perturbation is
+%     part of the score. fDBD (Liu & Qin): distance to the classifier's
+%     boundary as a score. Minimal / certified perturbations: worst case per
+%     detector. Ours: a declared, shared path measuring the calibrated
+%     rejection boundary.
+
+
+% R3  Overconfidence and feature norms. Hein et al. 2019: ReLU networks are
+%     overconfident far from the data -- Prop.~\ref{prop:radial}(a) is a
+%     calibrated feature-space counterpart for linear heads with exact
+%     conditions. Feature-norm observations in OOD detection \verify{which papers}.
+%     Evaluation critiques, e.g. \citet{li2025wrong} \verify{exists and says this}.
+
+% =====================================================================
+\section{Measurement}\label{sec:protocol}
+
+\paragraph{Detectors and calibration.}
+A frozen encoder $f$ maps an input to a feature $z=f(x)\in\R^d$, written in polar form $z=\rho u$ with
+$\rho=\|z\|$ and $\|u\|=1$. In-distribution (ID) training data are split into disjoint pools: a head pool
+for training a linear classifier with logits $Wz+b$ (rows $w_c$; $a=Wz$ denotes the bias-free logits),
+a reference pool $\mathcal{D}$ for fitting distance-based detectors, a direction pool $\mathcal{V}$ for
+estimating steering directions, a calibration pool $\mathcal{C}$ and a probe pool $\mathcal{X}$ of ID
+points to be steered. Test sets are used only for static evaluation.
+
+We focus on four scores, all oriented so that larger means more anomalous: the Euclidean distance to the
+$k$-th nearest point of $\mathcal{D}$ on unnormalized features (kNN; \citep{sun2022knn}); the
+class-conditional Mahalanobis score $\min_c (z-\mu_c)^\top P(z-\mu_c)$ with class means $\mu_c$ of
+$\mathcal{D}$ and $P$, the inverse of the pooled within-class covariance
+\citep{lee2018mahalanobis}, computed in double precision;\footnote{The single-precision
+implementation of \citet{kirchheim2022pytorchood} inverts the within-class scatter with only a $10^{-6}I$
+ridge. On our full-dimensional vision features, this matrix is so ill-conditioned that the calibrated
+thresholds are off by more than an order of magnitude (Appendix~\ref{app:numerics}).} energy
+$E(z)=-\lse(Wz+b)$ \citep{liu2020energy}; and $M(z)=-\max_c\softmax(Wz+b)_c$
+\citep{hendrycks2017baseline}.
+
+Every score $S$ is thresholded at the $\lceil(m+1)(1-\tau)\rceil$-th order statistic $t$ of its $m$
+calibration scores, for a common target rate $\tau$, and the decision is $\delta(z)=\mathbf{1}[S(z)>t]$.
+Under exchangeability this bounds the marginal ID rejection rate by $\tau$, and it puts every detector on the
+same operating point regardless of its scale (Proposition~\ref{prop:invariance}). All settings are listed in
+Appendix~\ref{app:impl}.
+
+\paragraph{Declared path families.}
+A path $\gamma:[0,H]\to\R^d$ starts at a probe, $\gamma(0)=z$. We use four families, each fixed before
+measurement and shared by all detectors (Table~\ref{tab:polar}): straight rays $\gamma(\alpha)=z+\alpha v$;
+geodesics on the sphere of radius $\rho$, $\gamma(\alpha)=\rho\,(\cos(\alpha/\rho)\,u+\sin(\alpha/\rho)\,w)$,
+with $w$ the normalised component of $v$ orthogonal to $u$ and $\alpha$ the arc length, so that
+$\|\gamma(\alpha)\|=\rho$; paths toward the origin, $\gamma(\alpha)=z-\alpha u$; and radial growth,
+$\gamma(\alpha)=z+\alpha u$. For straight rays and geodesics, $v$ is either the top principal direction of a
+bootstrap resample of $\mathcal{V}$ (``PC'') or an isotropic random unit vector (``random''), and both signs
+$\pm v$ are used. Distances are measured in ID radii,
+$\bar r=\operatorname{median}_{z\in\mathcal{D}}\|z-\bar z_{\mathcal{D}}\|$, which makes encoders
+comparable. The horizon $H$ is a fixed multiple of $\bar r$ chosen on ID data only. Paths toward the origin
+stop just short of it, and geodesics stop short of the antipode.
+
+\begin{table}[t]
+\centering\small
+\caption{Path families by their effect on the norm $\rho$ and the direction $u$ of $z=\rho u$.}
+\label{tab:polar}
+\begin{tabular}{lll}
+\toprule
+ & angular: no & angular: yes \\
+\midrule
+radial $+$ & radial growth & straight, $u^\top v\ge 0$ \\
+radial $0$ & (identity) & geodesics \\
+radial $-$ & toward origin & straight, $u^\top v<0$ (transient) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Measuring first rejection.}
+Each path is evaluated on a uniform grid of $\alpha\in[0,H]$, and the first grid crossing of $t$ is refined
+by bisection to give $\alpha^*=\inf\{\alpha:\delta(\gamma(\alpha))=1\}$. A path never rejected on $[0,H]$ is
+right-censored at $H$, and a probe rejected at the start has $\alpha^*=0$. We report the rejection rate
+$R(\alpha)$, the fraction of steered probes with $\delta(\gamma(\alpha))=1$; unlike the cumulative
+first-rejection rate, $R$ decreases when a detector re-accepts a path. To compare path families with
+different reachable lengths, we report $R$ at the \emph{matched horizon} $\alpha_m$, the largest $\alpha$
+reached by every path family, encoder and seed, using the last grid point not beyond it.
+
+\paragraph{Design and statistics.}
+For each encoder and seed we use a crossed design: several stratified bootstrap resamples of $\mathcal{D}$
+(detectors refitted, thresholds recalibrated on the fixed $\mathcal{C}$), several bootstrap resamples of
+$\mathcal{V}$ (direction estimates), and a fixed set of probes with both direction signs. Radial families
+depend on neither $v$ nor its sign and use one of each. Three independent seeds re-partition the data,
+retrain the head and redraw all resamples and probes. We report means over encoders and seeds with
+hierarchical bootstrap confidence intervals that resample encoders, then seeds within each encoder. Every
+detector sees the same probes and paths, so comparisons between detectors are paired: for each
+(seed, encoder) cell we bootstrap probes to obtain a one-sided $p$-value for the stated direction, and
+report in how many cells the difference is significant, together with a hierarchical interval for the mean
+difference. In every run we also refit the detectors independently and recompute the score at randomly
+chosen path points; the result must match the traced scores, and the score at $\alpha=0$ must match the
+unsteered probe score.
+
+\paragraph{Validity.}
+\begin{lemma}[Reduction]\label{lem:reduction}
+If an input shift $x(\beta)$ satisfies $f(x(\beta))=\gamma(\sigma(\beta))$ for a deterministic encoder $f$,
+then $\delta(f(x(\beta)))=\delta(\gamma(\sigma(\beta)))$ for all $\beta$. Hence, if a feature path is never
+rejected on $[0,H]$, every input shift realising it on $[0,H]$ is never rejected.
+\end{lemma}
+
+Inputs need not realise every feature path, so the converse fails. An $\epsilon$-approximate version for
+Lipschitz scores is in Appendix~\ref{app:proofs}. Because thresholds are order statistics, calibrated
+decisions are also invariant to monotone transformations of the score.
+
+\begin{proposition}[Invariance]\label{prop:invariance}
+If $g$ is strictly increasing and there are no ties at the calibration order statistic, the calibrated
+decisions of $g\circ S$ and $S$ coincide along every path, and so do their $\alpha^*$.
+\end{proposition}
+
+The invariance does not extend to input-dependent reparameterisations, and energy has one.
+
+\begin{proposition}[Gauge]\label{prop:gauge}
+Replacing every $w_c$ by $w_c+r$ leaves the softmax, the predictions and MSP unchanged, and changes energy
+to $E_r(z)=E(z)-r^\top z$. Since $r^\top z$ depends on the input, calibrated energy decisions can differ
+between two heads that make identical predictions. At the origin $E_r(0)=E(0)$, but the calibrated
+threshold $t_r$ moves with $r$, so the origin decision $-\lse(b)>t_r$ is gauge-dependent
+(Fig.~\ref{fig:polar}c).
+\end{proposition}
+
+% =====================================================================
+\section{Radial Structure of Decisions}\label{sec:radial}
+
+Fix a probe $z$ and consider the radial path $s\mapsto sz$, with $s>1$ for growth and $s\in(0,1)$ for
+shrinkage. Write $p(s)=\softmax(sa+b)$.
+
+\begin{proposition}[Radial behaviour]\label{prop:radial}
+\begin{enumerate}
+\item[(a)] \emph{Energy.} $E(s)=-\lse(sa+b)$ is concave, with $E'(s)=-\E_{p(s)}[a]$ and
+$\frac{d}{ds}\E_{p(s)}[a]=\Var_{p(s)}(a)\ge 0$, and $E(0)=-\lse(b)$. On growth from an accepted probe:
+if $\E_{p(1)}[a]\ge 0$, then $E(s)\le E(1)\le t$ for all $s\ge 1$; if $\E_{p(1)}[a]<0<\max_c a_c$, then $E$
+increases to its maximum at the unique root $s_0>1$ of $\E_{p(s)}[a]=0$ and tends to $-\infty$, so it
+rejects on at most one bounded interval; if $\max_c a_c<0$, then $E$ increases to $+\infty$ and the probe
+is eventually rejected. On shrinkage, an accepted probe is rejected near the origin iff $-\lse(b)>t$, with
+a single crossing.
+\item[(b)] \emph{MSP.} $M(0)=-\max_c\softmax(b)_c$, and $M(s)\to-1$ under growth if $\arg\max_c a_c$ is
+unique.
+\item[(c)] \emph{kNN.} $S(0)=r_{(k)}$, the $k$-th smallest reference norm (counting duplicates), so the
+origin is accepted iff $r_{(k)}\le t$. Writing $t=\|z_q-r_q\|$ for the calibration point $z_q$ that sets the
+threshold and its $k$-th neighbour $r_q$, this is equivalent to $c_k\le c^*$, where $c_k=\cos(z_q,r_q)$ and
+$c^*=(\|z_q\|^2+\|r_q\|^2-r_{(k)}^2)/(2\|z_q\|\|r_q\|)$; if all norms are equal, $c^*=1/2$. On radial
+growth, first rejection occurs by $\alpha^*\le t+\max_i\|r_i\|-\|z\|$ (in feature units).
+\item[(d)] \emph{Mahalanobis.} The score tends to $+\infty$ under growth and equals $\min_c\mu_c^\top P\mu_c$
+at the origin.
+\end{enumerate}
+\end{proposition}
+
+\begin{remark}[Scale-invariant scores]\label{rem:scaleinv}
+If $S(z)$ depends on $z$ only through $u=z/\|z\|$, as for kNN on normalised features, then $S(sz)=S(z)$ for
+all $s>0$: such a score rejects no radial path, in either direction. \hole{add normalised kNN to the
+experiments, or keep this as a remark only}
+\end{remark}
+
+\begin{remark}
+$-\lse(b)\approx-\log C$ only when the biases are nearly equal.
+\end{remark}
+
+\begin{theorem}[Cone condition]\label{thm:cone}
+Along $z+\alpha v$, energy is concave in $\alpha$, so its rejection set is an interval. Energy eventually
+rejects iff $Wv<0$ componentwise. Such $v$ exist iff no nonnegative, nonzero $y$ satisfies $W^\top y=0$
+(Gordan's alternative \hole{cite}), that is, iff $0\notin\mathrm{conv}\{w_1,\dots,w_C\}$.
+\end{theorem}
+
+% =====================================================================
+\section{Evaluation}\label{sec:eval}
+
+\paragraph{Data.}
+\emph{Text:} CLINC150~\citep{larson2019clinc}, with the intents as ID and the out-of-scope queries as OOD.
+The training queries of each intent are divided among the head, reference and direction pools, and the
+validation queries between calibration and probes; the official test sets are used after removing all
+copies of duplicated queries. \emph{Vision:} CIFAR-10 as ID~\citep{krizhevsky2009cifar}, with CIFAR-100 and
+SVHN~\citep{netzer2011svhn} as OOD. Training images of each class are divided among the five pools, test
+sets are subsampled uniformly, and exact pixel duplicates are removed. Pool sizes are in
+Appendix~\ref{app:impl}.
+
+\paragraph{Encoders and heads.}
+Text uses four frozen sentence encoders~\citep{reimers2019sbert,xiao2023bge}, MPNet, MiniLM-L6, BGE-base and
+BGE-large, all of which emit unit-norm embeddings. Vision uses four frozen pretrained backbones with their
+native pooled features: ResNet-18 and ResNet-50~\citep{he2016resnet} and ViT-B/16~\citep{dosovitskiy2021vit},
+pretrained on ImageNet \verify{ViT-B/16 checkpoint}, and DINOv2-S~\citep{oquab2023dinov2}, self-supervised on
+LVD-142M. A linear head is trained on the head pool with weight decay for a fixed number of epochs; per-encoder
+ID test accuracies are in Appendix~\ref{app:impl} \hole{add accuracies}.
+
+\paragraph{Sanity checks.}
+Held-out ID rejection matches the target rate $\tau$ on average, with small variation across runs. Across all
+(seed, encoder, path) runs, independently recomputed scores match the traces, scores at $\alpha=0$ match the
+unsteered probes, and geodesics preserve the norm, all to numerical precision.
+
+% ---------------------------------------------------------------------
+\subsection{RQ1: Do static metrics reveal path behaviour?}\label{sec:rq1}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_teaser.pdf}
+\caption{Static AUROC against rejection of steered ID probes at the matched horizon, one point per detector and encoder (mean over three seeds). The detectors with the best static AUROC are the logit-based scores, which almost never reject radially grown probes; distance-based scores reject nearly all of them, even where their static AUROC is below chance. The dotted line marks the target rate $\tau$.}
+\label{fig:teaser}
+\end{figure*}
+A logit-based score has the highest static AUROC for every encoder (Table~\ref{tab:static}): energy for all
+but one, and MSP for the remaining one. On radial growth, however, logit-based scores almost never reject
+steered probes, while distance-based scores reject nearly all of them (Figure~\ref{fig:teaser}). The ranking
+also inverts in the other direction. On ResNet-18, kNN is below chance statically, driven by SVHN, yet it
+rejects the large majority of radially grown probes. A single benchmark number therefore does not determine
+which shifts a detector misses.
+
+% ---------------------------------------------------------------------
+\subsection{RQ2: Do distance- and logit-based detectors fail along different paths?}\label{sec:rq2}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_failure_map.pdf}
+\caption{Rejection of steered ID probes at the matched horizon for every path family and detector, averaged over three seeds and four encoders per modality. Distance-based scores fail toward the origin; logit-based scores fail under radial growth and straight rays.}
+\label{fig:failuremap}
+\end{figure*}
+They do, and the pattern follows the norm (Figure~\ref{fig:failuremap}; values with confidence intervals in
+Table~\ref{tab:matched}, rejection curves in Figure~\ref{fig:curvesseeds}). Under radial growth,
+distance-based scores reject more than logit-based scores: each comparison (kNN and Mahalanobis against
+energy, kNN against MSP) is significant in every (seed, encoder) cell in both modalities, and the
+differences are close to the largest possible. Toward the origin, logit-based scores reject more than
+distance-based scores. In text the difference is large and significant in every cell. In vision, energy's
+advantage is significant in most cells and no cell shows the opposite direction; the only non-significant
+cells are ResNet-50 in each seed, whose origin Proposition~\ref{prop:radial} predicts to be accepted by
+energy. Straight rays, which both grow the norm and rotate the direction, behave like radial growth: energy
+rarely rejects them, while kNN rejects a large share.
+
+The vision energy result is bimodal across encoders (Table~\ref{tab:perencoder}): rejection toward the
+origin is high for ViT-B/16, near-complete for DINOv2-S and rare for the two ResNets. Both low cases are
+explained: ResNet-50's origin is predicted to be accepted, and ResNet-18's paths stop far from the origin
+because of the horizon cap.
+
+% ---------------------------------------------------------------------
+\subsection{RQ3: Does Proposition~\ref{prop:radial} predict the decisions?}\label{sec:rq3}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_theory.pdf}
+\caption{(a) Predicted margin of each detector's decision at the origin (Proposition~\ref{prop:radial}) against the observed rejection of probes that reach it, for every seed, encoder and (for kNN) decisive reference fit; shaded quadrants mark agreement. (b) Closed-form maximum energy along radial growth (at $s_0$, Proposition~\ref{prop:radial}(a)) against the maximum traced on the grid, per probe (first seed); the line is the identity.}
+\label{fig:theory}
+\end{figure}
+All origin conditions (a)--(d) match the observed decisions in every (seed, encoder) cell. For energy this
+includes ResNet-50, whose threshold exceeds $-\lse(b)$, so its origin is accepted. For kNN, the general
+condition $c_k\le c^*$ holds on every reference fit; we test only (fit, probe) pairs whose margin
+$|r_{(k)}-t|$ exceeds the endpoint norm, where the 1-Lipschitz bound makes the observation decisive, and
+thousands of pairs qualify. The unit-norm special case $c_k<1/2$ fails for ResNet-18 and ResNet-50, whose
+neighbours are strongly aligned but whose smallest reference norms are small. \hole{one sentence each on the
+Mahalanobis and MSP origin checks}. Under radial growth, the case analysis of (a) matches the traces for every
+probe, and growth causes no new energy rejection.
+
+Figure~\ref{fig:theory} shows both checks: every observation falls in the quadrant its predicted margin
+assigns, and the closed-form maximum energy along radial growth coincides with the traced maximum. The two
+cases a naive reading would call exceptions are both predicted: the anisotropic BGE encoders reject the
+origin under both distance scores, and ResNet-50's energy accepts it.
+
+% ---------------------------------------------------------------------
+\subsection{RQ4: What happens when the norm is held fixed?}\label{sec:rq4}
+On geodesics no family is uniformly blind. Mahalanobis rejects nearly all random geodesics, whereas energy
+rejects few of them in vision and about half in text. In vision, principal-axis geodesics are rarely rejected
+by any detector at the matched horizon; in text, MSP rejects most of them and kNN a substantial share. An
+independent check on the ID test split, which no detector uses, shows that at the matched horizon the vision
+endpoints lie just beyond the edge of the ID range along the steering axis and well within the Mahalanobis
+acceptance region \verify{recheck at $\alpha_m=0.75\bar r$}, so these paths are close to ID-preserving there.
+Once they move clearly outside the ID range (Figure~\ref{fig:support}, Appendix~\ref{app:extra}), energy flags
+none of these points, MSP and Mahalanobis flag a minority, and kNN catches a substantial share.
+
+% ---------------------------------------------------------------------
+\subsection{RQ5: Do natural input transformations realise these paths?}\label{sec:rq5}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_realise.pdf}
+\caption{Feature motion and detector response under natural transformations of CIFAR-10 test images (vision encoders, first seed; lines are encoder means, bands the range across encoders). Top: radial and angular components of the feature displacement, relative to the ID norm. Bottom: rejection at the calibrated thresholds. Every transformation shrinks the norm and rotates the features.}
+\label{fig:realise}
+\end{figure*}
+Lemma~\ref{lem:reduction} transfers blindness from a feature path to every input shift that realises it, so we
+ask which feature motions real shifts produce. We apply four natural transformations of increasing strength to
+ID test images (contrast reduction, darkening, blur and additive noise), encode them, and split each feature
+displacement into a radial and an angular component (Figure~\ref{fig:realise}). Every transformation shrinks the
+feature norm while rotating the features, so real shifts occupy the shrink-and-rotate cell of
+Table~\ref{tab:polar}, which our designed paths reach only transiently. Under contrast and brightness changes,
+shrinkage dominates at moderate strength; there the logit-based scores respond first while kNN stays close to the
+target rate, consistent with Proposition~\ref{prop:radial} for shrinking norms. Under blur and noise, rotation is
+much larger, every detector responds, and the distance-based scores overtake the logit-based ones at the highest
+strengths. These transformations are covariate shifts of ID images rather than semantic OOD; they show that the
+radial and angular motions we steer along are produced by ordinary input changes, and that the predicted
+complementarity appears there too.
+
+% ---------------------------------------------------------------------
+\subsection{RQ6: Is the energy decision a property of the predictor?}\label{sec:rq6}
+\begin{figure}[t]
+\centering
+\fig{fig_gauge}{\columnwidth}
+\caption{Energy rejection at the matched horizon as every row of the trained head is shifted by a multiple $\lambda$ of the mean row (first seed). All predictions are unchanged for every $\lambda$ (checked on the ID test set). Toward the origin, the decision changes substantially with $\lambda$; under radial growth, energy rejection stays low throughout.}
+\label{fig:gauge}
+\end{figure}
+Proposition~\ref{prop:gauge} says that energy depends on a component of the head that no prediction reveals. We
+sweep this component on the trained heads by replacing $w_c$ with $w_c-\lambda\bar w$, where $\bar w$ is the
+mean row, and recalibrate energy at each $\lambda$ (Figure~\ref{fig:gauge}). Toward the origin, energy's
+rejection changes substantially with $\lambda$ for several encoders, in both modalities, although every
+prediction is identical. Under radial growth it stays low throughout. A head with the same predictions can
+therefore yield a different energy detector, while its blindness to norm growth persists.
+
+% =====================================================================
+\section{Limitations and Conclusion}\label{sec:conclusion}
+% L1  Limitations as prose, one sentence each:
+%     linear heads on frozen encoders, one calibration level;
+%     feature paths not claimed realisable (Lemma one-directional), but
+%       natural transformations do realise shrink-and-rotate (RQ5, vision only);
+%     no designed shrink-and-rotate family;
+%     horizon is a development choice; origin paths cannot reach the origin
+%       for all probes;
+%     energy results depend on the trained head (RQ6);
+%     the link between real-OOD norms and static AUROC rests on one pair
+%       (Appendix~\ref{app:realshift}).
+\hole{L1}
+
+% C1  Conclusion: static metrics ask how well a score orders one test set;
+%     calibrated paths ask which changes a detector responds to; the answer
+%     is organised by the feature norm and predicted by closed-form limits.
+%     One sentence on what practitioners should do differently.
+\hole{C1}
+
+% =====================================================================
+\section*{AI Use Statement}
+% Required by the CFP (missing statement = desk rejection). Use the ICLR
+% format the CFP links to. To be written by the authors.
+\hole{AI Use Statement}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% =====================================================================
+\onecolumn
+\appendix
+\section{Implementation Details}\label{app:impl}
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Settings used for every reported result.}
+\label{tab:impl}
+\begin{tabular}{ll}
+\toprule
+setting & value \\
+\midrule
+target ID rejection $\tau$ & 0.05 (order statistic $\lceil(m+1)(1-\tau)\rceil$) \\
+kNN neighbours $k$ & 5 (Euclidean, unnormalised) \\
+energy / MSP temperature & 1 \\
+horizon $H$ & $3\bar r$ (median ID radius of $\mathcal{D}$) \\
+toward-origin stop & $0.99\min_{z\in\mathcal{X}}\|z\|$ \\
+geodesic cap & arc length $0.95\pi\min_{z\in\mathcal{X}}\|z\|$ \\
+grid / bisection & 101 points / 15 steps \\
+resamples of $\mathcal{D}$ / $\mathcal{V}$ & 6 / 6 (radial families: 1 direction, 1 sign) \\
+probes per encoder and seed & 64, drawn from $\mathcal{X}$ \\
+seeds & 3 (split, head and draws vary together) \\
+matched horizon $\alpha_m$ & $1.04\,\bar r$ (text), $0.75\,\bar r$ (vision) \\
+confidence intervals / tests & 95\% hierarchical bootstrap / one-sided paired bootstrap, $p<0.05$ \\
+linear head & AdamW, learning rate 0.01, weight decay $10^{-4}$, 30 epochs, batch 128 \\
+CLINC150 pools per intent & 60 / 20 / 20 train (head / ref.\ / dir.), 10 / 10 val.\ (cal.\ / probes) \\
+CLINC150 test (seed 0) & 4498 ID, 1000 out-of-scope (after deduplication) \\
+CIFAR-10 pools per class & 500 / 100 / 100 / 100 / 20 (head / ref.\ / dir.\ / cal.\ / probes) \\
+vision test (seed 0) & 5000 CIFAR-10, 5000 CIFAR-100, 5000 SVHN \\
+feature dimensions & MPNet 768, MiniLM 384, BGE-base 768, BGE-large 1024, \\
+ & ResNet-18 512, ResNet-50 2048, ViT-B/16 768, DINOv2-S 384 \\
+ID test accuracy of heads & \hole{per encoder, mean $\pm$ SD over seeds} \\
+verification tolerances & recompute $\le1.5\times10^{-11}$; norm drift on geodesics $\le10^{-7}$ \\
+compute & $\approx$410 CPU core-hours for the grid; encoding on one GPU \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Proofs}\label{app:proofs}
+\paragraph{Approximate realisation.}
+\begin{definition}[$\epsilon$-realisation]\label{def:realise}
+An input shift $\epsilon$-realises $\gamma$ if there is a monotone $\sigma$ with
+$\sup_\beta\|f(x(\beta))-\gamma(\sigma(\beta))\|\le\epsilon$.
+\end{definition}
+\begin{corollary}
+If $S$ is $L$-Lipschitz, decisions along $x(\beta)$ and $\gamma(\sigma(\beta))$ agree wherever
+$|S(\gamma(\sigma(\beta)))-t|>L\epsilon$. For kNN one can take $L=1$, and for energy $L=\max_c\|w_c\|$, since
+$\|\nabla E\|=\|W^\top p\|\le\max_c\|w_c\|$.
+\end{corollary}
+
+\hole{Proofs of Lemma~\ref{lem:reduction}, Proposition~\ref{prop:invariance},
+Proposition~\ref{prop:radial} (a)--(d), Remark~\ref{rem:scaleinv} and Theorem~\ref{thm:cone}; see THEORY.md.}
+
+\section{Numerical Note}\label{app:numerics}
+\hole{float32 inversion, condition numbers, ridge-determined crossings; from NORM\_PATHS.md}
+
+\section{Additional Results}\label{app:extra}
+
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Static OOD detection (AUROC, mean $\pm$ SD over three seeds); best per encoder in bold.
+Vision AUROC pools CIFAR-100 and SVHN.}
+\label{tab:static}
+\begin{tabular}{lcccc}
+\toprule
+encoder & kNN & Mahalanobis & Energy & MSP \\
+\midrule
+MPNet & 0.948$\pm$0.001 & 0.948$\pm$0.001 & \textbf{0.976$\pm$0.000} & 0.963$\pm$0.001 \\
+MiniLM-L6 & 0.944$\pm$0.001 & 0.946$\pm$0.000 & \textbf{0.965$\pm$0.000} & 0.953$\pm$0.001 \\
+BGE-base & 0.940$\pm$0.001 & 0.950$\pm$0.001 & \textbf{0.971$\pm$0.001} & 0.961$\pm$0.001 \\
+BGE-large & 0.949$\pm$0.001 & 0.953$\pm$0.001 & \textbf{0.976$\pm$0.001} & 0.966$\pm$0.001 \\
+\midrule
+ResNet-18 & 0.414$\pm$0.007 & 0.413$\pm$0.000 & \textbf{0.844$\pm$0.014} & 0.806$\pm$0.009 \\
+ResNet-50 & 0.829$\pm$0.001 & 0.794$\pm$0.004 & 0.849$\pm$0.005 & \textbf{0.871$\pm$0.002} \\
+ViT-B/16 & 0.889$\pm$0.002 & 0.856$\pm$0.005 & \textbf{0.949$\pm$0.003} & 0.905$\pm$0.009 \\
+DINOv2-S & 0.892$\pm$0.002 & 0.957$\pm$0.002 & \textbf{0.974$\pm$0.003} & 0.950$\pm$0.004 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Rejection at the matched horizon $\alpha_m$, averaged over three seeds and four encoders per modality,
+with hierarchical bootstrap confidence intervals (encoders, then seeds within encoder). Seeds vary the data
+split, head training and bootstrap draws together; seed-to-seed variation is small in every cell.
+Per-encoder values for the radial paths are in Table~\ref{tab:perencoder}.}
+\label{tab:matched}
+\begin{tabular}{lcccc}
+\toprule
+\multicolumn{5}{l}{\emph{text}}\\
+path & kNN & Maha & Energy & MSP \\
+\midrule
+radial growth & 1.00 \,[0.99,\,1.00] & 0.99 \,[0.98,\,1.00] & 0.01 \,[0.00,\,0.01] & 0.02 \,[0.01,\,0.03] \\
+toward origin & 0.11 \,[0.00,\,0.22] & 0.13 \,[0.00,\,0.30] & 1.00 \,[1.00,\,1.00] & 1.00 \,[1.00,\,1.00] \\
+straight, PC & 0.89 \,[0.88,\,0.91] & 0.30 \,[0.23,\,0.38] & 0.09 \,[0.07,\,0.12] & 0.25 \,[0.22,\,0.28] \\
+straight, random & 0.96 \,[0.94,\,0.98] & 1.00 \,[1.00,\,1.00] & 0.07 \,[0.06,\,0.07] & 0.06 \,[0.05,\,0.08] \\
+geodesic, PC & 0.39 \,[0.23,\,0.54] & 0.03 \,[0.00,\,0.06] & 0.28 \,[0.15,\,0.46] & 0.64 \,[0.52,\,0.76] \\
+geodesic, random & 0.74 \,[0.58,\,0.89] & 1.00 \,[1.00,\,1.00] & 0.51 \,[0.21,\,0.82] & 0.23 \,[0.12,\,0.33] \\
+\midrule
+\multicolumn{5}{l}{\emph{vision}}\\
+path & kNN & Maha & Energy & MSP \\
+\midrule
+radial growth & 0.95 \,[0.92,\,0.98] & 0.94 \,[0.89,\,0.98] & 0.03 \,[0.01,\,0.06] & 0.02 \,[0.01,\,0.03] \\
+toward origin & 0.00 \,[0.00,\,0.00] & 0.00 \,[0.00,\,0.00] & 0.52 \,[0.09,\,0.94] & 0.19 \,[0.13,\,0.25] \\
+straight, PC & 0.44 \,[0.28,\,0.68] & 0.22 \,[0.05,\,0.51] & 0.06 \,[0.03,\,0.09] & 0.19 \,[0.11,\,0.27] \\
+straight, random & 0.67 \,[0.57,\,0.82] & 1.00 \,[1.00,\,1.00] & 0.05 \,[0.03,\,0.06] & 0.05 \,[0.04,\,0.07] \\
+geodesic, PC & 0.10 \,[0.06,\,0.16] & 0.02 \,[0.01,\,0.03] & 0.06 \,[0.03,\,0.09] & 0.21 \,[0.12,\,0.32] \\
+geodesic, random & 0.31 \,[0.25,\,0.37] & 0.94 \,[0.85,\,1.00] & 0.08 \,[0.03,\,0.13] & 0.07 \,[0.05,\,0.09] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[!htbp]
+\centering
+\fig{fig_curves_seeds}{\linewidth}
+\caption{Rejection curves $R(\alpha)$ per detector and path family, averaged over encoders; bands show the range across the three seeds. The vertical line marks the matched horizon.}
+\label{fig:curvesseeds}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\fig{fig_support}{.6\linewidth}
+\caption{Vision geodesics along the top principal axis (first seed): rejection as a function of the distance travelled along the axis, in ID standard deviations measured on the ID test split. The shaded band is the ID range. Energy stops rejecting as the paths leave it, while kNN rises.}
+\label{fig:support}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\fig{fig_mechanism}{\linewidth}
+\caption{Energy and kNN scores along real radial paths $z\mapsto sz$ for random probes (first seed), shifted so that the calibrated threshold is zero. Stars mark the origin limits of Proposition~\ref{prop:radial}: $-\lse(b)$ for energy and the $k$-th smallest reference norm for kNN.}
+\label{fig:mechanism}
+\end{figure}
+
+\section{Real Distribution Shifts}\label{app:realshift}
+Relative to ID features (first seed), CLINC out-of-scope queries have exactly the ID norm, because the encoders
+normalise; CIFAR-100 features have nearly the ID norm; and SVHN features are clearly smaller for ResNet-18,
+slightly smaller for DINOv2-S, and slightly larger for ResNet-50 and ViT-B/16. The one strongly norm-shrinking
+case, ResNet-18 on SVHN, shows the complementarity predicted by Proposition~\ref{prop:radial}: energy detects
+SVHN well, while kNN is below chance. Across all (encoder, OOD set) pairs, the norm ratio does not predict the
+energy-over-distance gap (Figure~\ref{fig:realood}).
+
+\begin{figure}[!htbp]
+\centering
+\fig{fig_real_ood}{.5\linewidth}
+\caption{Median OOD-to-ID feature norm against the AUROC gap between energy and the best distance score, per encoder and OOD set (first seed).}
+\label{fig:realood}
+\end{figure}
+
+\section{Per-Encoder Results}\label{app:perencoder}
+\begin{table}[!htbp]
+\centering
+\scriptsize
+\caption{Rejection at the matched horizon on the radial paths, per encoder: mean $\pm$ SD over 3 seeds.}
+\label{tab:perencoder}
+\begin{tabular}{l cccc cccc}
+\toprule
+ & \multicolumn{4}{c}{radial growth} & \multicolumn{4}{c}{toward origin} \\
+encoder & kNN & Maha & Energy & MSP & kNN & Maha & Energy & MSP \\
+\midrule
+mpnet & 0.99$\pm$0.01 & 0.98$\pm$0.02 & 0.01$\pm$0.01 & 0.03$\pm$0.00 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+minilm & 1.00$\pm$0.01 & 1.00$\pm$0.00 & 0.00$\pm$0.00 & 0.01$\pm$0.01 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+bge\_base & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 0.01$\pm$0.01 & 0.01$\pm$0.01 & 0.18$\pm$0.02 & 0.14$\pm$0.11 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+bge\_large & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 0.01$\pm$0.01 & 0.03$\pm$0.01 & 0.25$\pm$0.03 & 0.40$\pm$0.07 & 1.00$\pm$0.00 & 1.00$\pm$0.00 \\
+resnet18 & 0.92$\pm$0.06 & 0.93$\pm$0.03 & 0.03$\pm$0.01 & 0.02$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.17$\pm$0.03 & 0.12$\pm$0.02 \\
+resnet50 & 0.94$\pm$0.04 & 0.86$\pm$0.03 & 0.07$\pm$0.03 & 0.03$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.02$\pm$0.01 & 0.16$\pm$0.05 \\
+vit\_b16 & 0.93$\pm$0.00 & 0.96$\pm$0.01 & 0.01$\pm$0.01 & 0.02$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.88$\pm$0.08 & 0.27$\pm$0.04 \\
+dinov2\_s & 1.00$\pm$0.00 & 1.00$\pm$0.00 & 0.01$\pm$0.02 & 0.02$\pm$0.02 & 0.00$\pm$0.00 & 0.00$\pm$0.00 & 0.99$\pm$0.01 & 0.20$\pm$0.05 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

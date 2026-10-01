@@ -37,6 +37,8 @@ Thumbs.db
 /uai_expt/
 /cache/
 /artifacts/
+/backup/
+backup/
 old/
 uai_expt/
 plots/
