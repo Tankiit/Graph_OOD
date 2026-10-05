@@ -1,0 +1,2 @@
+# Learned-direction run outputs (vectors, logs, manifests) are stored with Git LFS.
+runs/learned_directions/** filter=lfs diff=lfs merge=lfs -text

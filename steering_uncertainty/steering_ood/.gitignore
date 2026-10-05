@@ -139,3 +139,8 @@ paper/steering_ood.pdf
 !*.MD
 !**/*.md
 !**/*.MD
+
+# ------------------------------------------------------------------------------
+# 7. Learned-direction run outputs (tracked with Git LFS, see .gitattributes)
+# ------------------------------------------------------------------------------
+!runs/learned_directions/**
