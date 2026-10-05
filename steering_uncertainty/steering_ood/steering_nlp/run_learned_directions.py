@@ -31,11 +31,11 @@ from dataclasses import fields
 from pathlib import Path
 
 PKG = Path(__file__).resolve().parent.parent
-BUDGETS = {  # same budgets as the vision runner
+BUDGETS = {  # vision budgets, except 500 confirmatory steps: the text pilots' dev loss is flat by then
     'pilot': dict(swarm_size=8, steps=100, bs_id=32, bs_ood=32, log_every=10),
-    'confirmatory': dict(swarm_size=64, steps=1000, bs_id=64, bs_ood=64),
+    'confirmatory': dict(swarm_size=64, steps=500, bs_id=64, bs_ood=64, log_every=25),
 }
-MODEL_BUDGETS = {'confirmatory': {}}  # per-model step counts, to be set from timing runs
+MODEL_BUDGETS = {'confirmatory': {}}  # per-model overrides of a budget, if a model needs its own step count
 SPLIT_KEYS = ('seed', 'dev_fraction')
 PATH_KEYS = ('layer', 'sim_layer', 'ood_mode', 'id_augment', 'radius')  # already in the run directory
 
